@@ -1,3 +1,4 @@
+import streamlit as st
 from locales import t
 from auth_ui import render_auth_sidebar
 from supabase_client import get_current_user
