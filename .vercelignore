@@ -1,8 +1,15 @@
-# Files and directories ignored by Vercel deployment and build detector
-prisma/
+# Ignore Python backend files during Vercel deployment
+# This prevents Vercel from attempting to install heavy ML/Streamlit packages (501 MB)
+requirements.txt
+app.py
+pages/
+supabase_client.py
+auth_ui.py
 agripirate.db
-supabase_setup.sql
+*.db
+prisma/
 test_supabase.py
+supabase_setup.sql
 .env
 .env.local
 .env.*
