@@ -50,6 +50,16 @@ Smallholder farmers in the **Kongu Nadu / Erode** belt face compounding challeng
 
 ---
 
+## ⚡ Phase 2 Advanced Upgrades
+
+* 🌍 **Zero-Key Auto-Location & Climate:** Instant IP-based GPS and Open-Meteo satellite weather integration.
+* 🗣️ **Multilingual Chat:** Real-time AI translation (English, Tamil, Telugu) using `deep-translator`.
+* ⚡ **Ultra-Low Latency AI:** Gemini 1.5 Flash model integration with strict token capping for <1.5s response times.
+* 🛒 **Farmer-to-Buyer Marketplace:** Direct WhatsApp deal generation bypassing middlemen (Supabase & SQLite fallback).
+* 📱 **Agri Reels:** Mobile-first vertical video scroll for quick farming tips.
+
+---
+
 ## 🏗️ Architecture & Technology Stack
 
 ```mermaid
@@ -58,25 +68,33 @@ graph TD
     B -->|Cloud Auth| C[(Supabase Auth / Postgres)]
     B -->|Offline Auth| D[(Local SQLite: agripirate.db)]
     
-    A --> E[1. Agri-Chat]
+    A --> E[1. Agri-Chat: Multilingual AI]
     A --> F[2. Crop Vision Studio]
-    A --> G[3. Crop Optimizer]
+    A --> G[3. Crop Optimizer: GPS & Climate]
     A --> H[4. Market & SOS Helpdesk]
+    A --> K[5. Direct Market & Agri Reels]
     
-    E -->|REST API| I[Google Gemini AI Engine]
+    E -->|Translation| L[deep-translator: En / Ta / Te]
+    L -->|Low-Latency API| I[Google Gemini 1.5 Flash AI Engine]
     F -->|Vision Analysis| I
+    G -->|Zero-Key GPS / Sat Weather| M[IP-API + Open-Meteo API]
     G -->|NPK Logic Matrix| J[Agronomy Rules Engine]
     H -->|Realtime Tickets| C
     H -->|Offline Fallback| D
+    K -->|Harvest Lots| C
+    K -->|Offline Fallback| D
 ```
 
 | Layer | Technologies |
 |---|---|
 | **Frontend UI** | Streamlit 1.65+, Custom Responsive CSS (Glassmorphism & Mobile WhatsApp theme) |
-| **Generative AI** | Google Gemini 2.5 Flash / Flash Latest Vision API |
+| **Generative AI** | Google Gemini 1.5 Flash / Flash Latest Vision API (token-capped ultra-low latency) |
+| **Translation Engine** | deep-translator (GoogleTranslator) for real-time Tamil, Telugu & English |
+| **Weather & Geolocation** | Open-Meteo Satellite API + IP-API Geolocation (Zero-Key integration) |
 | **Cloud Database & Auth** | Supabase Cloud (PostgreSQL, PostgREST, Row Level Security) |
-| **Local Cache & Offline DB** | SQLite3, In-Memory Streamlit Resource Caching |
-| **Data Processing** | Pandas, Pillow (PIL), Python-Dotenv |
+| **Local Cache & Offline DB** | SQLite3 (`agripirate.db`), In-Memory Streamlit Resource Caching |
+| **Data Processing** | Pandas, Pillow (PIL), Python-Dotenv, Requests |
+
 
 ---
 
