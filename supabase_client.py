@@ -45,6 +45,19 @@ def init_local_db():
         location TEXT,
         created_at TEXT
     )''')
+    
+    # Seed initial demo crops if table is empty
+    c.execute("SELECT COUNT(*) FROM marketplace_crops")
+    if c.fetchone()[0] == 0:
+        seed_data = [
+            ('Murugan K.', '+919876543210', 'Erode Organic Turmeric (Finger)', 500.0, 145.0, 'Perundurai, Erode', '2026-10-09 09:30'),
+            ('Selvam P.', '+919443218765', 'Sugarcane (CO-86032)', 1200.0, 32.0, 'Bhavani, Erode', '2026-10-09 08:15'),
+            ('Vignesh R.', '+919842155678', 'Pearl Millet (Kambu / Bajra)', 350.0, 42.0, 'Sathyamangalam', '2026-10-09 07:45')
+        ]
+        c.executemany("""INSERT INTO marketplace_crops 
+                         (farmer_name, phone_whatsapp, crop_name, quantity_kg, price_per_kg, location, created_at) 
+                         VALUES (?, ?, ?, ?, ?, ?, ?)""", seed_data)
+                         
     conn.commit()
     conn.close()
 

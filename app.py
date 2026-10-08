@@ -36,3 +36,4 @@ st.page_link("pages/1_💬_Agri_Chat.py", label="**Agri Chat:** Talk to our AI a
 st.page_link("pages/2_📸_Crop_Vision.py", label="**Crop Vision:** Upload photos for instant health checks", icon="📸")
 st.page_link("pages/3_🌾_Optimizer.py", label="**Optimizer:** Find out exactly what to grow based on soil and water", icon="🌾")
 st.page_link("pages/4_📈_Market_SOS.py", label="**Market & SOS:** Check live prices and request community help", icon="📈")
+st.page_link("pages/5_🛒_Agri_Market.py", label="**Agri Market & Reels:** Direct harvest sales & mobile farming reels", icon="🛒")
