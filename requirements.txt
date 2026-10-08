@@ -4,3 +4,4 @@ pillow
 requests
 python-dotenv
 pandas
+deep-translator

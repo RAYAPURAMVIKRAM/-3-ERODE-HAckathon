@@ -1,9 +1,11 @@
 import os
 import streamlit as st
 from dotenv import load_dotenv
+from deep_translator import GoogleTranslator
+import google.generativeai as genai
 from auth_ui import render_auth_sidebar
 
-# Force reload the environment variables
+# 1. FORCE RELOAD ENVIRONMENT VARIABLES
 load_dotenv(override=True)
 raw_key = os.getenv("GEMINI_API_KEY", "")
 GEMINI_API_KEY = raw_key.strip(' "\'')
@@ -37,7 +39,7 @@ st.markdown("""
         color: white;
         padding: 14px 18px;
         border-radius: 12px;
-        margin-bottom: 16px;
+        margin-bottom: 12px;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -121,98 +123,74 @@ st.markdown("""
         line-height: 1.5;
     }
 
-    /* Modern Bottom Input Field */
-    div[data-testid="stChatInput"] {
-        border-radius: 24px;
-    }
-    div[data-testid="stChatInput"] > div {
-        border-radius: 24px !important;
-        border: 1px solid #128c7e !important;
-    }
-
-    /* Quick Action / Suggestion Chips */
-    .chip-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-bottom: 15px;
-    }
-    .chip-btn {
-        background-color: #ffffff;
+    /* Language Toggle Container */
+    .lang-bar {
+        background: #ffffff;
         border: 1px solid #128c7e;
-        color: #075e54;
-        padding: 5px 12px;
-        border-radius: 16px;
-        font-size: 0.8rem;
-        cursor: pointer;
-        transition: all 0.2s;
+        border-radius: 12px;
+        padding: 8px 14px;
+        margin-bottom: 14px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
     }
 </style>
 """, unsafe_allow_html=True)
 
-# 4. MASTER AGRONOMY PROMPT (SYSTEM INSTRUCTION)
+# 4. TRANSLATION HELPER (FAILSAFE)
+def safe_translate(text: str, source: str, target: str) -> str:
+    """Translates text using GoogleTranslator with failsafe fallback."""
+    if not text or source == target:
+        return text
+    try:
+        translated = GoogleTranslator(source=source, target=target).translate(text)
+        return translated if translated else text
+    except Exception as e:
+        print(f"Translation notice ({source} -> {target}): {e}")
+        return text
+
+# 5. MASTER AGRONOMY PROMPT (SYSTEM INSTRUCTION)
 MASTER_AGRONOMY_PROMPT = """
-You are STARK-X, an empathetic, simple, accessible, and highly knowledgeable agricultural advisor and agronomist dedicated to Indian farmers, with specialized expertise in Tamil Nadu (especially Erode, Salem, Coimbatore, Tiruppur, and nearby Cauvery/Bhavani basin areas).
+You are STARK-X, an empathetic, accessible, and highly knowledgeable agricultural advisor dedicated to Indian farmers, with specialized expertise in Tamil Nadu (especially Erode, Salem, Coimbatore, Tiruppur, Cauvery/Bhavani basin).
 
-Your Core Persona:
-- Empathetic, warm, encouraging, and respectful.
-- Use simple, direct, non-academic language that any farmer can understand immediately.
-- Never make the farmer feel bad or blamed for previous crop choices.
-
-Multi-Lingual Language Rule:
-- Automatically detect and reply in the EXACT language/style used by the farmer:
-  * English: Simple, clear Indian English.
-  * Tamil (தமிழ்): Natural, courteous Tamil (வணக்கம், வாழ்த்துக்கள், எளிய நடை).
-  * Tanglish: Tamil written in English letters (e.g. "Vanakkam! Unga mannu red soil ah iruntha Ragi nallave varum.").
-
-Core Master Rules:
-Rule 1: 'Can I grow [Crop]?'
-- Evaluate 3 core pillars: Soil Type, Temperature/Climate, and Water Availability.
-- Always provide an explicit Percentage Suitability score (e.g., '🌱 Suitability: 85%').
-- Format evaluation with clear bullet points:
-  * 🪨 Soil: [Good / Moderate / Bad] - Explain soil compatibility (texture, pH, drainage).
-  * 💧 Water: [Good / Moderate / Bad] - Water requirement vs farmer's availability.
-  * ☀️ Climate/Temperature: [Good / Moderate / Bad] - Season and weather fit.
-  * 💡 Practical Farmer Tip: A practical step or soil preparation advice.
-
-Rule 2: 'What should I grow?'
-- Recommend the Top 3 crops ranked by percentage suitability.
-- Account for water scarcity, soil condition, and seasonal market potential.
-- Format with clear numbered list:
-  1. [Crop 1] - [XX]% Suitability (Reason: drought tolerance, quick harvest, good returns)
-  2. [Crop 2] - [XX]% Suitability (Reason...)
-  3. [Crop 3] - [XX]% Suitability (Reason...)
-
-Rule 3: 'I am growing [Crop]'
-- Check for crop-soil or water mismatch.
-- If another crop yields better economic return or fits their water constraints, suggest it politely and constructively without criticizing the farmer.
-
-Agronomic Knowledge Base:
-- Rice (Paddy / நெல்): Requires heavy clay or alluvial soil with water holding capacity, pH 5.5-7.0, very high continuous water demand. Suffers severe drought stress during shortages.
-- Millets / Ragi (கேழ்வரகு / தினை / கம்பு): Best in Red soil / Sandy-loam. Highly drought-tolerant with low water demand. Top recommendation during water-stressed spells or dry seasons.
-- Turmeric (மஞ்சள்): High-value commercial crop, iconic in Erode. Needs well-drained loamy or alluvial soil, moderate water, strictly avoid waterlogging.
-- Cotton (பருத்தி): Thrives in Black soil (Regur), medium water demand, hot climate.
-- Sugarcane (கரும்பு): Extremely high water demand; strongly advise caution if groundwater/borewell is depleting.
-- Groundnut (வேர்க்கடலை): Red/sandy loam, medium water requirement, excellent soil-enriching diversification crop.
-
-Keep responses structured, concise, and easy to read on mobile screens.
+Core Rules:
+1. Provide short, concise, highly practical answers (within 100-150 words).
+2. For crop questions, evaluate Soil, Water, and Climate with a Percentage Suitability score.
+3. Recommend specific practical remedies, fertilizer doses, and irrigation advice for local conditions.
+4. Keep tone respectful, warm, and encourage the farmer.
 """
 
-# 5. WHATSAPP HEADER UI
+# 6. WHATSAPP HEADER UI
 st.markdown("""
 <div class="wa-header">
     <div class="wa-header-left">
         <div class="wa-avatar">🌱</div>
         <div>
             <h3 class="wa-title">STARK-X Agri Advisor</h3>
-            <p class="wa-status">🟢 Online | Tamil Nadu Agronomy Desk</p>
+            <p class="wa-status">🟢 Online | Real-Time Multilingual Fast AI</p>
         </div>
     </div>
-    <div class="wa-badge">WhatsApp View</div>
+    <div class="wa-badge">Ultra-Low Latency</div>
 </div>
 """, unsafe_allow_html=True)
 
-# 6. SIDEBAR CONTROLS & API KEY CHECK
+# 7. LANGUAGE SELECTION TOGGLE (TASK 2)
+lang_col, _ = st.columns([3, 1])
+with lang_col:
+    selected_language = st.radio(
+        "🌐 **Choose Language / மொழி / భాష:**",
+        ["English", "Tamil (தமிழ்)", "Telugu (తెలుగు)"],
+        horizontal=True,
+        index=0
+    )
+
+# Language code mapping
+lang_code_map = {
+    "English": "en",
+    "Tamil (தமிழ்)": "ta",
+    "Telugu (తెలుగు)": "te"
+}
+target_lang_code = lang_code_map.get(selected_language, "en")
+
+# 8. SIDEBAR CONTROLS & API KEY CHECK
 with st.sidebar:
     render_auth_sidebar()
     st.image("https://images.unsplash.com/photo-1592982537447-7440770cbfc9?q=80&w=400&auto=format&fit=crop", use_container_width=True)
@@ -242,15 +220,13 @@ with st.sidebar:
         st.session_state.chat_history = [
             {
                 "role": "assistant",
-                "content": "Vanakkam! I am your STARK-X farming advisor. Tell me your village/district, what soil you have, and your water availability, or ask me about any crop!"
+                "content": "Vanakkam! I am your STARK-X farming advisor. Tell me your village, soil type, and water availability, or ask me any crop question!"
             }
         ]
-        if "interaction_id" in st.session_state:
-            del st.session_state["interaction_id"]
         st.rerun()
 
-# 7. INITIALIZE PERSISTENT CONVERSATION HISTORY
-GREETING_MESSAGE = "Vanakkam! I am your STARK-X farming advisor. Tell me your village/district, what soil you have, and your water availability, or ask me about any crop!"
+# 9. INITIALIZE PERSISTENT CONVERSATION HISTORY
+GREETING_MESSAGE = "Vanakkam! I am your STARK-X farming advisor. Tell me your village, soil type, and water availability, or ask me any crop question!"
 
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = [
@@ -260,65 +236,75 @@ if "chat_history" not in st.session_state:
         }
     ]
 
-# 8. DISPLAY EXISTING CHAT MESSAGES
+# 10. DISPLAY EXISTING CHAT MESSAGES
 for msg in st.session_state.chat_history:
     avatar_icon = "user" if msg["role"] == "user" else "assistant"
     with st.chat_message(msg["role"], avatar=avatar_icon):
         st.markdown(msg["content"])
 
-# 9. GEMINI LLM INTERACTION HANDLER (BULLETPROOF FALLBACK)
-import google.generativeai as genai
-
-def generate_gemini_stream(prompt: str):
+# 11. GEMINI FAST GENERATION ENGINE (TASK 4)
+def generate_fast_gemini(prompt_english: str) -> str:
+    """Calls Gemini with gemini-1.5-flash and low-latency generation config."""
     if not GEMINI_API_KEY:
-        yield "⚠️ Gemini API Key is missing."
-        return
+        return "⚠️ Gemini API Key is missing. Please configure GEMINI_API_KEY in your .env file."
 
     try:
         genai.configure(api_key=GEMINI_API_KEY, transport="rest")
         
-        recent_history_context = ""
-        if len(st.session_state.chat_history) > 1:
-            recent_history_context = "Previous Conversation:\n"
-            for item in st.session_state.chat_history[-6:]:
-                role_label = "Farmer" if item["role"] == "user" else "Advisor"
-                recent_history_context += f"{role_label}: {item['content']}\n"
+        # Generation configuration for ultra-low latency & concise response
+        generation_config = genai.types.GenerationConfig(
+            max_output_tokens=250,
+            temperature=0.3
+        )
 
-        # Injecting the Master Prompt directly to bypass parameter restrictions
-        full_input = f"{MASTER_AGRONOMY_PROMPT}\n\n{recent_history_context}\nFarmer: {prompt}\n\nSTARK-X:"
+        full_input = f"{MASTER_AGRONOMY_PROMPT}\n\nFarmer Question: {prompt_english}\n\nSTARK-X Advisor:"
 
-        # Try gemini-pro, with automatic fallback to gemini-flash-latest if deprecated on endpoint
+        # Primary: gemini-1.5-flash | Fallback: gemini-flash-latest
         try:
-            model = genai.GenerativeModel("gemini-pro")
+            model = genai.GenerativeModel("gemini-1.5-flash", generation_config=generation_config)
             response = model.generate_content(full_input, stream=False)
+            return response.text
         except Exception:
-            model = genai.GenerativeModel("gemini-flash-latest")
+            model = genai.GenerativeModel("gemini-flash-latest", generation_config=generation_config)
             response = model.generate_content(full_input, stream=False)
-
-        yield response.text
+            return response.text
 
     except Exception as e:
-        yield f"⚠️ API Error: {str(e)}"
+        return f"⚠️ Advisory Error: {str(e)}"
 
-# 10. CHAT INPUT & EXECUTION
+# 12. CHAT INPUT & EXECUTION PIPELINE (TASKS 3 & 5)
 user_input = st.chat_input("Ask about your crops, soil, water, or district...")
 
 if "queued_query" in st.session_state:
     user_input = st.session_state.pop("queued_query")
 
 if user_input:
+    # Append & display original user message
     st.session_state.chat_history.append({"role": "user", "content": user_input})
     with st.chat_message("user", avatar="user"):
         st.markdown(user_input)
     
     with st.chat_message("assistant", avatar="assistant"):
-        # Windows Defender Bypass: Manually render text instead of using st.write_stream
         message_placeholder = st.empty()
-        response_text = ""
-        with st.spinner("STARK-X is thinking..."):
-            for chunk in generate_gemini_stream(user_input):
-                response_text += chunk
-                message_placeholder.markdown(response_text)
+        
+        with st.spinner("⚡ STARK-X is analyzing with low latency..."):
+            # Task 3: Intercept prompt -> Translate to English if selected language is not English
+            if target_lang_code != "en":
+                english_prompt = safe_translate(user_input, source="auto", target="en")
+            else:
+                english_prompt = user_input
+
+            # Task 4: Call Gemini 1.5 Flash in English
+            raw_english_response = generate_fast_gemini(english_prompt)
+
+            # Task 5: Intercept response -> Translate back into selected regional language
+            if target_lang_code != "en":
+                final_response = safe_translate(raw_english_response, source="en", target=target_lang_code)
+            else:
+                final_response = raw_english_response
+
+            # Display final translated response
+            message_placeholder.markdown(final_response)
             
-    if response_text:
-        st.session_state.chat_history.append({"role": "assistant", "content": response_text})
+    if final_response:
+        st.session_state.chat_history.append({"role": "assistant", "content": final_response})
