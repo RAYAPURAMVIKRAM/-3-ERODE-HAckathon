@@ -149,9 +149,11 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+from locales import t
+
 # 5. PAGE HEADER
-st.title("🌾 Agri Market & Reels")
-st.markdown("Direct farmer-to-buyer sales with **0% middleman fees** & mobile farming reels.")
+st.title(t("market_title"))
+st.markdown(t("market_sub"))
 
 # 6. TWO TABS
 tab_market, tab_reels = st.tabs(["🛒 Direct Marketplace", "📱 Agri Reels"])
@@ -196,7 +198,7 @@ with tab_market:
         total_lot_val = quantity_kg * price_per_kg
         st.markdown(f"**Estimated Total Lot Value:** `₹{total_lot_val:,.2f}`")
 
-        submitted = st.form_submit_button("🚀 Post Harvest to Direct Market", use_container_width=True)
+        submitted = st.form_submit_button(t("post_btn"), use_container_width=True)
         if submitted:
             if not farmer_name.strip():
                 st.error("Please enter the farmer name.")
@@ -271,7 +273,7 @@ with tab_market:
                     {f" &nbsp;•&nbsp; 🕒 {date_str}" if date_str else ""}
                 </div>
                 <a href="{wa_link}" target="_blank" class="wa-button">
-                    💬 Buy via WhatsApp (Direct Chat)
+                    {t("wa_btn")}
                 </a>
             </div>
             """, unsafe_allow_html=True)

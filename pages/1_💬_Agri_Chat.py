@@ -34,22 +34,38 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# 4. MULTILINGUAL TOGGLE
-st.markdown("""
+from locales import t
+
+# 4. MULTILINGUAL TOGGLE & HEADER
+current_lang = st.session_state.get("selected_lang", "English")
+lang_options = ["English", "Tamil (தமிழ்)", "Telugu (తెలుగు)"]
+lang_idx = lang_options.index(current_lang) if current_lang in lang_options else 0
+
+st.markdown(f"""
 <div class="wa-header">
     <div class="wa-header-left">
         <div class="wa-avatar">🌱</div>
         <div>
-            <h3 class="wa-title">STARK-X Agri Advisor</h3>
-            <p class="wa-status">🟢 Online | Multi-Language Desk</p>
+            <h3 class="wa-title">{t("chat_title")}</h3>
+            <p class="wa-status">{t("chat_status")}</p>
         </div>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-lang_option = st.radio("Select Language / மொழியைத் தேர்ந்தெடுக்கவும்", ["English", "Tamil (தமிழ்)", "Telugu (తెలుగు)"], horizontal=True)
+lang_option = st.radio(
+    "Select Language / மொழியைத் தேர்ந்தெடுக்கவும்",
+    lang_options,
+    index=lang_idx,
+    horizontal=True,
+    key="chat_lang_radio"
+)
+if lang_option != st.session_state.get("selected_lang"):
+    st.session_state["selected_lang"] = lang_option
+    st.rerun()
+
 lang_map = {"English": "en", "Tamil (தமிழ்)": "ta", "Telugu (తెలుగు)": "te"}
-target_lang = lang_map[lang_option]
+target_lang = lang_map.get(lang_option, "en")
 
 # 5. MASTER AGRONOMY PROMPT
 MASTER_AGRONOMY_PROMPT = """
@@ -68,7 +84,7 @@ Knowledge Base:
 
 # 6. INITIALIZE CHAT HISTORY
 if "chat_history" not in st.session_state:
-    st.session_state.chat_history = [{"role": "assistant", "content": "Vanakkam! I am your STARK-X farming advisor. Tell me your village, soil type, and water availability, or ask me any crop question!"}]
+    st.session_state.chat_history = [{"role": "assistant", "content": t("chat_welcome")}]
 
 for msg in st.session_state.chat_history:
     st.chat_message(msg["role"], avatar="user" if msg["role"] == "user" else "assistant").markdown(msg["content"])
@@ -118,7 +134,7 @@ def get_starkx_response(user_prompt):
         return f"⚠️ Error generating response. Please try again. ({str(e)})"
 
 # 8. CHAT INPUT
-user_input = st.chat_input("Ask about your crops, soil, water, or district...")
+user_input = st.chat_input(t("chat_placeholder"))
 
 if user_input:
     st.session_state.chat_history.append({"role": "user", "content": user_input})

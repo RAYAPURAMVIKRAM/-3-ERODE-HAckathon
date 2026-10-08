@@ -1,4 +1,5 @@
 import streamlit as st
+from locales import t, TRANSLATIONS
 from supabase_client import (
     sign_in_farmer,
     sign_up_farmer,
@@ -9,9 +10,28 @@ from supabase_client import (
 )
 
 def render_auth_sidebar():
-    """Renders user authentication and profile status in the sidebar."""
-    user = get_current_user()
+    """Renders language selector, user authentication and profile status in the sidebar."""
+    # 0. SYNCHRONIZED APP LANGUAGE SELECTOR
+    if "selected_lang" not in st.session_state:
+        st.session_state["selected_lang"] = "English"
+        
+    langs = list(TRANSLATIONS.keys())
+    curr_lang = st.session_state.get("selected_lang", "English")
+    curr_idx = langs.index(curr_lang) if curr_lang in langs else 0
     
+    st.sidebar.markdown("### 🌐 Language / மொழி / భాష")
+    chosen = st.sidebar.selectbox(
+        "Choose App Language",
+        langs,
+        index=curr_idx,
+        key="app_language_selector",
+        label_visibility="collapsed"
+    )
+    if chosen != st.session_state["selected_lang"]:
+        st.session_state["selected_lang"] = chosen
+        st.rerun()
+
+    user = get_current_user()
     st.sidebar.markdown("---")
     
     # 1. LOGGED IN STATE

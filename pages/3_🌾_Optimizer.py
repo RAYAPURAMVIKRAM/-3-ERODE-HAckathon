@@ -187,12 +187,14 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
+from locales import t
+
 # 7. PAGE TITLES
-st.markdown("<h2 class='opt-header'>🌾 STARK-X Crop Optimizer</h2>", unsafe_allow_html=True)
+st.markdown(f"<h2 class='opt-header'>{t('opt_title')}</h2>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center; color: #4b5563;'>Data-driven precision agronomy engine with real-time climate grounding.</p>", unsafe_allow_html=True)
 
 # 8. OPTIMIZER TABS
-tab1, tab2 = st.tabs(["🎯 Recommend Crop for My Farm", "🔍 Evaluate Specific Crop Match"])
+tab1, tab2 = st.tabs([t("opt_tab1"), t("opt_tab2")])
 
 soil_options = ["Red Soil", "Black Soil", "Alluvial", "Sandy Loam", "Clay"]
 default_soil_index = soil_options.index(inferred_soil) if inferred_soil in soil_options else 0
@@ -204,13 +206,13 @@ with tab1:
     with col1:
         # Task 7: Use inferred soil as default
         soil_type = st.selectbox(
-            "Soil Type (Auto-detected from GPS)",
+            f"{t('soil_label')} (Auto-detected from GPS)",
             soil_options,
             index=default_soil_index,
             help=f"Pre-selected based on geological survey data for {detected_city}."
         )
         water_avail = st.selectbox(
-            "Water Availability",
+            t("water_label"),
             ["Rainfed (Low)", "Borewell (Medium)", "Canal/River (High)"],
             index=1
         )
@@ -220,7 +222,7 @@ with tab1:
         phosphorus = st.slider("Phosphorus (P)", 0, 150, 45)
         potassium = st.slider("Potassium (K)", 0, 150, 50)
         
-    if st.button("🚀 Run STARK-X Algorithm", use_container_width=True):
+    if st.button(t("opt_btn"), use_container_width=True):
         with st.spinner("Processing STARK-X agro-meteorological recommendation matrix..."):
             
             # STARK-X Engine Logic (calibrated for live temperature & district conditions)
@@ -264,13 +266,13 @@ with tab2:
     )
     # Task 7: Use inferred soil as default
     target_soil = st.selectbox(
-        "Your Soil Type",
+        t("soil_label"),
         soil_options,
         index=default_soil_index,
         key="t2_soil"
     )
     target_water = st.selectbox(
-        "Your Water Availability",
+        t("water_label"),
         ["Rainfed (Low)", "Borewell (Medium)", "Canal/River (High)"],
         key="t2_water"
     )

@@ -26,8 +26,10 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown("<h2 class='vision-header'>📸 STARK-X Crop Vision Studio</h2>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #555;'>Upload a photo of your crop. Our AI will detect diseases and recommend treatments instantly.</p>", unsafe_allow_html=True)
+from locales import t
+
+st.markdown(f"<h2 class='vision-header'>{t('vision_title')}</h2>", unsafe_allow_html=True)
+st.markdown(f"<p style='text-align: center; color: #555;'>{t('vision_desc')}</p>", unsafe_allow_html=True)
 
 # 4. CACHED INFERENCE FUNCTION
 @st.cache_data(show_spinner=False)
@@ -58,7 +60,7 @@ if uploaded_file is not None:
     image = Image.open(uploaded_file)
     st.image(image, caption="Uploaded Crop Photo", use_container_width=True)
     
-    if st.button("🔍 Analyze Crop Health", use_container_width=True):
+    if st.button(t("vision_btn"), use_container_width=True):
         if not GEMINI_API_KEY:
             st.error("⚠️ Gemini API Key is missing. Please check your .env file.")
         else:
