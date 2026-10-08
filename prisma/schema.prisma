@@ -1,0 +1,30 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model SosTicket {
+  id          BigInt   @id @default(autoincrement())
+  name        String
+  village     String
+  category    String
+  description String
+  timestamp   String
+
+  @@map("sos_tickets")
+}
+
+model Farmer {
+  id         BigInt   @id @default(autoincrement())
+  email      String   @unique
+  name       String?
+  village    String?
+  createdAt  String?  @map("created_at")
+
+  @@map("farmers")
+}

@@ -1,0 +1,33 @@
+# Environment variables & secrets (NEVER COMMIT)
+.env
+.env.local
+.env.*.local
+
+# Python cache & virtual environment
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv/
+
+# Local databases & logs
+*.db
+*.sqlite3
+*.log
+.system_generated/
+
+# IDE & OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Node & Prisma (if generated)
+node_modules/
+.next/
+dist/
+build/
