@@ -34,6 +34,17 @@ def init_local_db():
         description TEXT,
         timestamp TEXT
     )''')
+    # Marketplace crops table
+    c.execute('''CREATE TABLE IF NOT EXISTS marketplace_crops (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        farmer_name TEXT,
+        phone_whatsapp TEXT,
+        crop_name TEXT,
+        quantity_kg REAL,
+        price_per_kg REAL,
+        location TEXT,
+        created_at TEXT
+    )''')
     conn.commit()
     conn.close()
 
@@ -241,3 +252,77 @@ def get_sos_tickets():
     df = pd.read_sql_query("SELECT timestamp as Date, name as Farmer, village as Location, category as Emergency, description as Details FROM sos_tickets ORDER BY id DESC", conn)
     conn.close()
     return df
+
+# ================= MARKETPLACE FUNCTIONS =================
+
+def fetch_marketplace_crops():
+    """Fetches marketplace crop listings from Supabase or SQLite fallback."""
+    client = get_supabase_client()
+    if client:
+        try:
+            response = client.table("marketplace_crops").select("*").order("id", desc=True).execute()
+            if response.data is not None and len(response.data) > 0:
+                return response.data
+        except Exception as e:
+            print(f"Supabase fetch_marketplace_crops fallback to SQLite: {e}")
+
+    # Fallback to local SQLite
+    try:
+        conn = sqlite3.connect(LOCAL_DB_PATH)
+        c = conn.cursor()
+        c.execute("SELECT id, farmer_name, phone_whatsapp, crop_name, quantity_kg, price_per_kg, location, created_at FROM marketplace_crops ORDER BY id DESC")
+        rows = c.fetchall()
+        conn.close()
+        return [
+            {
+                "id": r[0],
+                "farmer_name": r[1],
+                "phone_whatsapp": r[2],
+                "crop_name": r[3],
+                "quantity_kg": r[4],
+                "price_per_kg": r[5],
+                "location": r[6],
+                "created_at": r[7]
+            }
+            for r in rows
+        ]
+    except Exception as e:
+        print(f"Local SQLite fetch_marketplace_crops error: {e}")
+        return []
+
+def add_marketplace_crop(farmer, phone, crop, qty, price, loc):
+    """Adds a new crop listing to Supabase and SQLite fallback."""
+    now = datetime.now().strftime("%Y-%m-%d %H:%M")
+    
+    # 1. Save locally first for guaranteed zero-downtime
+    try:
+        conn = sqlite3.connect(LOCAL_DB_PATH)
+        c = conn.cursor()
+        c.execute("""INSERT INTO marketplace_crops 
+                     (farmer_name, phone_whatsapp, crop_name, quantity_kg, price_per_kg, location, created_at) 
+                     VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                  (farmer, phone, crop, qty, price, loc, now))
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"Local SQLite add_marketplace_crop error: {e}")
+
+    # 2. Sync to Supabase
+    client = get_supabase_client()
+    if client:
+        try:
+            client.table("marketplace_crops").insert({
+                "farmer_name": farmer,
+                "phone_whatsapp": phone,
+                "crop_name": crop,
+                "quantity_kg": qty,
+                "price_per_kg": price,
+                "location": loc
+            }).execute()
+            return True
+        except Exception as e:
+            print(f"Supabase add_marketplace_crop error: {e}")
+            return True
+            
+    return True
+
