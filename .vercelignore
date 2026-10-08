@@ -1,0 +1,8 @@
+# Files and directories ignored by Vercel deployment and build detector
+prisma/
+agripirate.db
+supabase_setup.sql
+test_supabase.py
+.env
+.env.local
+.env.*

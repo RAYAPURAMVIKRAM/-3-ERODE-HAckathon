@@ -1,0 +1,2 @@
+# Vercel Serverless Function requirements
+# Keeps lambda bundle size tiny (<1MB) to stay well under Vercel's 250MB limit
