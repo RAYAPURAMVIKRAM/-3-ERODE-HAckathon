@@ -1,0 +1,2 @@
+# Lightweight dependencies for Vercel Edge/Serverless functions
+# Zero external packages required - operates completely within Python Standard Library

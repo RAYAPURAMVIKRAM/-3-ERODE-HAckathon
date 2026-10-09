@@ -1,20 +1,21 @@
-# Exclude heavy Python ML packages and Streamlit runtime from Vercel
-# Streamlit runs directly on Streamlit Community Cloud
+# Exclude root Streamlit requirements and local database files from Vercel build
+# Vercel uses api/requirements.txt (0 MB) and api/index.py
 requirements.txt
-*.py
+app.py
+auth_ui.py
+locales.py
+supabase_client.py
+test_supabase.py
+supabase_setup.sql
 pages/
+prisma/
+agripirate.db
+*.db
+*.sqlite3
 __pycache__/
 .venv/
 env/
 venv/
-supabase_client.py
-auth_ui.py
-agripirate.db
-*.db
-*.sqlite3
-prisma/
-test_supabase.py
-supabase_setup.sql
 .env
 .env.local
 .env.*
