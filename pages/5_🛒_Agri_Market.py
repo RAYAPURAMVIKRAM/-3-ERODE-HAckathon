@@ -4,6 +4,7 @@ import urllib.parse
 import streamlit as st
 from dotenv import load_dotenv
 from auth_ui import render_auth_sidebar
+from locales import t
 from supabase_client import (
     get_current_user,
     fetch_marketplace_crops,
@@ -24,158 +25,397 @@ st.set_page_config(
 # 3. RENDER AUTHENTICATION SIDEBAR
 render_auth_sidebar()
 
-# 4. CUSTOM CSS FOR MOBILE-FIRST CARDS & REELS
+lang = st.session_state.get("lang", "English")
+
+# 4. EXECUTIVE AGRICULTURAL THEME & HIGH-CONTRAST CSS
 st.markdown("""
 <style>
+    /* Force Light Color Scheme across all browsers & OS dark-mode overrides */
     :root {
         color-scheme: light !important;
         --text-color: #0f172a !important;
         --background-color: #f8fafc !important;
         --secondary-background-color: #ffffff !important;
     }
+
+    /* Base Page Canvas */
     .stApp {
         background-color: #f8fafc !important;
         background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px) !important;
         background-size: 24px 24px !important;
         color: #0f172a !important;
     }
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
+    #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
 
-    /* Marketplace Card Styling */
+    /* Premium Header Hero Banner */
+    .market-hero-banner {
+        background: linear-gradient(135deg, #064e3b 0%, #047857 50%, #059669 100%) !important;
+        color: #ffffff !important;
+        padding: 18px 22px !important;
+        border-radius: 16px !important;
+        margin-bottom: 16px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        box-shadow: 0 4px 16px rgba(6, 78, 59, 0.25) !important;
+        border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
+    }
+    .market-hero-banner * {
+        color: #ffffff !important;
+    }
+    .market-hero-left {
+        display: flex !important;
+        align-items: center !important;
+        gap: 14px !important;
+    }
+    .market-avatar-badge {
+        width: 48px !important;
+        height: 48px !important;
+        background: #ffffff !important;
+        border-radius: 50% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 26px !important;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15) !important;
+        border: 2px solid #34d399 !important;
+    }
+    .market-hero-title {
+        font-size: 1.3rem !important;
+        font-weight: 800 !important;
+        margin: 0 !important;
+        color: #ffffff !important;
+        letter-spacing: 0.3px !important;
+    }
+    .market-hero-status {
+        font-size: 0.88rem !important;
+        color: #d1fae5 !important;
+        font-weight: 600 !important;
+        margin: 2px 0 0 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+    }
+    .live-dot {
+        width: 8px !important;
+        height: 8px !important;
+        background-color: #34d399 !important;
+        border-radius: 50% !important;
+        display: inline-block !important;
+        box-shadow: 0 0 8px #34d399 !important;
+        animation: pulse-dot 2s infinite !important;
+    }
+    @keyframes pulse-dot {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.6; transform: scale(1.2); }
+    }
+    .market-badge-pill {
+        background: rgba(255, 255, 255, 0.18) !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        padding: 6px 14px !important;
+        border-radius: 20px !important;
+        font-size: 13px !important;
+        font-weight: 700 !important;
+        color: #ffffff !important;
+        letter-spacing: 0.3px !important;
+    }
+
+    /* Tab Buttons: High Contrast & Solid Background */
+    .stTabs [data-baseweb="tab-list"] { 
+        gap: 14px !important; 
+        border-bottom: 2px solid #cbd5e1 !important;
+        margin-bottom: 20px !important;
+    }
+    .stTabs [data-baseweb="tab"] { 
+        height: 50px !important; 
+        border-radius: 12px 12px 0 0 !important; 
+        font-weight: 800 !important;
+        font-size: 1.05rem !important;
+        color: #334155 !important;
+        background: #ffffff !important;
+        border: 1.5px solid #cbd5e1 !important;
+        border-bottom: none !important;
+        padding: 10px 22px !important;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
+        transition: all 0.2s ease !important;
+    }
+    .stTabs [data-baseweb="tab"]:hover {
+        background: #f0fdf4 !important;
+        color: #059669 !important;
+    }
+    .stTabs [aria-selected="true"] {
+        background: #ffffff !important;
+        color: #064e3b !important;
+        border-top: 4px solid #059669 !important;
+        box-shadow: 0 -2px 8px rgba(5, 150, 105, 0.12) !important;
+    }
+
+    /* Section Cards */
+    .section-card {
+        background: #ffffff !important;
+        border: 1.5px solid #cbd5e1 !important;
+        border-radius: 16px !important;
+        padding: 20px 24px !important;
+        margin-bottom: 20px !important;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06) !important;
+    }
+    .section-card-title {
+        font-size: 1.25rem !important;
+        font-weight: 800 !important;
+        color: #064e3b !important;
+        margin-top: 0 !important;
+        margin-bottom: 6px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+    }
+    .section-card-desc {
+        font-size: 14px !important;
+        color: #475569 !important;
+        font-weight: 600 !important;
+        margin-bottom: 4px !important;
+        line-height: 1.5 !important;
+    }
+
+    /* Post Harvest Form & Inputs */
+    div[data-testid="stForm"] {
+        background: #ffffff !important;
+        border: 2px solid #cbd5e1 !important;
+        border-radius: 18px !important;
+        padding: 24px !important;
+        box-shadow: 0 4px 18px rgba(15, 23, 42, 0.08) !important;
+        margin-bottom: 24px !important;
+    }
+    div[data-testid="stForm"] label,
+    label[data-testid="stWidgetLabel"] p {
+        color: #064e3b !important;
+        font-weight: 800 !important;
+        font-size: 0.98rem !important;
+        margin-bottom: 6px !important;
+    }
+    div[data-testid="stTextInput"] input,
+    div[data-testid="stNumberInput"] input,
+    div[data-baseweb="select"] {
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+        border: 2px solid #94a3b8 !important;
+        border-radius: 12px !important;
+        font-weight: 600 !important;
+        font-size: 1rem !important;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
+    }
+    div[data-testid="stTextInput"] input:focus,
+    div[data-testid="stNumberInput"] input:focus {
+        border-color: #059669 !important;
+        box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.25) !important;
+    }
+
+    /* Buttons: Primary Gradient */
+    div.stButton > button,
+    div[data-testid="stFormSubmitButton"] > button {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+        color: #ffffff !important;
+        font-size: 1.08rem !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.3px !important;
+        padding: 14px 24px !important;
+        border-radius: 14px !important;
+        border: none !important;
+        box-shadow: 0 4px 14px rgba(5, 150, 105, 0.3) !important;
+        transition: all 0.2s ease !important;
+    }
+    div.stButton > button:hover,
+    div[data-testid="stFormSubmitButton"] > button:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 20px rgba(5, 150, 105, 0.45) !important;
+        background: linear-gradient(135deg, #047857 0%, #064e3b 100%) !important;
+    }
+    div.stButton > button *,
+    div[data-testid="stFormSubmitButton"] > button * {
+        color: #ffffff !important;
+    }
+
+    /* Marketplace Crop Cards (Pure White Card with Green Left Accent) */
     .market-card {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 16px;
-        padding: 20px;
-        margin-bottom: 18px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        transition: transform 0.2s, box-shadow 0.2s;
+        background: #ffffff !important;
+        border: 2px solid #cbd5e1 !important;
+        border-left: 6px solid #059669 !important;
+        border-radius: 18px !important;
+        padding: 22px !important;
+        margin-bottom: 20px !important;
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08) !important;
+        transition: transform 0.2s, box-shadow 0.2s !important;
     }
     .market-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(46, 123, 50, 0.15);
-        border-color: #2e7b32;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 24px rgba(5, 150, 105, 0.16) !important;
+        border-color: #059669 !important;
     }
     .crop-title {
-        font-size: 20px;
-        font-weight: 800;
-        color: #1b4332;
-        margin-bottom: 6px;
+        font-size: 1.25rem !important;
+        font-weight: 800 !important;
+        color: #064e3b !important;
+        margin-bottom: 10px !important;
     }
     .badge-pill {
-        display: inline-block;
-        padding: 4px 10px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: 600;
-        margin-right: 6px;
-        margin-bottom: 8px;
+        display: inline-block !important;
+        padding: 6px 12px !important;
+        border-radius: 20px !important;
+        font-size: 13px !important;
+        font-weight: 800 !important;
+        margin-right: 8px !important;
+        margin-bottom: 10px !important;
     }
     .badge-qty {
-        background: #e8f5e9;
-        color: #2e7d32;
-        border: 1px solid #a5d6a7;
+        background: #dcfce7 !important;
+        color: #166534 !important;
+        border: 1.5px solid #86efac !important;
     }
     .badge-price {
-        background: #fff8e1;
-        color: #f57f17;
-        border: 1px solid #ffe082;
+        background: #fef3c7 !important;
+        color: #92400e !important;
+        border: 1.5px solid #fcd34d !important;
     }
     .badge-loc {
-        background: #e0f2fe;
-        color: #0369a1;
-        border: 1px solid #bae6fd;
+        background: #e0f2fe !important;
+        color: #075985 !important;
+        border: 1.5px solid #7dd3fc !important;
     }
     .farmer-info {
-        font-size: 13px;
-        color: #64748b;
-        margin-bottom: 14px;
+        font-size: 14px !important;
+        color: #334155 !important;
+        font-weight: 600 !important;
+        margin-bottom: 16px !important;
     }
     .wa-button {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        width: 100%;
-        background-color: #25D366;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        width: 100% !important;
+        background-color: #16a34a !important;
         color: #ffffff !important;
-        font-size: 15px;
-        font-weight: 700;
-        padding: 12px 18px;
-        border-radius: 10px;
-        text-decoration: none;
-        box-shadow: 0 4px 10px rgba(37, 211, 102, 0.35);
-        transition: background-color 0.2s, transform 0.1s;
+        font-size: 16px !important;
+        font-weight: 800 !important;
+        padding: 13px 20px !important;
+        border-radius: 12px !important;
+        text-decoration: none !important;
+        box-shadow: 0 4px 12px rgba(22, 163, 74, 0.35) !important;
+        transition: background-color 0.2s, transform 0.1s !important;
     }
     .wa-button:hover {
-        background-color: #1ebe5d;
-        transform: scale(1.01);
+        background-color: #15803d !important;
+        transform: scale(1.01) !important;
+        color: #ffffff !important;
     }
 
-    /* Reels Mobile Vertical Video Frame */
+    /* Reels Mobile Vertical Frame & Explicit Contrast Lock */
     .reel-container {
-        max-width: 420px;
-        margin: 0 auto 32px auto;
-        background: #0f172a;
-        border: 2px solid #334155;
-        border-radius: 24px;
-        overflow: hidden;
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
-        position: relative;
+        max-width: 440px !important;
+        margin: 0 auto 32px auto !important;
+        background: #0f172a !important;
+        border: 3px solid #334155 !important;
+        border-radius: 24px !important;
+        overflow: hidden !important;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35) !important;
+        position: relative !important;
     }
     .reel-video {
-        width: 100%;
-        height: auto;
-        display: block;
-        border-radius: 22px;
+        width: 100% !important;
+        height: auto !important;
+        display: block !important;
+        border-radius: 20px 20px 0 0 !important;
     }
     .reel-meta {
-        padding: 16px 20px;
-        background: linear-gradient(180deg, rgba(15, 23, 42, 0.8) 0%, #0f172a 100%);
-        color: #f8fafc;
+        padding: 18px 22px !important;
+        background: linear-gradient(180deg, rgba(15, 23, 42, 0.9) 0%, #0f172a 100%) !important;
+    }
+    .reel-container,
+    .reel-container *,
+    .reel-meta,
+    .reel-meta * {
+        color: #f8fafc !important;
     }
     .reel-creator {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 14px;
-        font-weight: 700;
-        color: #4ade80;
-        margin-bottom: 6px;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        font-size: 14.5px !important;
+        font-weight: 800 !important;
+        color: #4ade80 !important;
+        margin-bottom: 8px !important;
+    }
+    .reel-creator * {
+        color: #4ade80 !important;
+    }
+    .reel-title {
+        font-weight: 800 !important;
+        font-size: 16px !important;
+        margin-bottom: 6px !important;
+        color: #ffffff !important;
     }
     .reel-caption {
-        font-size: 13px;
-        color: #cbd5e1;
-        line-height: 1.4;
-        margin-bottom: 10px;
+        font-size: 13.5px !important;
+        color: #e2e8f0 !important;
+        line-height: 1.5 !important;
+        font-weight: 500 !important;
+        margin-bottom: 12px !important;
     }
     .reel-actions {
-        display: flex;
-        gap: 16px;
-        font-size: 13px;
-        font-weight: 600;
-        color: #94a3b8;
+        display: flex !important;
+        gap: 16px !important;
+        font-size: 13px !important;
+        font-weight: 700 !important;
+        color: #94a3b8 !important;
+    }
+    .reel-actions * {
+        color: #94a3b8 !important;
+    }
+
+    /* Valuation Box */
+    .lot-valuation-card {
+        background: #f0fdf4 !important;
+        border: 1.5px solid #86efac !important;
+        border-radius: 12px !important;
+        padding: 12px 16px !important;
+        margin-bottom: 16px !important;
+        font-size: 15px !important;
+        font-weight: 800 !important;
+        color: #166534 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
-from locales import t
-
-lang = st.session_state.get("lang", "English")
-
-# 5. PAGE HEADER
-st.title(t("market_title", lang))
-st.markdown(t("market_sub", lang))
+# 5. PAGE HERO BANNER
+st.markdown(f"""
+<div class="market-hero-banner">
+    <div class="market-hero-left">
+        <div class="market-avatar-badge">🛒</div>
+        <div>
+            <h3 class="market-hero-title">{t("market_title", lang)}</h3>
+            <p class="market-hero-status"><span class="live-dot"></span> {t("market_sub", lang)}</p>
+        </div>
+    </div>
+    <div class="market-badge-pill">
+        🌾 Direct Farmer Trade
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
 # 6. TWO TABS
 tab_market, tab_reels = st.tabs([t("market_tab1", lang), t("market_tab2", lang)])
 
 # ================= TAB 1: DIRECT MARKETPLACE =================
 with tab_market:
-    st.subheader(t("post_harvest_title", lang))
-    st.caption("Wholesale buyers, food processing units, and exporters across Erode will contact you directly on WhatsApp.")
+    st.markdown(f"""
+    <div class="section-card">
+        <h4 class="section-card-title">📝 {t("post_harvest_title", lang)}</h4>
+        <p class="section-card-desc">Wholesale buyers, food processing units, and exporters across Erode will contact you directly on WhatsApp.</p>
+    </div>
+    """, unsafe_allow_html=True)
 
     # Check for current logged in user to auto-fill
     current_user = get_current_user()
@@ -210,16 +450,21 @@ with tab_market:
 
         # Expected lot valuation
         total_lot_val = quantity_kg * price_per_kg
-        st.markdown(f"**Estimated Total Lot Value:** `₹{total_lot_val:,.2f}`")
+        st.markdown(f"""
+        <div class="lot-valuation-card">
+            <span>📦 Estimated Total Lot Valuation</span>
+            <span style="font-size: 18px; font-weight: 900;">₹{total_lot_val:,.2f}</span>
+        </div>
+        """, unsafe_allow_html=True)
 
         submitted = st.form_submit_button(t("post_btn", lang), use_container_width=True)
         if submitted:
             if not farmer_name.strip():
-                st.error("Please enter the farmer name.")
+                st.error("⚠️ Please enter the farmer name.")
             elif not phone_wa.strip() or len(re.sub(r'[^0-9]', '', phone_wa)) < 10:
-                st.error("Please enter a valid 10-digit WhatsApp phone number.")
+                st.error("⚠️ Please enter a valid 10-digit WhatsApp phone number.")
             elif not location.strip():
-                st.error("Please specify your location or village.")
+                st.error("⚠️ Please specify your location or village.")
             else:
                 success = add_marketplace_crop(
                     farmer=farmer_name.strip(),
@@ -235,14 +480,18 @@ with tab_market:
                 else:
                     st.error("Could not save listing. Please try again.")
 
-    st.markdown("---")
-    st.subheader(t("active_listings_title", lang))
+    st.markdown(f"""
+    <div class="section-card" style="margin-top: 10px;">
+        <h4 class="section-card-title">🌾 {t("active_listings_title", lang)}</h4>
+        <p class="section-card-desc">Verified farmer lots ready for immediate procurement. Click the WhatsApp button to chat directly with the farmer.</p>
+    </div>
+    """, unsafe_allow_html=True)
 
     # Fetch active crop listings
     crops = fetch_marketplace_crops()
 
     if not crops:
-        st.info("No crop listings yet. Be the first farmer to list your harvest above!")
+        st.info("ℹ️ No crop listings yet. Be the first farmer to list your harvest above!")
     else:
         st.markdown(f"Showing **{len(crops)}** verified lots in Kongu Nadu / Erode agricultural belt:")
 
@@ -295,8 +544,12 @@ with tab_market:
 
 # ================= TAB 2: AGRI REELS =================
 with tab_reels:
-    st.subheader("📱 Agri Reels • Fast Mobile Agronomy Tips")
-    st.caption("Scroll through high-impact agronomy techniques, TNAU research hacks, and organic methods.")
+    st.markdown("""
+    <div class="section-card">
+        <h4 class="section-card-title">📱 Agri Reels • Fast Mobile Agronomy Tips</h4>
+        <p class="section-card-desc">Scroll through high-impact agronomy techniques, TNAU research hacks, and organic methods.</p>
+    </div>
+    """, unsafe_allow_html=True)
 
     reels_data = [
         {
@@ -335,9 +588,9 @@ with tab_reels:
             <div class="reel-meta">
                 <div class="reel-creator">
                     🌱 <b>{reel['creator']}</b>
-                    <span style="background: rgba(74, 222, 128, 0.2); padding: 2px 8px; border-radius: 12px; font-size: 11px;">Verified Expert</span>
+                    <span style="background: rgba(74, 222, 128, 0.2); padding: 3px 8px; border-radius: 12px; font-size: 11px; border: 1px solid rgba(74, 222, 128, 0.4);">✓ Verified Expert</span>
                 </div>
-                <div style="font-weight: 700; font-size: 15px; margin-bottom: 4px; color: #ffffff;">
+                <div class="reel-title">
                     {reel['title']}
                 </div>
                 <div class="reel-caption">

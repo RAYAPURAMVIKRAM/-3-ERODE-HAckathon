@@ -11,6 +11,42 @@ from supabase_client import (
 
 def render_auth_sidebar():
     """Renders persistent language selector, user authentication and profile status in the sidebar."""
+    st.sidebar.markdown("""
+    <style>
+        section[data-testid="stSidebar"] {
+            background-color: #ffffff !important;
+            border-right: 1.5px solid #cbd5e1 !important;
+        }
+        section[data-testid="stSidebar"] * {
+            color: #0f172a !important;
+        }
+        section[data-testid="stSidebar"] input,
+        section[data-testid="stSidebar"] div[data-baseweb="select"] {
+            background-color: #ffffff !important;
+            color: #0f172a !important;
+            border: 1.5px solid #94a3b8 !important;
+            border-radius: 10px !important;
+            font-weight: 600 !important;
+        }
+        section[data-testid="stSidebar"] button {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+            color: #ffffff !important;
+            font-weight: 800 !important;
+            border-radius: 10px !important;
+            border: none !important;
+            box-shadow: 0 3px 8px rgba(5, 150, 105, 0.25) !important;
+        }
+        section[data-testid="stSidebar"] button * {
+            color: #ffffff !important;
+        }
+        section[data-testid="stSidebar"] [data-testid="stExpander"] {
+            background: #f8fafc !important;
+            border: 1px solid #cbd5e1 !important;
+            border-radius: 12px !important;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
     # 0. SYNCHRONIZED APP LANGUAGE SELECTOR VIA st.session_state["lang"]
     if "lang" not in st.session_state:
         st.session_state["lang"] = st.session_state.get("selected_lang", "English")
