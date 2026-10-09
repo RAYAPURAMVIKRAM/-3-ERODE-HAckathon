@@ -1,3 +1,12 @@
+import sys
+import os
+from pathlib import Path
+
+# Ensure root directory is on sys.path for Streamlit Cloud
+_ROOT_DIR = str(Path(__file__).resolve().parent.parent)
+if _ROOT_DIR not in sys.path:
+    sys.path.insert(0, _ROOT_DIR)
+
 import streamlit as st
 import pandas as pd
 from auth_ui import render_auth_sidebar
@@ -6,9 +15,26 @@ from supabase_client import (
     get_current_user,
     insert_sos_ticket,
     get_sos_tickets,
-    is_supabase_connected,
-    format_to_ist
+    is_supabase_connected
 )
+
+def format_to_ist(ts_val):
+    """Formats timestamp string to Indian Standard Time (IST)."""
+    if not ts_val:
+        return ""
+    ts_str = str(ts_val).strip()
+    try:
+        if "T" in ts_str or "+" in ts_str or ts_str.endswith("Z"):
+            from datetime import datetime, timezone, timedelta
+            ist = timezone(timedelta(hours=5, minutes=30))
+            cleaned = ts_str.replace("Z", "+00:00")
+            dt = datetime.fromisoformat(cleaned)
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
+            return dt.astimezone(ist).strftime("%Y-%m-%d %H:%M")
+        return ts_str
+    except Exception:
+        return ts_str
 
 st.set_page_config(page_title="Market & SOS | STARK-X", page_icon="📈", layout="centered")
 

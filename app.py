@@ -1,3 +1,12 @@
+import sys
+import os
+from pathlib import Path
+
+# Ensure root directory is on sys.path
+_ROOT_DIR = str(Path(__file__).resolve().parent)
+if _ROOT_DIR not in sys.path:
+    sys.path.insert(0, _ROOT_DIR)
+
 import streamlit as st
 from locales import t
 from auth_ui import render_auth_sidebar

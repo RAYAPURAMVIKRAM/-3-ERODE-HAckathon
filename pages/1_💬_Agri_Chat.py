@@ -1,4 +1,12 @@
+import sys
 import os
+from pathlib import Path
+
+# Ensure root directory is on sys.path for Streamlit Cloud
+_ROOT_DIR = str(Path(__file__).resolve().parent.parent)
+if _ROOT_DIR not in sys.path:
+    sys.path.insert(0, _ROOT_DIR)
+
 import streamlit as st
 import google.generativeai as genai
 from dotenv import load_dotenv

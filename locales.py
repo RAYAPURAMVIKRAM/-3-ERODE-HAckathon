@@ -1,5 +1,7 @@
 import streamlit as st
 
+__all__ = ["LANGUAGE_COLORS", "TRANSLATIONS", "resolve_lang", "t", "get_lang_color"]
+
 LANGUAGE_COLORS = {
     "English": "#2563eb",         # Royal Blue
     "Tamil (தமிழ்)": "#16a34a",   # Agricultural Emerald Green

@@ -1,11 +1,35 @@
+import sys
 import os
 import sqlite3
+from pathlib import Path
 from datetime import datetime, timezone, timedelta
 import streamlit as st
 from dotenv import load_dotenv
 
+# Ensure root directory is on sys.path
+_ROOT_DIR = str(Path(__file__).resolve().parent)
+if _ROOT_DIR not in sys.path:
+    sys.path.insert(0, _ROOT_DIR)
+
 # IST timezone setup
 IST = timezone(timedelta(hours=5, minutes=30))
+
+__all__ = [
+    "IST",
+    "get_ist_now",
+    "format_to_ist",
+    "sign_up_farmer",
+    "sign_in_farmer",
+    "quick_demo_login",
+    "sign_out_farmer",
+    "get_current_user",
+    "is_supabase_connected",
+    "insert_sos_ticket",
+    "get_sos_tickets",
+    "fetch_marketplace_crops",
+    "add_marketplace_crop",
+    "get_supabase_client",
+]
 
 def get_ist_now() -> str:
     """Returns current timestamp formatted in Indian Standard Time (IST)."""
