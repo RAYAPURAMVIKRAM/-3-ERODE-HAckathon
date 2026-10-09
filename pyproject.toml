@@ -1,0 +1,7 @@
+[project]
+name = "stark-x-agripirate"
+version = "2.0.0"
+description = "STARK-X Autonomous Precision Agriculture Engine for 3-ERODE Hackathon"
+
+[tool.vercel]
+entrypoint = "index.py"
