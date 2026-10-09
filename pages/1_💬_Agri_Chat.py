@@ -3,7 +3,7 @@ import streamlit as st
 import google.generativeai as genai
 from dotenv import load_dotenv
 from auth_ui import render_auth_sidebar
-from locales import t, get_lang_color, LANGUAGE_COLORS
+from locales import t
 
 # 1. LOAD ENVIRONMENT VARIABLES WITH CACHE OVERRIDE
 load_dotenv(override=True)
