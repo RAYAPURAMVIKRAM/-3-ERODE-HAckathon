@@ -1,8 +1,31 @@
 import os
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 import streamlit as st
 from dotenv import load_dotenv
+
+# IST timezone setup
+IST = timezone(timedelta(hours=5, minutes=30))
+
+def get_ist_now() -> str:
+    """Returns current timestamp formatted in Indian Standard Time (IST)."""
+    return datetime.now(IST).strftime("%Y-%m-%d %H:%M")
+
+def format_to_ist(ts_val) -> str:
+    """Converts any timestamp (ISO string, UTC string, or standard string) into IST formatted string."""
+    if not ts_val:
+        return ""
+    ts_str = str(ts_val).strip()
+    try:
+        if "T" in ts_str or "+" in ts_str or ts_str.endswith("Z"):
+            cleaned = ts_str.replace("Z", "+00:00")
+            dt = datetime.fromisoformat(cleaned)
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
+            return dt.astimezone(IST).strftime("%Y-%m-%d %H:%M")
+        return ts_str
+    except Exception:
+        return ts_str
 
 # Load fresh environment variables from both .env.local and .env
 load_dotenv(".env.local", override=True)
@@ -115,7 +138,7 @@ def sign_up_farmer(email: str, password: str, name: str, village: str):
     try:
         conn = sqlite3.connect(LOCAL_DB_PATH)
         c = conn.cursor()
-        now = datetime.now().strftime("%Y-%m-%d %H:%M")
+        now = get_ist_now()
         c.execute("INSERT INTO farmers (email, password, name, village, created_at) VALUES (?, ?, ?, ?, ?)",
                   (email, password, name, village, now))
         conn.commit()
@@ -210,8 +233,8 @@ def get_current_user():
 # ================= DATABASE DATA FUNCTIONS =================
 
 def insert_sos_ticket(farmer_name: str, village: str, category: str, description: str):
-    """Inserts an emergency SOS ticket to Supabase and local SQLite."""
-    now = datetime.now().strftime("%Y-%m-%d %H:%M")
+    """Inserts an emergency SOS ticket to Supabase and local SQLite in IST."""
+    now = get_ist_now()
     
     # Always save to local SQLite first for instant responsiveness
     try:
@@ -239,13 +262,16 @@ def insert_sos_ticket(farmer_name: str, village: str, category: str, description
             print(f"Supabase ticket insert error (table may not be created yet): {e}")
 
 def get_sos_tickets():
-    """Fetches tickets from Supabase if table exists, or falls back to local SQLite."""
+    """Fetches tickets from Supabase if table exists, or falls back to local SQLite, formatted in IST."""
     client = get_supabase_client()
     if client:
         try:
             res = client.table("sos_tickets").select("*").order("id", desc=True).execute()
             if res.data and len(res.data) > 0:
                 import pandas as pd
+                for row in res.data:
+                    if "timestamp" in row:
+                        row["timestamp"] = format_to_ist(row.get("timestamp"))
                 df = pd.DataFrame(res.data)
                 # Map column names nicely
                 col_map = {
@@ -264,17 +290,22 @@ def get_sos_tickets():
     conn = sqlite3.connect(LOCAL_DB_PATH)
     df = pd.read_sql_query("SELECT timestamp as Date, name as Farmer, village as Location, category as Emergency, description as Details FROM sos_tickets ORDER BY id DESC", conn)
     conn.close()
+    if not df.empty and "Date" in df.columns:
+        df["Date"] = df["Date"].apply(format_to_ist)
     return df
 
 # ================= MARKETPLACE FUNCTIONS =================
 
 def fetch_marketplace_crops():
-    """Fetches marketplace crop listings from Supabase or SQLite fallback."""
+    """Fetches marketplace crop listings from Supabase or SQLite fallback, formatted in IST."""
     client = get_supabase_client()
     if client:
         try:
             response = client.table("marketplace_crops").select("*").order("id", desc=True).execute()
             if response.data is not None and len(response.data) > 0:
+                for item in response.data:
+                    if "created_at" in item:
+                        item["created_at"] = format_to_ist(item.get("created_at"))
                 return response.data
         except Exception as e:
             print(f"Supabase fetch_marketplace_crops fallback to SQLite: {e}")
@@ -295,7 +326,7 @@ def fetch_marketplace_crops():
                 "quantity_kg": r[4],
                 "price_per_kg": r[5],
                 "location": r[6],
-                "created_at": r[7]
+                "created_at": format_to_ist(r[7])
             }
             for r in rows
         ]
@@ -304,8 +335,8 @@ def fetch_marketplace_crops():
         return []
 
 def add_marketplace_crop(farmer, phone, crop, qty, price, loc):
-    """Adds a new crop listing to Supabase and SQLite fallback."""
-    now = datetime.now().strftime("%Y-%m-%d %H:%M")
+    """Adds a new crop listing to Supabase and SQLite fallback in IST."""
+    now = get_ist_now()
     
     # 1. Save locally first for guaranteed zero-downtime
     try:
@@ -320,7 +351,7 @@ def add_marketplace_crop(farmer, phone, crop, qty, price, loc):
     except Exception as e:
         print(f"Local SQLite add_marketplace_crop error: {e}")
 
-    # 2. Sync to Supabase
+    # 2. Sync to Supabase with explicit created_at timestamp in IST
     client = get_supabase_client()
     if client:
         try:
@@ -330,7 +361,8 @@ def add_marketplace_crop(farmer, phone, crop, qty, price, loc):
                 "crop_name": crop,
                 "quantity_kg": qty,
                 "price_per_kg": price,
-                "location": loc
+                "location": loc,
+                "created_at": now
             }).execute()
             return True
         except Exception as e:

@@ -55,7 +55,7 @@ with check (true);
 
 -- 5. Insert Sample Live SOS Ticket for testing verification
 insert into public.sos_tickets (name, village, category, description, timestamp)
-values ('Murugan K.', 'Perundurai, Erode', 'Water Scarcity', 'Groundwater table dropped below 650ft; requesting union borewell geophysics survey.', to_char(now(), 'YYYY-MM-DD HH24:MI'))
+values ('Murugan K.', 'Perundurai, Erode', 'Water Scarcity', 'Groundwater table dropped below 650ft; requesting union borewell geophysics survey.', to_char(now() at time zone 'Asia/Kolkata', 'YYYY-MM-DD HH24:MI'))
 on conflict do nothing;
 
 -- 6. Create Marketplace Crops Table (Phase 2 Upgrade)
@@ -67,7 +67,7 @@ create table if not exists public.marketplace_crops (
     quantity_kg numeric not null,
     price_per_kg numeric not null,
     location text not null,
-    created_at text not null default to_char(now(), 'YYYY-MM-DD HH24:MI')
+    created_at text not null default to_char(now() at time zone 'Asia/Kolkata', 'YYYY-MM-DD HH24:MI')
 );
 
 alter table public.marketplace_crops enable row level security;

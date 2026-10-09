@@ -8,7 +8,8 @@ from locales import t
 from supabase_client import (
     get_current_user,
     fetch_marketplace_crops,
-    add_marketplace_crop
+    add_marketplace_crop,
+    format_to_ist
 )
 
 # 1. FORCE LOAD ENV VARIABLES
@@ -502,7 +503,7 @@ with tab_market:
             qty = float(item.get("quantity_kg", 0.0))
             price = float(item.get("price_per_kg", 0.0))
             loc = item.get("location", "Erode")
-            date_str = item.get("created_at", "")
+            date_str = format_to_ist(item.get("created_at", ""))
             total_price = qty * price
 
             # Clean phone for WhatsApp URL

@@ -6,7 +6,8 @@ from supabase_client import (
     get_current_user,
     insert_sos_ticket,
     get_sos_tickets,
-    is_supabase_connected
+    is_supabase_connected,
+    format_to_ist
 )
 
 st.set_page_config(page_title="Market & SOS | STARK-X", page_icon="📈", layout="centered")
@@ -404,4 +405,6 @@ with tab2:
     if tickets_df is None or tickets_df.empty:
         st.info("ℹ️ No active emergencies logged. All regional zones operating normally.")
     else:
+        if "Date" in tickets_df.columns:
+            tickets_df["Date"] = tickets_df["Date"].apply(format_to_ist)
         st.dataframe(tickets_df, use_container_width=True, hide_index=True)
