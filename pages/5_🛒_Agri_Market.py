@@ -27,6 +27,18 @@ render_auth_sidebar()
 # 4. CUSTOM CSS FOR MOBILE-FIRST CARDS & REELS
 st.markdown("""
 <style>
+    :root {
+        color-scheme: light !important;
+        --text-color: #0f172a !important;
+        --background-color: #f8fafc !important;
+        --secondary-background-color: #ffffff !important;
+    }
+    .stApp {
+        background-color: #f8fafc !important;
+        background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px) !important;
+        background-size: 24px 24px !important;
+        color: #0f172a !important;
+    }
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}

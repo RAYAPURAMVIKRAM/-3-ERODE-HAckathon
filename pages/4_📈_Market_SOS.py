@@ -15,9 +15,21 @@ render_auth_sidebar()
 
 st.markdown("""
 <style>
+    :root {
+        color-scheme: light !important;
+        --text-color: #0f172a !important;
+        --background-color: #f8fafc !important;
+        --secondary-background-color: #ffffff !important;
+    }
+    .stApp {
+        background-color: #f8fafc !important;
+        background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px) !important;
+        background-size: 24px 24px !important;
+        color: #0f172a !important;
+    }
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
-    .sos-header { text-align: center; color: #d32f2f; font-family: sans-serif; }
-    .fin-header { text-align: center; color: #1976d2; font-family: sans-serif; }
+    .sos-header { text-align: center; color: #dc2626; font-weight: 800; font-family: sans-serif; }
+    .fin-header { text-align: center; color: #0284c7; font-weight: 800; font-family: sans-serif; }
     .db-badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; margin-bottom: 10px; }
 </style>
 """, unsafe_allow_html=True)

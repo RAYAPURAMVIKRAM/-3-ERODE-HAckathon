@@ -16,49 +16,135 @@ render_auth_sidebar()
 # 3. CUSTOM STYLING
 st.markdown("""
 <style>
+    /* Force Light Color Scheme across all browsers & OS dark-mode overrides */
+    :root {
+        color-scheme: light !important;
+        --text-color: #0f172a !important;
+        --background-color: #f8fafc !important;
+        --secondary-background-color: #ffffff !important;
+    }
+
+    /* Base Page Styling: Professional, clean, light-slate agricultural canvas */
+    .stApp {
+        background-color: #f8fafc !important;
+        background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px) !important;
+        background-size: 24px 24px !important;
+        color: #0f172a !important;
+    }
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
-    .opt-header { text-align: center; color: #1b4332; font-family: sans-serif; margin-bottom: 6px; }
-    .stTabs [data-baseweb="tab-list"] { gap: 18px; }
-    .stTabs [data-baseweb="tab"] { height: 48px; border-radius: 10px 10px 0 0; font-weight: 600; }
     
+    .opt-header { 
+        text-align: center !important; 
+        color: #064e3b !important; 
+        font-weight: 800 !important; 
+        margin-bottom: 6px !important; 
+    }
+    .opt-subtitle {
+        text-align: center !important;
+        color: #475569 !important;
+        font-weight: 600 !important;
+        font-size: 1.05rem !important;
+        margin-bottom: 20px !important;
+    }
+
+    .stTabs [data-baseweb="tab-list"] { 
+        gap: 14px !important; 
+        border-bottom: 2px solid #cbd5e1 !important;
+    }
+    .stTabs [data-baseweb="tab"] { 
+        height: 48px !important; 
+        border-radius: 12px 12px 0 0 !important; 
+        font-weight: 700 !important;
+        color: #334155 !important;
+        background: #f1f5f9 !important;
+        border: 1.5px solid #cbd5e1 !important;
+        border-bottom: none !important;
+        padding: 8px 18px !important;
+    }
+    .stTabs [aria-selected="true"] {
+        background: #ffffff !important;
+        color: #064e3b !important;
+        border-top: 3px solid #059669 !important;
+    }
+
     .live-banner {
-        background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%);
-        color: #ffffff;
-        padding: 14px 18px;
-        border-radius: 14px;
-        margin-bottom: 22px;
-        border: 1px solid #52b788;
-        box-shadow: 0 4px 12px rgba(46, 125, 50, 0.2);
+        background: linear-gradient(135deg, #064e3b 0%, #047857 50%, #059669 100%) !important;
+        color: #ffffff !important;
+        padding: 18px 22px !important;
+        border-radius: 16px !important;
+        margin-bottom: 22px !important;
+        border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
+        box-shadow: 0 4px 16px rgba(6, 78, 59, 0.25) !important;
+    }
+    .live-banner * {
+        color: #ffffff !important;
     }
     .live-banner-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 12px;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        flex-wrap: wrap !important;
+        gap: 12px !important;
     }
     .live-banner-left {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 4px !important;
     }
     .live-banner-title {
-        font-size: 15px;
-        font-weight: 800;
-        letter-spacing: 0.3px;
+        font-size: 16px !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.3px !important;
     }
     .live-banner-details {
-        font-size: 13px;
-        color: #d8f3dc;
+        font-size: 13px !important;
+        color: #d1fae5 !important;
+        font-weight: 600 !important;
     }
     .live-soil-tag {
-        background: rgba(255, 255, 255, 0.2);
-        padding: 6px 14px;
-        border-radius: 20px;
-        font-size: 13px;
-        font-weight: 700;
-        color: #ffffff;
-        border: 1px solid rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.2) !important;
+        padding: 8px 16px !important;
+        border-radius: 20px !important;
+        font-size: 13.5px !important;
+        font-weight: 800 !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255, 255, 255, 0.35) !important;
+    }
+
+    /* Primary Action Buttons */
+    div.stButton > button {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+        color: #ffffff !important;
+        font-size: 1.08rem !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.3px !important;
+        padding: 14px 24px !important;
+        border-radius: 14px !important;
+        border: none !important;
+        box-shadow: 0 4px 14px rgba(5, 150, 105, 0.3) !important;
+        transition: all 0.2s ease !important;
+    }
+    div.stButton > button:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 20px rgba(5, 150, 105, 0.45) !important;
+        background: linear-gradient(135deg, #047857 0%, #064e3b 100%) !important;
+    }
+    div.stButton > button * {
+        color: #ffffff !important;
+    }
+
+    /* Alert / Result Boxes */
+    div[data-testid="stAlert"] {
+        background-color: #ffffff !important;
+        border: 2px solid #cbd5e1 !important;
+        border-left: 6px solid #059669 !important;
+        border-radius: 16px !important;
+        padding: 16px 20px !important;
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08) !important;
+    }
+    div[data-testid="stAlert"] * {
+        color: #0f172a !important;
+        font-weight: 600 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -193,7 +279,7 @@ st.markdown(f"""
 
 # 7. PAGE TITLES
 st.markdown(f"<h2 class='opt-header'>{t('opt_title', lang)}</h2>", unsafe_allow_html=True)
-st.markdown(f"<p style='text-align: center; color: #4b5563;'>{t('opt_subtitle', lang)}</p>", unsafe_allow_html=True)
+st.markdown(f"<p class='opt-subtitle'>{t('opt_subtitle', lang)}</p>", unsafe_allow_html=True)
 
 # 8. OPTIMIZER TABS
 tab1, tab2 = st.tabs([t("opt_tab1", lang), t("opt_tab2", lang)])

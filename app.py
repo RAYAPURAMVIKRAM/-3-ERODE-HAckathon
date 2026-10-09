@@ -10,14 +10,35 @@ render_auth_sidebar()
 
 st.markdown("""
     <style>
+    :root {
+        color-scheme: light !important;
+        --text-color: #0f172a !important;
+        --background-color: #f8fafc !important;
+        --secondary-background-color: #ffffff !important;
+    }
+    .stApp {
+        background-color: #f8fafc !important;
+        background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px) !important;
+        background-size: 24px 24px !important;
+        color: #0f172a !important;
+    }
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
     div[data-testid="stPageLink-NavLink"] {
-        background-color: #ffffff; border: 1px solid #e2e8f0; padding: 15px;
-        border-radius: 12px; margin-bottom: 10px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); transition: all 0.2s;
+        background-color: #ffffff !important; 
+        border: 1.5px solid #cbd5e1 !important; 
+        padding: 16px 20px !important;
+        border-radius: 14px !important; 
+        margin-bottom: 12px !important;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06) !important; 
+        transition: all 0.2s ease !important;
+    }
+    div[data-testid="stPageLink-NavLink"] * {
+        color: #0f172a !important;
     }
     div[data-testid="stPageLink-NavLink"]:hover {
-        border-color: #2e7b32; transform: translateY(-2px);
+        border-color: #059669 !important; 
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 18px rgba(5, 150, 105, 0.15) !important;
     }
     </style>
 """, unsafe_allow_html=True)
