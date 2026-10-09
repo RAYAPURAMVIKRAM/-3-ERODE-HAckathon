@@ -1,12 +1,17 @@
-# Ignore Python backend files during Vercel deployment
-# This prevents Vercel from attempting to install heavy ML/Streamlit packages (501 MB)
+# Exclude heavy Python ML packages and Streamlit runtime from Vercel
+# Streamlit runs directly on Streamlit Community Cloud
 requirements.txt
-app.py
+*.py
 pages/
+__pycache__/
+.venv/
+env/
+venv/
 supabase_client.py
 auth_ui.py
 agripirate.db
 *.db
+*.sqlite3
 prisma/
 test_supabase.py
 supabase_setup.sql

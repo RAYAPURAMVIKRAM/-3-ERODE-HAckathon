@@ -1,4 +1,6 @@
 {
+  "buildCommand": "echo 'Building STARK-X Static Web App'",
+  "outputDirectory": ".",
   "cleanUrls": true,
   "rewrites": [
     {
