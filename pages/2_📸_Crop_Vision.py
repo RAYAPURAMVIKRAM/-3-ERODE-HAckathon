@@ -45,15 +45,16 @@ def analyze_crop_image(_image, target_lang):
         f"Keep the language simple and empathetic. "
         f"IMPORTANT: Output your complete agronomic analysis natively in {target_lang}."
     )
-    try:
-        model = genai.GenerativeModel('gemini-flash-latest')
-        response = model.generate_content([prompt, _image], stream=False)
-    except Exception as inner_e:
-        if "429" in str(inner_e) or "Quota" in str(inner_e):
-            raise inner_e
-        model = genai.GenerativeModel('gemini-1.5-flash')
-        response = model.generate_content([prompt, _image], stream=False)
-    return response.text
+    candidate_models = ['gemini-flash-lite-latest', 'gemini-3.5-flash', 'gemini-3.1-flash-lite', 'gemini-1.5-flash']
+    for m in candidate_models:
+        try:
+            model = genai.GenerativeModel(m)
+            response = model.generate_content([prompt, _image], stream=False)
+            if response and response.text:
+                return response.text
+        except Exception:
+            continue
+    raise Exception("Unable to analyze image across available vision models.")
 
 # 5. FILE UPLOADER
 uploaded_file = st.file_uploader(t("vision_upload_label", lang), type=["jpg", "jpeg", "png"])

@@ -152,22 +152,26 @@ def get_starkx_response(user_prompt, active_lang):
             temperature=0.3
         )
         
-        try:
-            model = genai.GenerativeModel(
-                'gemini-1.5-flash',
-                system_instruction=sys_inst,
-                generation_config=gen_config
-            )
-            response = model.generate_content(full_input, stream=False)
-        except Exception:
-            model = genai.GenerativeModel(
-                'gemini-flash-latest',
-                system_instruction=sys_inst,
-                generation_config=gen_config
-            )
-            response = model.generate_content(full_input, stream=False)
+        candidate_models = ['gemini-flash-lite-latest', 'gemini-3.5-flash', 'gemini-3.1-flash-lite', 'gemini-1.5-flash']
+        response_text = ""
+        for m_name in candidate_models:
+            try:
+                model = genai.GenerativeModel(
+                    m_name,
+                    system_instruction=sys_inst,
+                    generation_config=gen_config
+                )
+                res = model.generate_content(full_input, stream=False)
+                if res and res.text:
+                    response_text = res.text
+                    break
+            except Exception:
+                continue
             
-        return response.text
+        if not response_text:
+            return "⚠️ Currently unable to reach AI agronomy service. Please retry in a few seconds."
+            
+        return response_text
     except Exception as e:
         return f"⚠️ Error generating response: {str(e)}"
 
