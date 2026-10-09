@@ -10,24 +10,45 @@ from supabase_client import (
 )
 
 def render_auth_sidebar():
-    """Renders language selector, user authentication and profile status in the sidebar."""
-    # 0. SYNCHRONIZED APP LANGUAGE SELECTOR
-    if "selected_lang" not in st.session_state:
-        st.session_state["selected_lang"] = "English"
+    """Renders persistent language selector, user authentication and profile status in the sidebar."""
+    # 0. SYNCHRONIZED APP LANGUAGE SELECTOR VIA st.session_state["lang"]
+    if "lang" not in st.session_state:
+        st.session_state["lang"] = st.session_state.get("selected_lang", "English")
+    st.session_state["selected_lang"] = st.session_state["lang"]
         
-    langs = list(TRANSLATIONS.keys())
-    curr_lang = st.session_state.get("selected_lang", "English")
+    langs = ["English", "Tamil (தமிழ்)", "Telugu (తెలుగు)"]
+    curr_lang = st.session_state.get("lang", "English")
     curr_idx = langs.index(curr_lang) if curr_lang in langs else 0
     
-    st.sidebar.markdown("### 🌐 Language / மொழி / భాష")
+    # Styled Language Badges with Vivid Text Colors
+    st.sidebar.markdown("""
+    <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 10px 12px; margin-bottom: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
+        <div style="font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #1e293b;">
+            🌐 Language / மொழி / భాష
+        </div>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <span style="color: #2563eb; font-weight: 800; font-size: 12px; background: #eff6ff; padding: 3px 8px; border-radius: 6px; border: 1px solid #bfdbfe;">
+                🇬🇧 English
+            </span>
+            <span style="color: #16a34a; font-weight: 800; font-size: 12px; background: #f0fdf4; padding: 3px 8px; border-radius: 6px; border: 1px solid #bbf7d0;">
+                🌾 தமிழ்
+            </span>
+            <span style="color: #ea580c; font-weight: 800; font-size: 12px; background: #fff7ed; padding: 3px 8px; border-radius: 6px; border: 1px solid #fed7aa;">
+                ☀️ తెలుగు
+            </span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
     chosen = st.sidebar.selectbox(
         "Choose App Language",
         langs,
         index=curr_idx,
-        key="app_language_selector",
+        key="global_sidebar_lang_selector",
         label_visibility="collapsed"
     )
-    if chosen != st.session_state["selected_lang"]:
+    if chosen != st.session_state["lang"]:
+        st.session_state["lang"] = chosen
         st.session_state["selected_lang"] = chosen
         st.rerun()
 

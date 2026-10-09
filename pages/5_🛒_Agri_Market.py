@@ -151,16 +151,18 @@ st.markdown("""
 
 from locales import t
 
+lang = st.session_state.get("lang", "English")
+
 # 5. PAGE HEADER
-st.title(t("market_title"))
-st.markdown(t("market_sub"))
+st.title(t("market_title", lang))
+st.markdown(t("market_sub", lang))
 
 # 6. TWO TABS
-tab_market, tab_reels = st.tabs(["🛒 Direct Marketplace", "📱 Agri Reels"])
+tab_market, tab_reels = st.tabs([t("market_tab1", lang), t("market_tab2", lang)])
 
 # ================= TAB 1: DIRECT MARKETPLACE =================
 with tab_market:
-    st.subheader("Post Your Harvest for Direct Sale")
+    st.subheader(t("post_harvest_title", lang))
     st.caption("Wholesale buyers, food processing units, and exporters across Erode will contact you directly on WhatsApp.")
 
     # Check for current logged in user to auto-fill
@@ -172,9 +174,9 @@ with tab_market:
     with st.form("post_harvest_form", clear_on_submit=False):
         col1, col2 = st.columns(2)
         with col1:
-            farmer_name = st.text_input("Farmer Name", value=default_name, placeholder="e.g. Murugan K.")
+            farmer_name = st.text_input(t("farmer_name_label", lang), value=default_name, placeholder="e.g. Murugan K.")
             crop_name = st.selectbox(
-                "Crop Name",
+                t("crop_name_label", lang),
                 [
                     "Erode Organic Turmeric (Finger)",
                     "Turmeric (Bulb)",
@@ -187,18 +189,18 @@ with tab_market:
                     "Robusta Banana"
                 ]
             )
-            location = st.text_input("Village / Location", value=default_loc, placeholder="e.g. Perundurai, Erode")
+            location = st.text_input(t("location_label", lang), value=default_loc, placeholder="e.g. Perundurai, Erode")
 
         with col2:
-            phone_wa = st.text_input("WhatsApp Number", placeholder="e.g. +91 98765 43210 or 9876543210")
-            quantity_kg = st.number_input("Available Quantity (kg)", min_value=10.0, max_value=50000.0, value=250.0, step=25.0)
-            price_per_kg = st.number_input("Expected Price per kg (₹)", min_value=1.0, max_value=2000.0, value=145.0, step=5.0)
+            phone_wa = st.text_input(t("phone_label", lang), placeholder="e.g. +91 98765 43210 or 9876543210")
+            quantity_kg = st.number_input(t("qty_label", lang), min_value=10.0, max_value=50000.0, value=250.0, step=25.0)
+            price_per_kg = st.number_input(t("price_label", lang), min_value=1.0, max_value=2000.0, value=145.0, step=5.0)
 
         # Expected lot valuation
         total_lot_val = quantity_kg * price_per_kg
         st.markdown(f"**Estimated Total Lot Value:** `₹{total_lot_val:,.2f}`")
 
-        submitted = st.form_submit_button(t("post_btn"), use_container_width=True)
+        submitted = st.form_submit_button(t("post_btn", lang), use_container_width=True)
         if submitted:
             if not farmer_name.strip():
                 st.error("Please enter the farmer name.")
@@ -222,7 +224,7 @@ with tab_market:
                     st.error("Could not save listing. Please try again.")
 
     st.markdown("---")
-    st.subheader("🌾 Active Harvest Listings (Direct from Farmers)")
+    st.subheader(t("active_listings_title", lang))
 
     # Fetch active crop listings
     crops = fetch_marketplace_crops()
@@ -273,7 +275,7 @@ with tab_market:
                     {f" &nbsp;•&nbsp; 🕒 {date_str}" if date_str else ""}
                 </div>
                 <a href="{wa_link}" target="_blank" class="wa-button">
-                    {t("wa_btn")}
+                    {t("wa_btn", lang)}
                 </a>
             </div>
             """, unsafe_allow_html=True)

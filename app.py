@@ -22,19 +22,22 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+lang = st.session_state.get("lang", "English")
+
 st.image("https://images.unsplash.com/photo-1625246333195-78d9c38ad449?q=80&w=1000&auto=format&fit=crop", use_container_width=True)
-st.title(t("app_title"))
-st.subheader("The Ultimate Autonomous Farming Ecosystem")
+st.title(t("app_title", lang))
+st.subheader(t("app_subtitle", lang))
 
 # Display personalized welcome banner if logged in
 user = get_current_user()
 if user:
-    st.success(f"🌾 Vanakkam, **{user.get('name')}** ({user.get('village')})! Your farmer profile is connected.")
+    welcome_text = t("welcome_farmer", lang).format(name=user.get('name', 'Farmer'), village=user.get('village', 'Tamil Nadu'))
+    st.success(f"🌾 {welcome_text}")
 
-st.markdown("Select a tool below to get started:")
+st.markdown(t("select_tool_msg", lang))
 
-st.page_link("pages/1_💬_Agri_Chat.py", label=f"**{t('chat_page')}:** Talk to our AI about your farm (WhatsApp style)", icon="💬")
-st.page_link("pages/2_📸_Crop_Vision.py", label=f"**{t('vision_page')}:** Upload photos for instant health checks", icon="📸")
-st.page_link("pages/3_🌾_Optimizer.py", label=f"**{t('opt_page')}:** Find out exactly what to grow based on soil and water", icon="🌾")
-st.page_link("pages/4_📈_Market_SOS.py", label="**Market & SOS:** Check live prices and request community help", icon="📈")
-st.page_link("pages/5_🛒_Agri_Market.py", label=f"**{t('market_page')}:** Direct harvest sales & mobile farming reels", icon="🛒")
+st.page_link("pages/1_💬_Agri_Chat.py", label=f"**{t('chat_page', lang)}:** {t('chat_page_desc', lang)}", icon="💬")
+st.page_link("pages/2_📸_Crop_Vision.py", label=f"**{t('vision_page', lang)}:** {t('vision_page_desc', lang)}", icon="📸")
+st.page_link("pages/3_🌾_Optimizer.py", label=f"**{t('opt_page', lang)}:** {t('opt_page_desc', lang)}", icon="🌾")
+st.page_link("pages/4_📈_Market_SOS.py", label=f"**{t('market_sos_page', lang)}:** {t('market_sos_desc', lang)}", icon="📈")
+st.page_link("pages/5_🛒_Agri_Market.py", label=f"**{t('market_page', lang)}:** {t('market_page_desc', lang)}", icon="🛒")

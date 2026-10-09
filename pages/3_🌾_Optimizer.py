@@ -168,12 +168,16 @@ live_temp = climate_data["temperature"]
 live_humidity = climate_data["humidity"]
 inferred_soil = climate_data["inferred_soil"]
 
+from locales import t
+
+lang = st.session_state.get("lang", "English")
+
 # 6. DISPLAY GREEN LIVE WEATHER & GPS BANNER (TASK 6)
 st.markdown(f"""
 <div class="live-banner">
     <div class="live-banner-content">
         <div class="live-banner-left">
-            <span class="live-banner-title">📡 Live Satellite GPS & Agrometeorology</span>
+            <span class="live-banner-title">{t("gps_banner_title", lang)}</span>
             <span class="live-banner-details">
                 📍 <b>{detected_city}</b> ({climate_data['lat']:.2f}°N, {climate_data['lon']:.2f}°E) 
                 &nbsp;•&nbsp; 🌡️ <b>{live_temp:.1f}°C</b> Live Temp 
@@ -181,38 +185,36 @@ st.markdown(f"""
             </span>
         </div>
         <div class="live-soil-tag">
-            🌱 Auto-Inferred: <b>{inferred_soil}</b>
+            {t("auto_inferred_soil", lang)}: <b>{inferred_soil}</b>
         </div>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-from locales import t
-
 # 7. PAGE TITLES
-st.markdown(f"<h2 class='opt-header'>{t('opt_title')}</h2>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #4b5563;'>Data-driven precision agronomy engine with real-time climate grounding.</p>", unsafe_allow_html=True)
+st.markdown(f"<h2 class='opt-header'>{t('opt_title', lang)}</h2>", unsafe_allow_html=True)
+st.markdown(f"<p style='text-align: center; color: #4b5563;'>{t('opt_subtitle', lang)}</p>", unsafe_allow_html=True)
 
 # 8. OPTIMIZER TABS
-tab1, tab2 = st.tabs([t("opt_tab1"), t("opt_tab2")])
+tab1, tab2 = st.tabs([t("opt_tab1", lang), t("opt_tab2", lang)])
 
 soil_options = ["Red Soil", "Black Soil", "Alluvial", "Sandy Loam", "Clay"]
 default_soil_index = soil_options.index(inferred_soil) if inferred_soil in soil_options else 0
 
 # --- TAB 1: CONDITIONS TO CROP ---
 with tab1:
-    st.subheader("Farm Soil, Water & Climate Parameters")
+    st.subheader(t("farm_params_title", lang))
     col1, col2 = st.columns(2)
     with col1:
         # Task 7: Use inferred soil as default
         soil_type = st.selectbox(
-            f"{t('soil_label')} (Auto-detected from GPS)",
+            f"{t('soil_label', lang)} (Auto-detected from GPS)",
             soil_options,
             index=default_soil_index,
             help=f"Pre-selected based on geological survey data for {detected_city}."
         )
         water_avail = st.selectbox(
-            t("water_label"),
+            t("water_label", lang),
             ["Rainfed (Low)", "Borewell (Medium)", "Canal/River (High)"],
             index=1
         )
@@ -222,7 +224,7 @@ with tab1:
         phosphorus = st.slider("Phosphorus (P)", 0, 150, 45)
         potassium = st.slider("Potassium (K)", 0, 150, 50)
         
-    if st.button(t("opt_btn"), use_container_width=True):
+    if st.button(t("opt_btn", lang), use_container_width=True):
         with st.spinner("Processing STARK-X agro-meteorological recommendation matrix..."):
             
             # STARK-X Engine Logic (calibrated for live temperature & district conditions)
@@ -266,18 +268,18 @@ with tab2:
     )
     # Task 7: Use inferred soil as default
     target_soil = st.selectbox(
-        t("soil_label"),
+        t("soil_label", lang),
         soil_options,
         index=default_soil_index,
         key="t2_soil"
     )
     target_water = st.selectbox(
-        t("water_label"),
+        t("water_label", lang),
         ["Rainfed (Low)", "Borewell (Medium)", "Canal/River (High)"],
         key="t2_water"
     )
     
-    if st.button("🔍 Check Compatibility", use_container_width=True):
+    if st.button(t("opt_eval_btn", lang), use_container_width=True):
         with st.spinner("Cross-referencing live meteorological & agronomic thresholds..."):
             
             # Mismatch Logic Engine

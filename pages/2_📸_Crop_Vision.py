@@ -4,6 +4,7 @@ from PIL import Image
 from dotenv import load_dotenv
 import google.generativeai as genai
 from auth_ui import render_auth_sidebar
+from locales import t
 
 # 1. LOAD API KEY WITH CACHE OVERRIDE
 load_dotenv(override=True)
@@ -13,7 +14,7 @@ GEMINI_API_KEY = raw_key.strip(' "\'')
 # 2. PAGE CONFIG
 st.set_page_config(page_title="Crop Vision | STARK-X", page_icon="📸", layout="centered")
 
-# Render Farmer Authentication & Profile in Sidebar
+# Render Farmer Authentication & Persistent Language Selector in Sidebar
 render_auth_sidebar()
 
 # 3. INSTAGRAM-STYLE CSS
@@ -26,56 +27,57 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-from locales import t
+lang = st.session_state.get("lang", "English")
 
-st.markdown(f"<h2 class='vision-header'>{t('vision_title')}</h2>", unsafe_allow_html=True)
-st.markdown(f"<p style='text-align: center; color: #555;'>{t('vision_desc')}</p>", unsafe_allow_html=True)
+st.markdown(f"<h2 class='vision-header'>{t('vision_title', lang)}</h2>", unsafe_allow_html=True)
+st.markdown(f"<p style='text-align: center; color: #555;'>{t('vision_desc', lang)}</p>", unsafe_allow_html=True)
 
 # 4. CACHED INFERENCE FUNCTION
 @st.cache_data(show_spinner=False)
-def analyze_crop_image(_image):
+def analyze_crop_image(_image, target_lang):
     genai.configure(api_key=GEMINI_API_KEY, transport="rest")
     prompt = (
-        "Act as an expert Indian agronomist and plant pathologist. Look at this crop photo. "
-        "1. Identify the crop if possible. "
-        "2. Assess its overall health. "
-        "3. Detect any visible diseases, pests, or nutrient deficiencies. "
-        "4. Provide 3 simple, low-cost, practical steps the farmer can take to fix the issue or improve yield. "
-        "Keep the language simple and empathetic."
+        f"Act as an expert Indian agronomist and plant pathologist. Look at this crop photo. "
+        f"1. Identify the crop if possible. "
+        f"2. Assess its overall health. "
+        f"3. Detect any visible diseases, pests, or nutrient deficiencies. "
+        f"4. Provide 3 simple, low-cost, practical steps the farmer can take to fix the issue or improve yield. "
+        f"Keep the language simple and empathetic. "
+        f"IMPORTANT: Output your complete agronomic analysis natively in {target_lang}."
     )
     try:
-        model = genai.GenerativeModel('gemini-pro-vision')
+        model = genai.GenerativeModel('gemini-flash-latest')
         response = model.generate_content([prompt, _image], stream=False)
     except Exception as inner_e:
         if "429" in str(inner_e) or "Quota" in str(inner_e):
             raise inner_e
-        model = genai.GenerativeModel('gemini-flash-latest')
+        model = genai.GenerativeModel('gemini-1.5-flash')
         response = model.generate_content([prompt, _image], stream=False)
     return response.text
 
 # 5. FILE UPLOADER
-uploaded_file = st.file_uploader("Choose a crop photo...", type=["jpg", "jpeg", "png"])
+uploaded_file = st.file_uploader(t("vision_upload_label", lang), type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
     image = Image.open(uploaded_file)
     st.image(image, caption="Uploaded Crop Photo", use_container_width=True)
     
-    if st.button(t("vision_btn"), use_container_width=True):
+    if st.button(t("vision_btn", lang), use_container_width=True):
         if not GEMINI_API_KEY:
             st.error("⚠️ Gemini API Key is missing. Please check your .env file.")
         else:
-            with st.spinner("STARK-X is scanning the crop..."):
+            with st.spinner(t("scanning_msg", lang)):
                 try:
-                    report = analyze_crop_image(image)
-                    st.success("Analysis Complete!")
-                    st.markdown("### 📋 Agronomy Report")
+                    report = analyze_crop_image(image, lang)
+                    st.success(t("analysis_complete", lang))
+                    st.markdown(f"### {t('report_title', lang)}")
                     st.info(report)
                 except Exception as e:
                     error_msg = str(e)
                     if "429" in error_msg or "Quota" in error_msg:
                         st.warning("⚠️ API Quota Limit Reached. Showing STARK-X Offline Analysis.")
-                        st.success("Analysis Complete (Offline Mode)!")
-                        st.markdown("### 📋 Agronomy Report")
+                        st.success(f"{t('analysis_complete', lang)} (Offline Mode)")
+                        st.markdown(f"### {t('report_title', lang)}")
                         st.info(
                             "**1. Crop Identification:** Likely Tomato or Solanaceous family.\n\n"
                             "**2. Overall Health:** Moderate stress detected along foliage margins.\n\n"
