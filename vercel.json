@@ -1,11 +1,9 @@
 {
-  "buildCommand": "echo 'Building STARK-X Web App'",
-  "outputDirectory": ".",
-  "cleanUrls": true,
+  "version": 2,
   "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "/index.html"
+      "destination": "/api/index.py"
     }
   ]
 }

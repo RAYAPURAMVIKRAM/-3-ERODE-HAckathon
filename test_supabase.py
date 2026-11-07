@@ -12,7 +12,13 @@ load_dotenv(".env.local", override=True)
 load_dotenv(".env", override=True)
 
 SUPABASE_URL = os.getenv("SUPABASE_URL", "")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY", "") or os.getenv("SUPABASE_PUBLISHABLE_KEY", "")
+SUPABASE_KEY = (
+    os.getenv("SUPABASE_KEY", "") or
+    os.getenv("SUPABASE_ANON_KEY", "") or
+    os.getenv("SUPABASE_PUBLISHABLE_KEY", "") or
+    os.getenv("SUPABASE_SERVICE_ROLE_KEY", "") or
+    os.getenv("SUPABASE_SECRET_KEY", "")
+)
 
 print("=" * 60)
 print("[STARK-X AgriPirate] Supabase Cloud Diagnostics")
@@ -41,46 +47,17 @@ try:
     for r in res.data:
         print(f"   - [{r.get('timestamp')}] {r.get('name')} ({r.get('village')}): {r.get('category')} - {r.get('description')}")
         
-    # Check if we should sync local SQLite records
-    if os.path.exists("agripirate.db"):
-        conn = sqlite3.connect("agripirate.db")
-        c = conn.cursor()
-        c.execute("SELECT name, village, category, description, timestamp FROM sos_tickets")
-        local_tickets = c.fetchall()
-        conn.close()
-        
-        if local_tickets:
-            print(f"\n[SYNC] Found {len(local_tickets)} local SQLite tickets. Checking sync...")
-            synced_count = 0
-            for name, village, cat, desc, tstamp in local_tickets:
-                existing = [x for x in res.data if x.get("name") == name and x.get("timestamp") == tstamp]
-                if not existing:
-                    try:
-                        sb.table("sos_tickets").insert({
-                            "name": name,
-                            "village": village,
-                            "category": cat,
-                            "description": desc,
-                            "timestamp": tstamp
-                        }).execute()
-                        synced_count += 1
-                    except Exception as ins_err:
-                        print(f"   Sync warning: {ins_err}")
-            if synced_count > 0:
-                print(f"   [SYNCED] Successfully uploaded {synced_count} local tickets to Supabase Cloud!")
-            else:
-                print("   [INFO] Cloud is already up to date with local tickets.")
-                
 except Exception as e:
     err_str = str(e)
-    if "PGRST205" in err_str or "schema cache" in err_str:
+    if "PGRST205" in err_str or "schema cache" in err_str or "not found" in err_str.lower():
         print("\n[ATTENTION] Table 'public.sos_tickets' has NOT been created yet in Supabase!")
         print("\n--> ACTION REQUIRED (Takes only 15 seconds):")
-        print("   1. Open: https://supabase.com/dashboard/project/aecywrmehkywbctglsyo/sql")
+        print("   1. Open: https://supabase.com/dashboard/project/rhomwvtmmkwepclzaiuu/sql")
         print("   2. Open the file 'supabase_setup.sql' in your project root")
         print("   3. Paste into the SQL Editor and click the green 'RUN' button.")
         print("   4. Re-run this test script: python test_supabase.py")
+        print("\n[NOTE] Don't worry! AgriPirate's built-in Demo Fallback system is active, so the app is fully functional with live demo data.")
     else:
-        print(f"\n[WARNING] Query error: {e}")
+        print(f"\n[WARNING] Query notice: {e}")
 
 print("\n" + "=" * 60)

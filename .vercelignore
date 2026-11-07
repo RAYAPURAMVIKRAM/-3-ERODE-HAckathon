@@ -1,14 +1,12 @@
-# Exclude Streamlit Python backend, API, and local database files from Vercel deployment
+# Exclude root Streamlit dependencies and large assets from Vercel deployment
 requirements.txt
 app.py
 auth_ui.py
 locales.py
-supabase_client.py
 test_supabase.py
 supabase_setup.sql
 pages/
 prisma/
-api/
 agripirate.db
 *.db
 *.sqlite3
