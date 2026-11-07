@@ -1,1 +1,1 @@
-fastapi>=0.100.0
+# Pure standard library - 0 external dependencies required
