@@ -1,26 +1,9 @@
 {
   "version": 2,
-  "cleanUrls": true,
   "rewrites": [
     {
       "source": "/health",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/api/health",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/api",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "destination": "/api/health"
     }
   ]
 }
