@@ -110,3 +110,6 @@ insert into public.marketplace_crops (farmer_name, phone_whatsapp, crop_name, qu
 ('Arumugam S.', '+919442098765', 'Country Red Shallots (Small Onion)', 600.0, 58.0, 'Chennimalai Belt', '2026-11-07 13:15'),
 ('Dhandapani R.', '+919943567890', 'Robusta Banana (Pachainadan)', 1500.0, 24.0, 'Kodumudi Riverbed', '2026-11-07 14:00')
 on conflict do nothing;
+
+-- 9. Reload PostgREST Schema Cache (CRITICAL: tells Supabase REST API to expose new tables)
+NOTIFY pgrst, 'reload schema';

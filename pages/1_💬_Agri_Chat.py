@@ -492,51 +492,13 @@ elif len(st.session_state.chat_history) == 1 and st.session_state.chat_history[0
 for msg in st.session_state.chat_history:
     st.chat_message(msg["role"], avatar="user" if msg["role"] == "user" else "assistant").markdown(msg["content"])
 
-# 7. ZERO-LAG NATIVE LLM HANDLER (Multi-Model Cascade)
+# 7. ZERO-LAG NATIVE LLM HANDLER (Gemini Cascade + Intelligent Regional Agronomy Engine)
 def get_starkx_response(user_prompt, active_lang):
-    if not GEMINI_API_KEY:
-        return "⚠️ Gemini API Key is missing. Check your .env file."
-    
     try:
-        genai.configure(api_key=GEMINI_API_KEY, transport="rest")
-        
-        # Build conversation context
-        recent_context = ""
-        for item in st.session_state.chat_history[-4:]:
-            role_label = "Farmer" if item["role"] == "user" else "Advisor"
-            recent_context += f"{role_label}: {item['content']}\n"
-            
-        full_input = f"{recent_context}\nFarmer asks: {user_prompt}"
-        
-        # Generate complete response natively in farmer's selected language
-        sys_inst = build_native_system_instruction(active_lang)
-        gen_config = genai.types.GenerationConfig(
-            max_output_tokens=600,
-            temperature=0.3
-        )
-        
-        candidate_models = ['gemini-flash-lite-latest', 'gemini-3.5-flash', 'gemini-3.1-flash-lite', 'gemini-1.5-flash']
-        response_text = ""
-        for m_name in candidate_models:
-            try:
-                model = genai.GenerativeModel(
-                    m_name,
-                    system_instruction=sys_inst,
-                    generation_config=gen_config
-                )
-                res = model.generate_content(full_input, stream=False)
-                if res and res.text:
-                    response_text = res.text
-                    break
-            except Exception:
-                continue
-            
-        if not response_text:
-            return "⚠️ Currently unable to reach AI agronomy service. Please retry in a few seconds."
-            
-        return response_text
+        from agronomy_ai import get_agronomy_chat_response
+        return get_agronomy_chat_response(user_prompt, active_lang, st.session_state.get("chat_history", []))
     except Exception as e:
-        return f"⚠️ Error generating response: {str(e)}"
+        return f"⚠️ Agronomy Engine Notice: {str(e)}"
 
 # 8. CHAT INPUT
 user_input = st.chat_input(t("chat_placeholder", current_lang))

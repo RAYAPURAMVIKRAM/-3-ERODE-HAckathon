@@ -241,8 +241,9 @@ def get_supabase_client():
     if not SUPABASE_URL or not SUPABASE_KEY or "your-project" in SUPABASE_URL:
         return None
     try:
-        from supabase import create_client
-        return create_client(SUPABASE_URL, SUPABASE_KEY)
+        from supabase import create_client, ClientOptions
+        options = ClientOptions(postgrest_client_timeout=4)
+        return create_client(SUPABASE_URL, SUPABASE_KEY, options=options)
     except Exception as e:
         print(f"Supabase client initialization exception: {e}")
         return None
