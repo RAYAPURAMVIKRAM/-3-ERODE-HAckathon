@@ -3,7 +3,11 @@
   "rewrites": [
     {
       "source": "/health",
-      "destination": "/api/health"
+      "destination": "/api?route=health"
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": "/api?route=$1"
     }
   ]
 }

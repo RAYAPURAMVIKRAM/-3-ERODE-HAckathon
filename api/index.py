@@ -433,6 +433,28 @@ class handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def resolve_path(self):
+        parsed = urllib.parse.urlparse(self.path)
+        qs = urllib.parse.parse_qs(parsed.query)
+        route = qs.get("route", [None])[0]
+        if route:
+            route = route.strip("/")
+            if route == "health":
+                return "/health"
+            return f"/api/{route}"
+
+        hdr = (
+            self.headers.get("x-matched-path") or
+            self.headers.get("x-vercel-matched-path") or
+            self.headers.get("x-original-uri")
+        )
+        if hdr:
+            hdr_path = urllib.parse.urlparse(hdr).path
+            if hdr_path and hdr_path not in ["/api", "/api/"]:
+                return hdr_path
+
+        return parsed.path
+
     def do_OPTIONS(self):
         self.send_response(200)
         self.send_header("Access-Control-Allow-Origin", "*")
@@ -441,8 +463,7 @@ class handler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
-        parsed = urllib.parse.urlparse(self.path)
-        path = parsed.path
+        path = self.resolve_path()
 
         # 1. API Health Check
         if path in ["/health", "/api/health", "/api", "/api/"]:
@@ -577,8 +598,7 @@ class handler(BaseHTTPRequestHandler):
         self.wfile.write(fallback_msg)
 
     def do_POST(self):
-        parsed = urllib.parse.urlparse(self.path)
-        path = parsed.path
+        path = self.resolve_path()
 
         # Read JSON body
         content_len = int(self.headers.get("Content-Length", 0))
@@ -590,7 +610,7 @@ class handler(BaseHTTPRequestHandler):
 
         # 1. AI Agri Chat API
         if path in ["/api/chat", "/api/ai/chat"]:
-            prompt = req_data.get("prompt", "").strip()
+            prompt = (req_data.get("prompt") or req_data.get("message") or "").strip()
             lang = req_data.get("lang", "English")
 
             if not prompt:
@@ -625,7 +645,7 @@ class handler(BaseHTTPRequestHandler):
 
         # 2. AI Crop Vision Pathology Scanner API
         if path in ["/api/vision", "/api/ai/vision"]:
-            crop_hint = req_data.get("crop_hint", "turmeric")
+            crop_hint = req_data.get("crop_hint") or req_data.get("sample_id") or "turmeric"
             lang = req_data.get("lang", "English")
             report = generate_crop_vision_report(crop_hint, lang)
             return self.send_json(200, report)
