@@ -1,1 +1,1 @@
-# Pure standard library - 0 external dependencies required
+# Zero external dependencies - 100% Python Standard Library

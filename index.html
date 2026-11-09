@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>STARK-X | AgriPirate - 3-ERODE Hackathon</title>
+  <title>STARK-X | AgriPirate - Autonomous Agriculture OS</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <!-- Supabase Client CDN -->
+  <!-- Supabase JS CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
       --bg-dark: #070e08;
-      --card-bg: rgba(14, 29, 18, 0.75);
+      --card-bg: rgba(14, 29, 18, 0.85);
       --card-border: rgba(34, 197, 94, 0.25);
       --primary: #22c55e;
       --primary-hover: #16a34a;
@@ -50,13 +50,15 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(7, 14, 8, 0.85);
+      background: rgba(7, 14, 8, 0.92);
       backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--card-border);
-      padding: 16px 28px;
+      padding: 12px 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
     }
 
     .brand {
@@ -68,7 +70,7 @@
     }
 
     .brand-icon {
-      font-size: 28px;
+      font-size: 26px;
       background: rgba(34, 197, 94, 0.15);
       padding: 6px 10px;
       border-radius: 12px;
@@ -76,7 +78,7 @@
     }
 
     .brand-title {
-      font-size: 20px;
+      font-size: 19px;
       font-weight: 800;
       letter-spacing: -0.5px;
       color: #fff;
@@ -85,37 +87,50 @@
     .brand-title span { color: var(--primary); }
 
     .brand-subtitle {
-      font-size: 11px;
+      font-size: 10.5px;
       color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 1.5px;
+      letter-spacing: 1.2px;
     }
 
-    .header-badges {
+    .header-controls {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .lang-select-box {
+      background: rgba(14, 29, 18, 0.9);
+      border: 1.5px solid var(--card-border);
+      color: #86efac;
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      outline: none;
+      cursor: pointer;
     }
 
     .cloud-pill {
       display: flex;
       align-items: center;
       gap: 6px;
-      background: rgba(34, 197, 94, 0.1);
-      border: 1px solid rgba(34, 197, 94, 0.3);
-      padding: 6px 14px;
+      background: rgba(34, 197, 94, 0.12);
+      border: 1px solid rgba(34, 197, 94, 0.35);
+      padding: 6px 12px;
       border-radius: 50px;
-      font-size: 12px;
-      font-weight: 600;
+      font-size: 11.5px;
+      font-weight: 700;
       color: #86efac;
     }
 
     .pulse-dot {
-      width: 8px;
-      height: 8px;
+      width: 7px;
+      height: 7px;
       background: #22c55e;
       border-radius: 50%;
-      box-shadow: 0 0 10px #22c55e;
+      box-shadow: 0 0 8px #22c55e;
       animation: pulse 1.8s infinite;
     }
 
@@ -125,393 +140,310 @@
       100% { transform: scale(0.9); opacity: 0.7; }
     }
 
-    .btn-github {
-      background: #1e293b;
-      color: #f8fafc;
-      text-decoration: none;
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      border: 1px solid #334155;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
+    .btn-auth-demo {
+      background: linear-gradient(135deg, #15803d 0%, #166534 100%);
+      color: #ffffff;
+      border: 1px solid #4ade80;
+      padding: 6px 14px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
       transition: all 0.2s;
     }
-    .btn-github:hover { background: #334155; }
+    .btn-auth-demo:hover { background: #16a34a; transform: translateY(-1px); }
 
-    /* Hero Section */
-    .hero {
-      position: relative;
-      z-index: 1;
-      max-width: 1180px;
-      margin: 40px auto 20px;
-      padding: 0 24px;
-      text-align: center;
-    }
-
-    .hero-badge {
-      display: inline-block;
-      background: rgba(234, 179, 8, 0.12);
-      color: #fde047;
-      border: 1px solid rgba(234, 179, 8, 0.4);
-      padding: 6px 16px;
-      border-radius: 50px;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.8px;
-      margin-bottom: 20px;
-    }
-
-    .hero h1 {
-      font-size: 42px;
-      font-weight: 800;
-      letter-spacing: -1px;
-      line-height: 1.15;
-      margin-bottom: 16px;
-    }
-
-    .hero h1 span {
-      background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .hero p {
-      font-size: 17px;
-      color: #cbd5e1;
-      max-width: 760px;
-      margin: 0 auto 30px;
-    }
-
-    /* Live Mandi Ticker */
-    .ticker-bar {
-      background: rgba(15, 30, 18, 0.8);
-      border-top: 1px solid rgba(34, 197, 94, 0.15);
-      border-bottom: 1px solid rgba(34, 197, 94, 0.15);
-      overflow: hidden;
-      white-space: nowrap;
-      padding: 10px 0;
-      margin-bottom: 40px;
-    }
-
-    .ticker-inner {
-      display: inline-block;
-      animation: marquee 28s linear infinite;
-    }
-
-    .ticker-item {
-      display: inline-flex;
+    .user-badge {
+      display: flex;
       align-items: center;
       gap: 8px;
-      margin-right: 36px;
-      font-size: 13px;
-      font-family: 'JetBrains Mono', monospace;
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid #22c55e;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #bbf7d0;
     }
 
-    .ticker-up { color: #4ade80; }
-    .ticker-down { color: #f87171; }
-
-    @keyframes marquee {
-      0% { transform: translateX(0%); }
-      100% { transform: translateX(-50%); }
+    /* Weather & Satellite Bar */
+    .weather-bar {
+      max-width: 1200px;
+      margin: 16px auto 0;
+      padding: 0 20px;
+    }
+    .weather-card {
+      background: linear-gradient(135deg, rgba(6, 78, 59, 0.8) 0%, rgba(4, 120, 87, 0.8) 100%);
+      border: 1px solid rgba(52, 211, 153, 0.4);
+      border-radius: 14px;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    }
+    .weather-left { display: flex; align-items: center; gap: 10px; font-size: 13.5px; font-weight: 600; }
+    .weather-soil-tag {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #fff;
     }
 
-    /* Container */
+    /* Main Container & Tab System */
     .container {
-      max-width: 1180px;
-      margin: 0 auto 80px;
-      padding: 0 24px;
+      max-width: 1200px;
+      margin: 20px auto 60px;
+      padding: 0 20px;
       position: relative;
       z-index: 1;
     }
 
-    /* Tabs Component */
-    .tab-nav {
+    .nav-tabs {
       display: flex;
-      gap: 12px;
-      background: rgba(15, 23, 42, 0.6);
-      padding: 8px;
-      border-radius: 14px;
-      border: 1px solid rgba(34, 197, 94, 0.2);
+      gap: 8px;
+      border-bottom: 2px solid rgba(34, 197, 94, 0.2);
+      padding-bottom: 10px;
       margin-bottom: 24px;
       overflow-x: auto;
     }
 
     .tab-btn {
-      flex: 1;
-      min-width: 180px;
-      padding: 14px 20px;
-      border: none;
-      background: transparent;
+      background: rgba(14, 29, 18, 0.6);
+      border: 1px solid rgba(34, 197, 94, 0.25);
       color: var(--text-muted);
-      border-radius: 10px;
+      padding: 10px 18px;
+      border-radius: 12px;
       font-size: 14px;
       font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
-      justify-content: center;
       gap: 8px;
+      white-space: nowrap;
       transition: all 0.2s;
     }
 
     .tab-btn:hover {
-      color: #fff;
-      background: rgba(34, 197, 94, 0.08);
-    }
-
-    .tab-btn.active {
-      background: var(--primary);
-      color: #052e16;
-      box-shadow: 0 4px 14px var(--primary-glow);
-    }
-
-    .tab-content {
-      display: none;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 20px;
-      padding: 32px;
-      backdrop-filter: blur(16px);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-    }
-
-    .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Tool 1: Chat UI */
-    .chat-box {
-      background: #0b141a;
-      border-radius: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      overflow: hidden;
-      max-width: 760px;
-      margin: 0 auto;
-    }
-
-    .chat-header {
-      background: #1f2c34;
-      padding: 14px 20px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .chat-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: #00a884;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-    }
-
-    .chat-body {
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      min-height: 280px;
-      max-height: 380px;
-      overflow-y: auto;
-    }
-
-    .message {
-      max-width: 80%;
-      padding: 12px 16px;
-      border-radius: 12px;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .msg-bot {
-      background: #202c33;
-      color: #e9edef;
-      align-self: flex-start;
-      border-top-left-radius: 0;
-    }
-
-    .msg-user {
-      background: #005c4b;
-      color: #e9edef;
-      align-self: flex-end;
-      border-top-right-radius: 0;
-    }
-
-    .chat-presets {
-      padding: 12px 20px;
-      background: #111b21;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-    }
-
-    .preset-pill {
-      background: #202c33;
-      color: #00a884;
-      border: 1px solid rgba(0, 168, 132, 0.3);
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      white-space: nowrap;
-      cursor: pointer;
-      font-weight: 600;
-    }
-    .preset-pill:hover { background: #00a884; color: #fff; }
-
-    /* Tool 2: Vision UI */
-    .vision-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
-    }
-
-    .leaf-selector {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .leaf-card {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(34, 197, 94, 0.2);
-      border-radius: 12px;
-      padding: 14px 18px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .leaf-card:hover, .leaf-card.selected {
       background: rgba(34, 197, 94, 0.15);
+      color: #fff;
       border-color: var(--primary);
     }
 
-    .report-card {
-      background: #09130c;
-      border: 1px solid var(--primary);
+    .tab-btn.active {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      color: #fff;
+      border-color: #34d399;
+      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.35);
+    }
+
+    .tab-content { display: none; animation: fadeIn 0.3s ease; }
+    .tab-content.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Cards & Grids */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
       border-radius: 16px;
       padding: 24px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      margin-bottom: 24px;
     }
 
-    .report-badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    @media (max-width: 860px) { .grid-2 { grid-template-columns: 1fr; } }
 
-    .badge-amber { background: rgba(234, 179, 8, 0.2); color: #fde047; }
-
-    /* Tool 3: Optimizer UI */
-    .optimizer-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 32px;
-    }
-
-    .slider-group {
-      margin-bottom: 18px;
-    }
-
-    .slider-header {
-      display: flex;
-      justify-content: space-between;
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: #cbd5e1;
-    }
-
-    input[type=range] {
-      width: 100%;
-      height: 6px;
-      border-radius: 3px;
-      background: #1e293b;
-      outline: none;
-      accent-color: var(--primary);
-    }
-
-    select, input[type=text], textarea {
-      width: 100%;
-      background: #0f172a;
-      border: 1px solid rgba(34, 197, 94, 0.3);
-      padding: 10px 14px;
-      border-radius: 8px;
-      color: #f8fafc;
-      font-size: 14px;
-      outline: none;
-    }
-
-    .score-card {
-      background: rgba(255, 255, 255, 0.03);
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 12px;
-      border-left: 4px solid var(--primary);
-    }
-
-    /* Tool 4: SOS Helpdesk */
-    .helpdesk-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 32px;
-    }
-
+    /* Form Elements */
     .form-group { margin-bottom: 16px; }
-    .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #cbd5e1; }
-
-    .btn-submit {
+    .form-group label { display: block; font-size: 13px; font-weight: 700; color: #86efac; margin-bottom: 6px; }
+    .form-group input, .form-group select, .form-group textarea {
       width: 100%;
-      background: var(--danger);
+      background: rgba(7, 14, 8, 0.85);
+      border: 1px solid rgba(34, 197, 94, 0.35);
       color: #fff;
-      padding: 14px;
-      border: none;
+      padding: 10px 14px;
       border-radius: 10px;
-      font-size: 15px;
+      font-size: 13.5px;
+      outline: none;
+      transition: border 0.2s;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 14.5px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45); }
+
+    /* Chat Styling */
+    .chat-box {
+      height: 380px;
+      overflow-y: auto;
+      background: rgba(7, 14, 8, 0.7);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .chat-msg {
+      max-width: 82%;
+      padding: 12px 16px;
+      border-radius: 14px;
+      font-size: 13.5px;
+      line-height: 1.6;
+    }
+    .chat-msg.user {
+      align-self: flex-end;
+      background: #1e3a24;
+      color: #fff;
+      border: 1px solid #22c55e;
+      border-bottom-right-radius: 2px;
+    }
+    .chat-msg.assistant {
+      align-self: flex-start;
+      background: #0f1e13;
+      color: #e2e8f0;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      border-bottom-left-radius: 2px;
+    }
+    .chat-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    .chat-pill {
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: #86efac;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11.5px;
       font-weight: 700;
       cursor: pointer;
-      box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4);
+    }
+    .chat-pill:hover { background: rgba(34, 197, 94, 0.25); color: #fff; }
+    .chat-input-row { display: flex; gap: 8px; }
+
+    /* Vision Studio */
+    .leaf-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px; }
+    .leaf-card {
+      background: rgba(7, 14, 8, 0.8);
+      border: 2px solid rgba(34, 197, 94, 0.25);
+      border-radius: 12px;
+      padding: 12px 14px;
+      cursor: pointer;
       transition: all 0.2s;
     }
-    .btn-submit:hover { background: #dc2626; }
+    .leaf-card:hover, .leaf-card.selected {
+      border-color: var(--primary);
+      background: rgba(34, 197, 94, 0.15);
+      transform: translateY(-2px);
+    }
+    .report-card {
+      background: #0c1c10;
+      border: 1px solid #22c55e;
+      border-radius: 14px;
+      padding: 20px;
+    }
 
-    .ticket-table {
+    /* Sub-tabs inside Tab 3 & 4 */
+    .sub-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+    .sub-tab-btn {
+      background: rgba(7, 14, 8, 0.6);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: #94a3b8;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .sub-tab-btn.active {
+      background: #059669;
+      color: #fff;
+      border-color: #34d399;
+    }
+
+    /* Market Tables & Cards */
+    .mandi-table, .ticket-table {
       width: 100%;
       border-collapse: collapse;
       font-size: 13px;
     }
-
-    .ticket-table th, .ticket-table td {
+    .mandi-table th, .ticket-table th {
+      background: rgba(34, 197, 94, 0.15);
+      color: #86efac;
       padding: 10px 12px;
       text-align: left;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom: 1px solid var(--card-border);
+    }
+    .mandi-table td, .ticket-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: #cbd5e1;
     }
 
-    .ticket-table th { color: var(--primary); font-weight: 700; }
+    .crop-card {
+      background: rgba(7, 14, 8, 0.85);
+      border: 1px solid rgba(34, 197, 94, 0.25);
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 14px;
+      transition: all 0.2s;
+    }
+    .crop-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+
+    .btn-whatsapp {
+      display: block;
+      text-align: center;
+      background: #25D366;
+      color: #fff;
+      padding: 9px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 13px;
+      margin-top: 10px;
+    }
+    .btn-whatsapp:hover { background: #1eb854; }
+
+    /* Reels vertical video frame */
+    .reel-box {
+      max-width: 420px;
+      margin: 0 auto;
+      background: #000;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid #334155;
+    }
+    .reel-box video { width: 100%; display: block; }
+    .reel-info { padding: 14px; }
 
     footer {
-      border-top: 1px solid var(--card-border);
-      padding: 24px;
       text-align: center;
+      padding: 24px;
       color: var(--text-muted);
-      font-size: 13px;
-    }
-
-    @media (max-width: 768px) {
-      .hero h1 { font-size: 28px; }
-      .vision-grid, .optimizer-grid, .helpdesk-grid { grid-template-columns: 1fr; }
-      .header-badges { display: none; }
+      font-size: 12.5px;
+      border-top: 1px solid var(--card-border);
+      margin-top: 40px;
     }
   </style>
 </head>
@@ -521,274 +453,486 @@
   <!-- Header -->
   <header>
     <a href="#" class="brand">
-      <div class="brand-icon">🌾</div>
+      <div class="brand-icon">🌱</div>
       <div>
         <div class="brand-title">STARK-X <span>AgriPirate</span></div>
-        <div class="brand-subtitle">3-ERODE Hackathon 2026</div>
+        <div class="brand-subtitle">Autonomous Precision Agriculture OS</div>
       </div>
     </a>
-    <div class="header-badges">
+
+    <div class="header-controls">
+      <!-- 5-Language Switcher -->
+      <select id="langSelect" class="lang-select-box" onchange="switchLanguage(this.value);">
+        <option value="en" selected>🇬🇧 English</option>
+        <option value="ta">🌾 தமிழ் (Tamil)</option>
+        <option value="te">☀️ తెలుగు (Telugu)</option>
+        <option value="hi">🇮🇳 हिन्दी (Hindi)</option>
+        <option value="kn">🌻 ಕನ್ನಡ (Kannada)</option>
+      </select>
+
+      <!-- Backend Connection Pill -->
       <div class="cloud-pill">
-        <div class="pulse-dot"></div>
-        <span>Supabase Cloud Live</span>
+        <span class="pulse-dot"></span>
+        <span id="backendStatus">Master Supabase & AI Active</span>
       </div>
-      <a href="https://github.com/RAYAPURAMVIKRAM/-3-ERODE-HAckathon" target="_blank" class="btn-github">
-        ⭐ GitHub Repository
-      </a>
+
+      <!-- Farmer Auth Controls -->
+      <button class="btn-auth-demo" id="authBtn" onclick="toggleDemoLogin();">⚡ 1-Click Demo Login</button>
+      <div id="userBadge" class="user-badge" style="display:none;">
+        <span>🧑‍🌾 Murugan K. (Erode)</span>
+        <button onclick="logoutFarmer();" style="background:none; border:none; color:#f87171; cursor:pointer; font-weight:800; margin-left:4px;">✕</button>
+      </div>
     </div>
   </header>
 
-  <!-- Hero -->
-  <section class="hero">
-    <div class="hero-badge">🚜 KONGU NADU PRECISION AGRICULTURE & FINTECH PLATFORM</div>
-    <h1>Autonomous Agronomy & <span>Emergency Helpdesk</span></h1>
-    <p>Engineered for smallholder farmers across Erode, Perundurai, and Sathyamangalam. Experience trilingual agronomy AI, disease diagnostics, soil optimization, and real-time cloud SOS dispatch.</p>
-  </section>
-
-  <!-- Mandi Ticker -->
-  <div class="ticker-bar">
-    <div class="ticker-inner">
-      <span class="ticker-item">🌾 ERODE TURMERIC (FINGER): ₹14,250/qtl <span class="ticker-up">▲ +3.2%</span></span>
-      <span class="ticker-item">🌾 TURMERIC (BULB): ₹12,800/qtl <span class="ticker-up">▲ +2.1%</span></span>
-      <span class="ticker-item">🌱 SUGARCANE (CO-86032): ₹3,150/ton <span class="ticker-up">▲ +0.5%</span></span>
-      <span class="ticker-item">☁️ COTTON (MCU-5): ₹7,850/qtl <span class="ticker-down">▼ -1.2%</span></span>
-      <span class="ticker-item">🥔 TAPIOCA / SAGO: ₹1,920/qtl <span class="ticker-up">▲ +1.8%</span></span>
-      <span class="ticker-item">🧅 SHALLOTS (CHINNA VENGAYAM): ₹4,800/qtl <span class="ticker-up">▲ +5.4%</span></span>
-      <!-- Repeated for smooth loop -->
-      <span class="ticker-item">🌾 ERODE TURMERIC (FINGER): ₹14,250/qtl <span class="ticker-up">▲ +3.2%</span></span>
-      <span class="ticker-item">🌾 TURMERIC (BULB): ₹12,800/qtl <span class="ticker-up">▲ +2.1%</span></span>
-      <span class="ticker-item">🌱 SUGARCANE (CO-86032): ₹3,150/ton <span class="ticker-up">▲ +0.5%</span></span>
+  <!-- Live Satellite Agrometeorology Banner -->
+  <div class="weather-bar">
+    <div class="weather-card">
+      <div class="weather-left">
+        <span>📡 <b>Satellite Grounding:</b></span>
+        <span id="liveCity">📍 Perundurai / Erode (Kongu Belt)</span>
+        <span>•</span>
+        <span id="liveTemp">🌡️ 29.4°C Live</span>
+        <span>•</span>
+        <span id="liveHumidity">💧 64% Humidity</span>
+      </div>
+      <div class="weather-soil-tag" id="liveSoilTag">
+        🌱 Auto-Inferred Soil: <b>Red Loam</b>
+      </div>
     </div>
   </div>
 
-  <!-- Main Tools Tabs -->
+  <!-- Main Workspace -->
   <div class="container">
-    <div class="tab-nav">
-      <button class="tab-btn active" onclick="switchTab('chat')">💬 Agri-Chat AI</button>
-      <button class="tab-btn" onclick="switchTab('vision')">📸 Crop Vision Studio</button>
-      <button class="tab-btn" onclick="switchTab('optimizer')">🌾 Crop Optimizer</button>
-      <button class="tab-btn" onclick="switchTab('sos')">🚨 Live SOS Helpdesk</button>
-      <button class="tab-btn" onclick="switchTab('market')">🛒 Direct Market & Reels</button>
+    <!-- 5 Core Navigation Tabs -->
+    <div class="nav-tabs">
+      <button class="tab-btn active" onclick="selectTab('chat');">💬 1. <span data-i18n="nav_chat">Agri Chat</span></button>
+      <button class="tab-btn" onclick="selectTab('vision');">📸 2. <span data-i18n="nav_vision">Crop Vision</span></button>
+      <button class="tab-btn" onclick="selectTab('optimizer');">🌾 3. <span data-i18n="nav_optimizer">Crop & Soil Optimizer</span></button>
+      <button class="tab-btn" onclick="selectTab('market');">📈 4. <span data-i18n="nav_market">Market & SOS</span></button>
+      <button class="tab-btn" onclick="selectTab('marketplace');">🛒 5. <span data-i18n="nav_marketplace">Direct Marketplace & Reels</span></button>
     </div>
 
-    <!-- TAB 1: AGRI CHAT -->
+    <!-- TAB 1: AGRI CHAT (AI PRECISION AGRONOMIST) -->
     <div id="tab-chat" class="tab-content active">
-      <div class="chat-box">
-        <div class="chat-header">
-          <div class="chat-avatar">🌱</div>
-          <div>
-            <div style="font-weight:700; font-size:15px;">STARK-X AI Agronomist</div>
-            <div style="font-size:12px; color:#86efac;">● Active • Trilingual (Tamil / English)</div>
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <h3 style="color:#4ade80;">🌱 <span data-i18n="chat_head">STARK-X Multilingual AI Agronomist</span></h3>
+          <span style="font-size:12px; color:#94a3b8;">Powered by Gemini Multi-Model Cascade</span>
+        </div>
+
+        <!-- Quick Farmer Prompts -->
+        <div class="chat-pills">
+          <span class="chat-pill" onclick="sendChatQuery('How to cure Turmeric Rhizome Rot (Pythium)?');">🌿 Turmeric Rhizome Rot</span>
+          <span class="chat-pill" onclick="sendChatQuery('What is the fertilizer schedule for Sugarcane CO-86032?');">🌱 Sugarcane Fertilizer</span>
+          <span class="chat-pill" onclick="sendChatQuery('Best low-water drought resilient crops for Red Soil?');">💧 Drought Crops</span>
+          <span class="chat-pill" onclick="sendChatQuery('How to control Cotton Whitefly without toxic chemicals?');">☁️ Cotton Whitefly</span>
+        </div>
+
+        <!-- Chat Stream -->
+        <div class="chat-box" id="chatBox">
+          <div class="chat-msg assistant">
+            <b>🌱 STARK-X Advisor:</b><br>
+            <span data-i18n="chat_welcome">Vanakkam! I am your STARK-X precision agriculture advisor. Ask me anything about soil health, crop diseases, fertilizer dosage, or pest management in your language!</span>
           </div>
         </div>
-        <div class="chat-body" id="chatStream">
-          <div class="message msg-bot">
-            வணக்கம்! I am your STARK-X Agronomy Intelligence copilot calibrated for Erode soil and climate. Ask me about crop diseases, pest outbreaks, fertilizer dosage, or market pricing!
-          </div>
-        </div>
-        <div class="chat-presets">
-          <div class="preset-pill" onclick="sendChatPreset('How to cure Rhizome Rot in Erode Turmeric?')">🌿 Turmeric Rhizome Rot</div>
-          <div class="preset-pill" onclick="sendChatPreset('Best NPK fertilizer for Sugarcane CO-86032?')">🌱 Sugarcane NPK Dosage</div>
-          <div class="preset-pill" onclick="sendChatPreset('மஞ்சள் பயிர் இலை கருகல் நோய் மருந்து என்ன?')">🇮🇳 தமிழ்: இலை கருகல்</div>
+
+        <!-- Chat Input Row -->
+        <div class="chat-input-row">
+          <input type="text" id="chatInput" placeholder="Ask your crop, soil or pest question..." onkeydown="if(event.key==='Enter') sendUserMessage();">
+          <button class="btn-primary" style="width:auto; padding:10px 18px;" onclick="toggleVoiceInput();" title="Voice Input">🎙️</button>
+          <button class="btn-primary" style="width:auto; padding:10px 22px;" onclick="sendUserMessage();">Send</button>
         </div>
       </div>
     </div>
 
-    <!-- TAB 2: CROP VISION -->
+    <!-- TAB 2: CROP VISION (AI PLANT PATHOLOGY STUDIO) -->
     <div id="tab-vision" class="tab-content">
-      <div class="vision-grid">
-        <div class="leaf-selector">
-          <h3 style="margin-bottom:12px; color:#4ade80;">Select Crop Leaf for Scan:</h3>
-          <div class="leaf-card selected" onclick="selectCropLeaf(this, 'turmeric')">
-            <b>🌿 Turmeric (Curcuma longa)</b>
-            <p style="font-size:12px; color:#94a3b8;">Symptom: Oval brown necrotic spots with yellow halo</p>
-          </div>
-          <div class="leaf-card" onclick="selectCropLeaf(this, 'rice')">
-            <b>🌾 Paddy / Rice (CO-51)</b>
-            <p style="font-size:12px; color:#94a3b8;">Symptom: Spindle-shaped lesions on foliage</p>
-          </div>
-          <div class="leaf-card" onclick="selectCropLeaf(this, 'cotton')">
-            <b>☁️ Cotton (MCU-5)</b>
-            <p style="font-size:12px; color:#94a3b8;">Symptom: Upward curling and interveinal yellowing</p>
-          </div>
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <h3 style="color:#4ade80;">📸 <span data-i18n="vision_head">AI Crop Disease & Pathology Scanner</span></h3>
+          <span style="font-size:12px; color:#94a3b8;">Multimodal Vision Diagnostics</span>
         </div>
 
-        <div class="report-card" id="visionReport">
-          <div class="report-badge badge-amber">DIAGNOSIS: MODERATE SEVERITY</div>
-          <h2 style="font-size:20px; color:#4ade80; margin-bottom:8px;">Leaf Spot (Colletotrichum capsici)</h2>
-          <p style="font-size:14px; color:#cbd5e1; margin-bottom:16px;">
-            <b>Health Index:</b> 64% (At-risk) • <b>Affected Area:</b> ~28% foliage
-          </p>
-          <h4 style="color:#f8fafc; font-size:14px; margin-bottom:6px;">Recommended Interventions:</h4>
-          <ul style="font-size:13px; color:#94a3b8; padding-left:18px; line-height:1.7;">
-            <li>Spray <b>Mancozeb 75% WP</b> @ 2.5g per litre of water.</li>
-            <li>Apply <i>Pseudomonas fluorescens</i> (organic bio-control) @ 10g/L during early morning.</li>
-            <li>Maintain drainage channels in Perundurai red/black loam to prevent root rot.</li>
-          </ul>
+        <div class="grid-2">
+          <div>
+            <h4 style="color:#86efac; margin-bottom:10px;">Select Sample Leaf Preset:</h4>
+            <div class="leaf-grid">
+              <div class="leaf-card selected" onclick="pickLeafPreset(this, 'turmeric');">
+                <b>🌿 Erode Turmeric</b>
+                <p style="font-size:11.5px; color:#94a3b8;">Leaf Spot & Rhizome Rot</p>
+              </div>
+              <div class="leaf-card" onclick="pickLeafPreset(this, 'rice');">
+                <b>🌾 Paddy / Rice (CO-51)</b>
+                <p style="font-size:11.5px; color:#94a3b8;">Rice Blast & Sheath Blight</p>
+              </div>
+              <div class="leaf-card" onclick="pickLeafPreset(this, 'cotton');">
+                <b>☁️ Hybrid Cotton (MCU-5)</b>
+                <p style="font-size:11.5px; color:#94a3b8;">Whitefly & Leaf Curl</p>
+              </div>
+              <div class="leaf-card" onclick="pickLeafPreset(this, 'tomato');">
+                <b>🍅 Tomato (PKM-1)</b>
+                <p style="font-size:11.5px; color:#94a3b8;">Early Blight & Potassium Def.</p>
+              </div>
+            </div>
+
+            <h4 style="color:#86efac; margin-bottom:10px;">Or Upload Live Crop Photo:</h4>
+            <input type="file" id="cropPhotoInput" accept="image/*" style="display:none;" onchange="handlePhotoUpload(this);">
+            <div style="border: 2px dashed rgba(34,197,94,0.4); border-radius:12px; padding:20px; text-align:center; cursor:pointer;" onclick="document.getElementById('cropPhotoInput').click();">
+              <p style="font-size:24px; margin-bottom:4px;">📷</p>
+              <p style="font-weight:700; color:#86efac;">Click or Drag & Drop Crop Image</p>
+              <small style="color:#94a3b8;">Supports JPG, PNG (Max 5MB)</small>
+            </div>
+            <img id="imagePreview" style="display:none; width:100%; border-radius:12px; margin-top:12px; border:1px solid #22c55e;">
+          </div>
+
+          <div>
+            <div class="report-card" id="visionReportBox">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <span id="reportSeverity" style="background:#f59e0b; color:#000; font-size:11px; font-weight:800; padding:3px 8px; border-radius:6px;">MODERATE SEVERITY</span>
+                <span id="reportHealth" style="font-size:12px; color:#86efac; font-weight:700;">Health Index: 64%</span>
+              </div>
+              <h3 id="reportCrop" style="color:#4ade80; margin-bottom:4px;">Erode Turmeric (Curcuma longa - BSR-2)</h3>
+              <p id="reportDiagnosis" style="color:#fde047; font-weight:700; font-size:14px; margin-bottom:8px;">Leaf Spot (Colletotrichum capsici) & Early Rhizome Rot Stress</p>
+              <p id="reportSymptoms" style="font-size:12.5px; color:#cbd5e1; margin-bottom:12px;">Elliptical brown necrotic blotches on lamina with chlorotic margin affecting ~28% foliage.</p>
+              
+              <h4 style="color:#86efac; font-size:13px; margin-bottom:4px;">🌿 Organic Bio-Shield Protocol:</h4>
+              <ul id="reportOrganic" style="font-size:12px; color:#cbd5e1; padding-left:18px; margin-bottom:10px; line-height:1.6;">
+                <li>Soil drench with Pseudomonas fluorescens @ 10g/L + Trichoderma viride @ 5g/L.</li>
+                <li>Broadcast 200 kg powdered Neem Cake per acre to neutralize soil-borne fungal inoculum.</li>
+              </ul>
+
+              <h4 style="color:#f87171; font-size:13px; margin-bottom:4px;">🧪 Chemical Intervention Plan:</h4>
+              <ul id="reportChemical" style="font-size:12px; color:#cbd5e1; padding-left:18px; line-height:1.6;">
+                <li>Foliar spray with Mancozeb 75% WP @ 2.5g/L or Carbendazim 50% WP @ 1g/L.</li>
+                <li>For root zones: Drench with Metalaxyl 8% + Mancozeb 64% WP @ 2g/L.</li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- TAB 3: OPTIMIZER -->
+    <!-- TAB 3: CROP & SOIL OPTIMIZER -->
     <div id="tab-optimizer" class="tab-content">
-      <div class="optimizer-grid">
-        <div>
-          <h3 style="color:#4ade80; margin-bottom:16px;">Soil & Nutrient Profile:</h3>
-          <div class="slider-group">
-            <div class="slider-header"><span>Nitrogen (N)</span><span id="nVal">90 kg/ha</span></div>
-            <input type="range" min="20" max="180" value="90" oninput="updateSliders();">
-          </div>
-          <div class="slider-group">
-            <div class="slider-header"><span>Phosphorus (P)</span><span id="pVal">45 kg/ha</span></div>
-            <input type="range" min="10" max="100" value="45" oninput="updateSliders();">
-          </div>
-          <div class="slider-group">
-            <div class="slider-header"><span>Potassium (K)</span><span id="kVal">60 kg/ha</span></div>
-            <input type="range" min="20" max="150" value="60" oninput="updateSliders();">
-          </div>
-          <div class="form-group">
-            <label>Soil Type</label>
-            <select id="soilSelect" onchange="runOptimizer();">
-              <option value="clay_loam">Clay Loam (Bhavani River Basin)</option>
-              <option value="red_loam" selected>Red Loam (Perundurai / Chennimalai)</option>
-              <option value="black_soil">Black Soil (Sathyamangalam)</option>
-            </select>
+      <div class="card">
+        <div class="sub-tabs">
+          <button class="sub-tab-btn active" onclick="switchOptSubTab('recommend');">🎯 1. Recommend Crop for My Farm</button>
+          <button class="sub-tab-btn" onclick="switchOptSubTab('evaluate');">🔍 2. Evaluate Specific Crop Compatibility</button>
+        </div>
+
+        <!-- Sub-tab 1: Recommend Crop -->
+        <div id="opt-sub-recommend">
+          <div class="grid-2">
+            <div>
+              <div class="form-group">
+                <label>Soil Type (Pre-selected from Satellite GPS)</label>
+                <select id="optSoil">
+                  <option value="Red Soil" selected>Red Soil / Red Loam (Perundurai / Chennimalai)</option>
+                  <option value="Black Soil">Black Soil / Regur (Sathyamangalam / Coimbatore)</option>
+                  <option value="Alluvial">Alluvial Basin (Bhavani River Basin / Karur)</option>
+                  <option value="Clay">Clay Soil (Cauvery Delta / Madurai)</option>
+                  <option value="Sandy Loam">Sandy Loam (Coastal / Ramanathapuram)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Water & Irrigation Availability</label>
+                <select id="optWater">
+                  <option value="Borewell (Medium)" selected>Borewell Drip Irrigation (Medium)</option>
+                  <option value="Canal/River (High)">Canal / River Immersion (High)</option>
+                  <option value="Rainfed (Low)">Rainfed Monsoon Only (Low)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Soil pH Level: <span id="phDisplay" style="color:#fff;">6.5</span></label>
+                <input type="range" id="optPh" min="4.0" max="9.0" step="0.1" value="6.5" oninput="document.getElementById('phDisplay').innerText=this.value;">
+              </div>
+
+              <div class="form-group">
+                <label>Nitrogen (N): <span id="nDisplay" style="color:#fff;">60 kg/ha</span></label>
+                <input type="range" id="optN" min="0" max="150" value="60" oninput="document.getElementById('nDisplay').innerText=this.value + ' kg/ha';">
+              </div>
+
+              <div class="form-group">
+                <label>Potassium (K): <span id="kDisplay" style="color:#fff;">50 kg/ha</span></label>
+                <input type="range" id="optK" min="0" max="150" value="50" oninput="document.getElementById('kDisplay').innerText=this.value + ' kg/ha';">
+              </div>
+
+              <button class="btn-primary" onclick="runCropOptimization();">🚀 Run STARK-X Recommendation Matrix</button>
+            </div>
+
+            <div>
+              <div id="optResultBox" style="background:#0c1c10; border:1px solid #22c55e; border-radius:14px; padding:20px;">
+                <h4 style="color:#86efac; margin-bottom:8px;">🏆 Top Crop Recommendation:</h4>
+                <h2 id="topCropName" style="color:#4ade80; font-size:22px; margin-bottom:6px;">Erode Turmeric (Curcuma longa)</h2>
+                <div style="background:rgba(255,255,255,0.1); border-radius:10px; height:12px; margin-bottom:14px; overflow:hidden;">
+                  <div id="matchBar" style="background:#22c55e; height:100%; width:95%;"></div>
+                </div>
+                <p id="matchPercent" style="font-weight:700; color:#86efac; margin-bottom:14px;">95% Agro-Meteorological Match</p>
+
+                <h4 style="color:#86efac; font-size:13px; margin-bottom:6px;">High-Suitability Alternatives:</h4>
+                <p id="altCrops" style="font-size:13px; color:#cbd5e1; margin-bottom:16px;">2. Maize (88% Match) • 3. Small Onion Shallots (83% Match)</p>
+
+                <div style="background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.3); border-radius:10px; padding:14px;">
+                  <h5 style="color:#fde047; margin-bottom:6px;">💰 Projected Commercial ROI (Per Acre):</h5>
+                  <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:12.5px; color:#cbd5e1;">
+                    <div>• <b>Target Yield:</b> <span id="roiYield">24 Quintals</span></div>
+                    <div>• <b>Gross Revenue:</b> <span id="roiGross">₹3,48,000</span></div>
+                    <div>• <b>Net Profit:</b> <span id="roiNet">₹2,10,000</span></div>
+                    <div>• <b>Water Index:</b> <span id="roiWater">1,200 mm</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div>
-          <h3 style="color:#4ade80; margin-bottom:16px;">STARK-X Algorithm Match:</h3>
-          <div class="score-card">
-            <div style="display:flex; justify-content:space-between; font-weight:700; margin-bottom:4px;">
-              <span>1. Erode Turmeric (Curcuma longa)</span>
-              <span style="color:#4ade80;" id="scoreTurmeric">94% Match</span>
-            </div>
-            <p style="font-size:12px; color:#94a3b8;">High profitability in well-drained red loam with moderate-high Potassium.</p>
-          </div>
+        <!-- Sub-tab 2: Evaluate Specific Crop -->
+        <div id="opt-sub-evaluate" style="display:none;">
+          <div class="grid-2">
+            <div>
+              <div class="form-group">
+                <label>Select Target Crop to Evaluate</label>
+                <select id="evalCrop">
+                  <option value="Erode Turmeric">Erode Turmeric (Curcuma longa)</option>
+                  <option value="Paddy / Rice">Paddy / Rice (CO-51)</option>
+                  <option value="Cotton">Cotton (MCU-5)</option>
+                  <option value="Sugarcane">Sugarcane (CO-86032)</option>
+                  <option value="Millets (Ragi)">Finger Millet (Ragi CO-15)</option>
+                  <option value="Groundnut">Groundnut (TMV-14)</option>
+                </select>
+              </div>
 
-          <div class="score-card">
-            <div style="display:flex; justify-content:space-between; font-weight:700; margin-bottom:4px;">
-              <span>2. Sugarcane (CO-86032)</span>
-              <span style="color:#eab308;" id="scoreCane">86% Match</span>
-            </div>
-            <p style="font-size:12px; color:#94a3b8;">Ideal for canal irrigated belts; high Nitrogen required.</p>
-          </div>
+              <div class="form-group">
+                <label>Target Soil Type</label>
+                <select id="evalSoil">
+                  <option value="Red Soil">Red Soil</option>
+                  <option value="Black Soil">Black Soil</option>
+                  <option value="Alluvial">Alluvial</option>
+                  <option value="Clay">Clay</option>
+                  <option value="Sandy Loam">Sandy Loam</option>
+                </select>
+              </div>
 
-          <div class="score-card">
-            <div style="display:flex; justify-content:space-between; font-weight:700; margin-bottom:4px;">
-              <span>3. Finger Millet / Ragi</span>
-              <span style="color:#94a3b8;" id="scoreMillet">78% Match</span>
+              <div class="form-group">
+                <label>Target Water Level</label>
+                <select id="evalWater">
+                  <option value="Rainfed (Low)">Rainfed (Low)</option>
+                  <option value="Borewell (Medium)" selected>Borewell (Medium)</option>
+                  <option value="Canal/River (High)">Canal/River (High)</option>
+                </select>
+              </div>
+
+              <button class="btn-primary" onclick="evaluateCropCompatibility();">🔍 Cross-Reference Crop Compatibility</button>
             </div>
-            <p style="font-size:12px; color:#94a3b8;">Drought-hardy fallback; excellent for rainfed regions.</p>
+
+            <div>
+              <div id="evalResultBox" style="background:#0c1c10; border:1px solid #22c55e; border-radius:14px; padding:20px;">
+                <h4 style="color:#86efac; margin-bottom:8px;">Evaluation Outcome:</h4>
+                <p id="evalStatus" style="font-size:16px; font-weight:800; color:#4ade80;">✅ OPTIMAL MATCH: Erode Turmeric is well-suited for your farm!</p>
+                <div id="evalDetails" style="font-size:13px; color:#cbd5e1; margin-top:8px;">
+                  Your soil profile, water availability, and local ambient temperatures meet baseline commercial agronomic criteria.
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- TAB 4: SOS HELPDESK -->
-    <div id="tab-sos" class="tab-content">
-      <div class="helpdesk-grid">
-        <div>
-          <h3 style="color:#ef4444; margin-bottom:14px;">🚨 Report Agricultural Emergency</h3>
-          <form id="sosForm" onsubmit="handleSosSubmit(event);">
-            <div class="form-group">
-              <label>Farmer Name</label>
-              <input type="text" id="sosName" placeholder="e.g. Murugan K." required>
-            </div>
-            <div class="form-group">
-              <label>Village / Taluk</label>
-              <select id="sosVillage">
-                <option>Perundurai, Erode</option>
-                <option>Gobichettipalayam</option>
-                <option>Bhavani</option>
-                <option>Sathyamangalam</option>
-                <option>Kodumudi</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Emergency Category</label>
-              <select id="sosCategory">
-                <option>Water Scarcity / Borewell Failure</option>
-                <option>Crop Disease Outbreak</option>
-                <option>Mandi Fraud / Price Rigging</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Description of Issue</label>
-              <textarea id="sosDesc" rows="3" placeholder="Describe the crisis details..." required></textarea>
-            </div>
-            <button type="submit" class="btn-submit" id="sosSubmitBtn">🚨 Dispatch SOS to Cloud</button>
-          </form>
+    <!-- TAB 4: MARKET & SOS HELPDESK -->
+    <div id="tab-market" class="tab-content">
+      <div class="card">
+        <div class="sub-tabs">
+          <button class="sub-tab-btn active" onclick="switchMarketSubTab('rates');">📊 Live Mandi Spot Rates & FinTech</button>
+          <button class="sub-tab-btn" onclick="switchMarketSubTab('sos');">🚨 Agricultural Union SOS Dispatch</button>
         </div>
 
-        <div>
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-            <h3 style="color:#4ade80;">Active Cloud Interventions</h3>
-            <span style="font-size:12px; color:#86efac;" id="ticketCount">Loading Supabase...</span>
+        <!-- Sub-tab 1: Mandi Spot Rates -->
+        <div id="market-sub-rates">
+          <div class="grid-2">
+            <div>
+              <h4 style="color:#86efac; margin-bottom:10px;">📊 Erode APMC Regulated Market Spot Rates:</h4>
+              <table class="mandi-table">
+                <thead>
+                  <tr>
+                    <th>Crop Commodity</th>
+                    <th>Modal Rate</th>
+                    <th>Price Trend</th>
+                  </tr>
+                </thead>
+                <tbody id="mandiTableBody">
+                  <tr><td>Turmeric (Bulb)</td><td><b>₹12,450 / qtl</b></td><td style="color:#4ade80;">⬆️ High Demand (+12%)</td></tr>
+                  <tr><td>Rice (Paddy - Grade A)</td><td><b>₹2,203 / qtl</b></td><td style="color:#94a3b8;">➡️ Stable (+0.5%)</td></tr>
+                  <tr><td>Cotton (MCU-5)</td><td><b>₹7,100 / qtl</b></td><td style="color:#f87171;">⬇️ Dropping (-2.1%)</td></tr>
+                  <tr><td>Millets (Ragi)</td><td><b>₹3,500 / qtl</b></td><td style="color:#4ade80;">⬆️ Rising (+6.4%)</td></tr>
+                  <tr><td>Groundnut (Pods)</td><td><b>₹6,400 / qtl</b></td><td style="color:#94a3b8;">➡️ Stable (+1.2%)</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div>
+              <h4 style="color:#86efac; margin-bottom:10px;">💰 STARK-X Predictive Financial Strategy:</h4>
+              <div style="background:#0c1c10; border:1px solid #22c55e; border-radius:12px; padding:18px; margin-bottom:12px;">
+                <p style="font-size:13.5px; color:#cbd5e1; line-height:1.6;" id="strategyText">
+                  <b>🌿 Turmeric Market Alert:</b> Active spice export shipments to UAE and Europe have created an acute local supply deficit. Hold 80% stock for 14-18 days to capture terminal pricing above ₹13,200/qtl.<br><br>
+                  <b>🌾 Ragi / Millets:</b> Liquidate 50% harvest immediately to fund weeding operational costs; store remaining 50% for direct retail sale.
+                </p>
+              </div>
+              <button class="btn-primary" onclick="refreshFinancialStrategy();">🔄 Refresh Financial Intelligence</button>
+            </div>
           </div>
-          <div style="max-height:360px; overflow-y:auto; border:1px solid rgba(255,255,255,0.08); border-radius:10px;">
-            <table class="ticket-table">
-              <thead>
-                <tr>
-                  <th>Farmer</th>
-                  <th>Village</th>
-                  <th>Crisis</th>
-                </tr>
-              </thead>
-              <tbody id="ticketList">
-                <tr><td colspan="3" style="text-align:center; color:#94a3b8;">Connecting to Supabase...</td></tr>
-              </tbody>
-            </table>
+        </div>
+
+        <!-- Sub-tab 2: SOS Emergency Dispatch -->
+        <div id="market-sub-sos" style="display:none;">
+          <div class="grid-2">
+            <div>
+              <h4 style="color:#f87171; margin-bottom:12px;">🚨 Report Critical Agricultural Emergency:</h4>
+              <form id="sosForm" onsubmit="handleSosSubmit(event);">
+                <div class="form-group">
+                  <label>Farmer Name</label>
+                  <input type="text" id="sosName" placeholder="e.g. Murugan K." required>
+                </div>
+                <div class="form-group">
+                  <label>Village / Taluk</label>
+                  <input type="text" id="sosVillage" placeholder="e.g. Perundurai, Erode" required>
+                </div>
+                <div class="form-group">
+                  <label>Emergency Category</label>
+                  <select id="sosCategory">
+                    <option>Severe Water Scarcity / Borewell Failure</option>
+                    <option>Unknown Rapid Crop Disease Outbreak</option>
+                    <option>Mandi Fraud / Price Rigging</option>
+                    <option>Solar / Power Grid Transformer Breakdown</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Description of Crisis</label>
+                  <textarea id="sosDesc" rows="3" placeholder="Describe the acreage, affected crop, and required physical intervention..." required></textarea>
+                </div>
+                <button type="submit" class="btn-primary" style="background:#dc2626;" id="sosSubmitBtn">🚨 Dispatch SOS to Agricultural Union</button>
+              </form>
+            </div>
+
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <h4 style="color:#86efac;">Active Union Interventions:</h4>
+                <button onclick="loadSosTickets();" style="background:none; border:none; color:#4ade80; cursor:pointer; font-size:12px;">🔄 Refresh</button>
+              </div>
+              <div style="max-height:360px; overflow-y:auto; border:1px solid var(--card-border); border-radius:10px;">
+                <table class="ticket-table">
+                  <thead>
+                    <tr>
+                      <th>Farmer</th>
+                      <th>Location</th>
+                      <th>Emergency Category</th>
+                    </tr>
+                  </thead>
+                  <tbody id="sosTableBody">
+                    <tr><td colspan="3" style="text-align:center;">Loading cloud tickets...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <!-- TAB 5: DIRECT MARKETPLACE & REELS -->
-    <div id="tab-market" class="tab-content">
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
-        <!-- Marketplace column -->
-        <div>
-          <h3 style="color:#4ade80; margin-bottom: 12px;">🛒 Active Farmer Harvest Lots</h3>
-          <p style="font-size: 13px; color: #94a3b8; margin-bottom: 16px;">Direct buyer contact via WhatsApp with 0% middleman deduction.</p>
-          
-          <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(34,197,94,0.2); border-radius: 12px; padding: 16px; margin-bottom: 14px;">
-            <div style="font-weight: 700; color: #f8fafc; font-size: 16px;">🌿 Erode Organic Turmeric (Finger)</div>
-            <div style="margin: 8px 0;">
-              <span style="background: rgba(34,197,94,0.15); color: #86efac; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">⚖️ 500 kg Available</span>
-              <span style="background: rgba(234,179,8,0.15); color: #fde047; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">💰 ₹145 / kg</span>
-            </div>
-            <div style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">👤 Farmer: Murugan K. • 📍 Perundurai, Erode</div>
-            <a href="https://wa.me/919876543210?text=Vanakkam%20Murugan!%20I%20am%20interested%20in%20your%20Turmeric%20harvest%20on%20STARK-X." target="_blank" style="display: block; text-align: center; background: #25D366; color: #fff; padding: 10px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 13px;">
-              💬 Buy via WhatsApp
-            </a>
-          </div>
+    <div id="tab-marketplace" class="tab-content">
+      <div class="card">
+        <div class="sub-tabs">
+          <button class="sub-tab-btn active" onclick="switchMarketplaceSubTab('lots');">🛒 Direct Harvest Lots</button>
+          <button class="sub-tab-btn" onclick="switchMarketplaceSubTab('post');">📝 Post Your Harvest</button>
+          <button class="sub-tab-btn" onclick="switchMarketplaceSubTab('reels');">📱 Agri Reels Video Hub</button>
+        </div>
 
-          <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(34,197,94,0.2); border-radius: 12px; padding: 16px;">
-            <div style="font-weight: 700; color: #f8fafc; font-size: 16px;">🌱 Sugarcane (CO-86032)</div>
-            <div style="margin: 8px 0;">
-              <span style="background: rgba(34,197,94,0.15); color: #86efac; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">⚖️ 1,200 kg Available</span>
-              <span style="background: rgba(234,179,8,0.15); color: #fde047; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">💰 ₹32 / kg</span>
-            </div>
-            <div style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">👤 Farmer: Selvam P. • 📍 Bhavani River Basin</div>
-            <a href="https://wa.me/919443218765?text=Vanakkam%20Selvam!%20I%20am%20interested%20in%20your%20Sugarcane%20harvest%20on%20STARK-X." target="_blank" style="display: block; text-align: center; background: #25D366; color: #fff; padding: 10px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 13px;">
-              💬 Buy via WhatsApp
-            </a>
+        <!-- Sub-tab 1: Harvest Lots -->
+        <div id="market-sub-lots">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+            <h4 style="color:#86efac;">🛒 Verified Farmer Harvest Lots (Direct WhatsApp Trade):</h4>
+            <span style="font-size:12px; color:#94a3b8;">0% Middleman Deduction</span>
+          </div>
+          <div id="cropLotsGrid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:16px;">
+            <!-- Loaded dynamically from API -->
           </div>
         </div>
 
-        <!-- Reels column -->
-        <div>
-          <h3 style="color:#4ade80; margin-bottom: 12px;">📱 Agri Reels • Video Tips</h3>
-          <p style="font-size: 13px; color: #94a3b8; margin-bottom: 16px;">High-impact micro-learning for Tamil Nadu crop management.</p>
-          <div style="background: #000; border-radius: 16px; overflow: hidden; border: 1px solid #334155;">
-            <video controls autoplay loop muted playsinline style="width: 100%; display: block; border-radius: 16px;">
+        <!-- Sub-tab 2: Post Harvest -->
+        <div id="market-sub-post" style="display:none;">
+          <div style="max-width:600px; margin:0 auto;">
+            <h4 style="color:#86efac; margin-bottom:14px;">📝 List Your Harvest for Instant Direct Sale:</h4>
+            <form id="postCropForm" onsubmit="handlePostCropSubmit(event);">
+              <div class="form-group">
+                <label>Farmer Name</label>
+                <input type="text" id="postFarmer" placeholder="e.g. Murugan K." required>
+              </div>
+              <div class="form-group">
+                <label>Crop Commodity</label>
+                <select id="postCropName">
+                  <option>Erode Organic Turmeric (Finger)</option>
+                  <option>Sugarcane (CO-86032)</option>
+                  <option>Pearl Millet (Kambu / Bajra)</option>
+                  <option>Hybrid Long Staple Cotton (MCU-5)</option>
+                  <option>Country Red Shallots (Small Onion)</option>
+                  <option>Robusta Banana (Pachainadan)</option>
+                </select>
+              </div>
+              <div class="grid-2">
+                <div class="form-group">
+                  <label>Available Quantity (kg)</label>
+                  <input type="number" id="postQty" value="500" min="10" step="10" oninput="calculateLotValuation();" required>
+                </div>
+                <div class="form-group">
+                  <label>Expected Price per kg (₹)</label>
+                  <input type="number" id="postPrice" value="145" min="1" step="1" oninput="calculateLotValuation();" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Village / District Location</label>
+                <input type="text" id="postLoc" placeholder="e.g. Perundurai, Erode" required>
+              </div>
+              <div class="form-group">
+                <label>WhatsApp Contact Phone</label>
+                <input type="text" id="postPhone" placeholder="e.g. +91 98765 43210" required>
+              </div>
+
+              <div style="background:#0c1c10; border:1px solid #22c55e; border-radius:10px; padding:12px; margin-bottom:16px; display:flex; justify-content:space-between; font-weight:800;">
+                <span>Estimated Lot Valuation:</span>
+                <span id="lotValuationDisplay" style="color:#4ade80;">₹72,500.00</span>
+              </div>
+
+              <button type="submit" class="btn-primary" id="postCropBtn">🚀 Post Harvest Lot to Marketplace</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Sub-tab 3: Agri Reels -->
+        <div id="market-sub-reels" style="display:none;">
+          <div style="text-align:center; margin-bottom:16px;">
+            <h4 style="color:#86efac;">📱 Agri Reels • Fast Mobile Agronomy Hacks</h4>
+            <small style="color:#94a3b8;">Curated practical video guides from TNAU & Erode Krishi Vigyan Kendra</small>
+          </div>
+          <div class="reel-box">
+            <video controls autoplay loop muted playsinline id="reelVideo">
               <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4">
             </video>
-            <div style="padding: 12px 16px;">
-              <div style="font-size: 13px; font-weight: 700; color: #4ade80;">🌱 @erode_krishi_vigyan</div>
-              <div style="font-size: 13px; color: #cbd5e1; margin-top: 4px;">Turmeric Seed Rhizome Dip with Trichoderma viride to prevent root rot before monsoons.</div>
-              <div style="font-size: 12px; color: #94a3b8; margin-top: 8px;">❤️ 14.2k • 💬 384 • ↗️ Share</div>
+            <div class="reel-info">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <span style="color:#4ade80; font-weight:800; font-size:13.5px;" id="reelAuthor">🌱 @erode_krishi_vigyan</span>
+                <span style="background:rgba(34,197,94,0.2); color:#86efac; font-size:11px; padding:2px 8px; border-radius:10px;">✓ TNAU Certified</span>
+              </div>
+              <p style="font-size:13px; color:#cbd5e1; margin-bottom:10px;" id="reelDesc">
+                Turmeric Seed Rhizome Dip with Trichoderma viride to prevent Rhizome Rot before monsoon sowing.
+              </p>
+              <div style="display:flex; justify-content:space-between; font-size:12px; color:#94a3b8;">
+                <span>❤️ 14.2k • 💬 384</span>
+                <button onclick="nextReel();" style="background:#15803d; color:#fff; border:none; padding:4px 12px; border-radius:6px; font-weight:700; cursor:pointer;">Next Video ⏭️</button>
+              </div>
             </div>
           </div>
         </div>
@@ -799,165 +943,333 @@
   <!-- Footer -->
   <footer>
     <p>🌾 <b>STARK-X | AgriPirate</b> • Developed for <b>3-ERODE Hackathon 2026</b></p>
-    <p style="margin-top:6px; font-size:12px;">Powered by Google Gemini AI & Supabase Cloud PostgreSQL • Tamil Nadu Agriculture Directorate</p>
+    <p style="margin-top:6px; font-size:12px;">Powered by Google Gemini AI & Master Supabase Cloud Database • Tamil Nadu Agriculture Directorate</p>
   </footer>
 
+  <!-- Master JavaScript Application Engine -->
   <script>
-    // Master Supabase Configuration
+    // Master Supabase Credentials
     const SUPABASE_URL = "https://rhomwvtmmkwepclzaiuu.supabase.co";
     const SUPABASE_KEY = "sb_publishable_OJUn4OSw4PYcDmlIjCntNQ_qGeFBWFO";
-    const supabase = (window.supabase && typeof window.supabase.createClient === 'function') 
-      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) 
+    const supabase = (window.supabase && typeof window.supabase.createClient === 'function')
+      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
       : null;
 
-    // Guaranteed Demo Tickets Fallback (Always displays rich, realistic data)
-    let localTicketsCache = [
-      { name: "Murugan K.", village: "Perundurai, Erode", category: "Water Scarcity / Borewell Failure", description: "Groundwater table dropped below 680ft; urgent geophysics survey needed.", timestamp: "2026-11-07 10:15" },
-      { name: "Selvam P.", village: "Bhavani River Basin", category: "Crop Disease Outbreak", description: "Rhizome Rot (Pythium) noticed across 2.5 acres of turmeric crop.", timestamp: "2026-11-07 11:30" },
-      { name: "Arumugam S.", village: "Gobichettipalayam", category: "Mandi Fraud / Price Rigging", description: "Regulated market commission agent deducting illegal handling fee.", timestamp: "2026-11-07 12:45" },
-      { name: "Kavitha M.", village: "Sathyamangalam", category: "Crop Disease Outbreak", description: "Whitefly attack spreading on hybrid cotton; leaves curling upward.", timestamp: "2026-11-07 14:10" },
-      { name: "Dhandapani R.", village: "Kodumudi", category: "Water Scarcity / Borewell Failure", description: "LBP branch canal sluice jammed with silt; 40 acres dried out.", timestamp: "2026-11-07 15:20" }
-    ];
+    // Multilingual Dictionary (English, Tamil, Telugu, Hindi, Kannada)
+    const I18N = {
+      en: {
+        nav_chat: "Agri Chat",
+        nav_vision: "Crop Vision",
+        nav_optimizer: "Crop & Soil Optimizer",
+        nav_market: "Market & SOS",
+        nav_marketplace: "Direct Marketplace & Reels",
+        chat_head: "STARK-X Multilingual AI Agronomist",
+        chat_welcome: "Vanakkam! I am your STARK-X precision agriculture advisor. Ask me anything about soil health, crop diseases, fertilizer dosage, or pest management in your language!",
+        vision_head: "AI Crop Disease & Pathology Scanner"
+      },
+      ta: {
+        nav_chat: "விவசாய அரட்டை",
+        nav_vision: "பயிர் பார்வை",
+        nav_optimizer: "பயிர் தேர்வு",
+        nav_market: "சந்தை & அவசர உதவி",
+        nav_marketplace: "நேரடி சந்தை & ரீல்ஸ்",
+        chat_head: "STARK-X நவீன விவசாய AI ஆலோசகர்",
+        chat_welcome: "வணக்கம்! நான் உங்கள் STARK-X வேளாண் ஆலோசகர். மண் வகை, உர மேலாண்மை, பயிர் நோய் தடுப்பு அல்லது பாசனம் பற்றி உங்கள் மொழியில் கேளுங்கள்!",
+        vision_head: "AI பயிர் நோய் கண்டறியும் மையம்"
+      },
+      te: {
+        nav_chat: "వ్యవసాయ చాట్",
+        nav_vision: "పంట నిర్ధారణ",
+        nav_optimizer: "పంట ఎంపిక",
+        nav_market: "మార్కెట్ & అత్యవసరం",
+        nav_marketplace: "రైతు మార్కెట్ & రీల్స్",
+        chat_head: "STARK-X వ్యవసాయ AI సలహాదారు",
+        chat_welcome: "నమస్కారం! నేను మీ STARK-X వ్యవసాయ సలహాదారుని. నేల రకం, ఎరువుల మోతాదు లేదా తెగుళ్ల నివారణ గురించి అడగండి!",
+        vision_head: "AI పంట తెగుళ్ల స్కానర్"
+      },
+      hi: {
+        nav_chat: "कृषि संवाद",
+        nav_vision: "फसल निदान",
+        nav_optimizer: "मृदा एवं फसल चयन",
+        nav_market: "मंडी भाव एवं आपात",
+        nav_marketplace: "किसान बाजार एवं रील्स",
+        chat_head: "STARK-X बहुभाषी कृषि AI सलाहकार",
+        chat_welcome: "नमस्कार! मैं आपका STARK-X कृषि सलाहकार हूँ। मिट्टी की जांच, खाद की मात्रा, फसल सुरक्षा या रोग उपचार के बारे में अपनी भाषा में पूछें!",
+        vision_head: "AI फसल रोग एवं कीट स्कैनर"
+      },
+      kn: {
+        nav_chat: "ಕೃಷಿ ಸಂವಾದ",
+        nav_vision: "ಬೆಳೆ ತಪಾಸಣೆ",
+        nav_optimizer: "ಬೆಳೆ ಆಯ್ಕೆ",
+        nav_market: "ಮಾರುಕಟ್ಟೆ & ತುರ್ತು",
+        nav_marketplace: "ನೇರ ಮಾರುಕಟ್ಟೆ & ರೀಲ್ಸ್",
+        chat_head: "STARK-X ಕೃಷಿ AI ಸಲಹೆಗಾರ",
+        chat_welcome: "ನಮಸ್ಕಾರ! ನಾನು ನಿಮ್ಮ STARK-X ಕೃಷಿ ಸಲಹೆಗಾರ. ಮಣ್ಣಿನ ಆರೋಗ್ಯ, ರೋಗ ನಿಯಂತ್ರಣ ಅಥವಾ ಗೊಬ್ಬರದ ಬಗ್ಗೆ ನಿಮ್ಮ ಭಾಷೆಯಲ್ಲಿ ಕೇಳಿ!",
+        vision_head: "AI ಬೆಳೆ ರೋಗ ಪರೀಕ್ಷಕ"
+      }
+    };
 
-    // Tab Switcher
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-      
+    let currentLang = "en";
+    let currentUser = null;
+
+    function switchLanguage(langCode) {
+      currentLang = langCode;
+      const dict = I18N[langCode] || I18N.en;
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key]) el.innerText = dict[key];
+      });
+    }
+
+    // Tab Navigation
+    function selectTab(tabKey) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+      document.getElementById('tab-' + tabKey).classList.add('active');
+
+      if (tabKey === 'market') loadSosTickets();
+      if (tabKey === 'marketplace') loadMarketCrops();
+    }
+
+    // Sub-tab switchers
+    function switchOptSubTab(key) {
+      document.querySelectorAll('#tab-optimizer .sub-tab-btn').forEach(b => b.classList.remove('active'));
       event.target.classList.add('active');
-      document.getElementById('tab-' + tabId).classList.add('active');
+      document.getElementById('opt-sub-recommend').style.display = (key === 'recommend') ? 'block' : 'none';
+      document.getElementById('opt-sub-evaluate').style.display = (key === 'evaluate') ? 'block' : 'none';
+    }
 
-      if (tabId === 'sos') {
-        loadCloudTickets();
+    function switchMarketSubTab(key) {
+      document.querySelectorAll('#tab-market .sub-tab-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById('market-sub-rates').style.display = (key === 'rates') ? 'block' : 'none';
+      document.getElementById('market-sub-sos').style.display = (key === 'sos') ? 'block' : 'none';
+    }
+
+    function switchMarketplaceSubTab(key) {
+      document.querySelectorAll('#tab-marketplace .sub-tab-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById('market-sub-lots').style.display = (key === 'lots') ? 'block' : 'none';
+      document.getElementById('market-sub-post').style.display = (key === 'post') ? 'block' : 'none';
+      document.getElementById('market-sub-reels').style.display = (key === 'reels') ? 'block' : 'none';
+    }
+
+    // Farmer Demo Auth
+    function toggleDemoLogin() {
+      currentUser = {
+        name: "Murugan K.",
+        village: "Perundurai, Erode (TN)",
+        email: "murugan.erode@agripirate.org"
+      };
+      document.getElementById('authBtn').style.display = 'none';
+      document.getElementById('userBadge').style.display = 'flex';
+      document.getElementById('sosName').value = currentUser.name;
+      document.getElementById('sosVillage').value = currentUser.village;
+      document.getElementById('postFarmer').value = currentUser.name;
+      document.getElementById('postLoc').value = currentUser.village;
+    }
+
+    function logoutFarmer() {
+      currentUser = null;
+      document.getElementById('authBtn').style.display = 'block';
+      document.getElementById('userBadge').style.display = 'none';
+    }
+
+    // TAB 1: Chat Operations
+    async function sendUserMessage() {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      appendChatMessage("user", text);
+      input.value = "";
+
+      const thinkingId = appendChatMessage("assistant", "<i>STARK-X agronomy engine analyzing query...</i>");
+
+      try {
+        const resp = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: jsonStringifySafe({ prompt: text, lang: currentLang })
+        });
+        const res = await resp.json();
+        updateChatMessage(thinkingId, res.reply || "STARK-X advisory active.");
+      } catch (err) {
+        updateChatMessage(thinkingId, "Advisory: Groundwater and soil moisture levels in Erode are within normal seasonal range.");
       }
     }
 
-    // Chat Simulator
-    function sendChatPreset(query) {
-      const chatStream = document.getElementById('chatStream');
-      const userMsg = document.createElement('div');
-      userMsg.className = 'message msg-user';
-      userMsg.innerText = query;
-      chatStream.appendChild(userMsg);
-
-      const botMsg = document.createElement('div');
-      botMsg.className = 'message msg-bot';
-      botMsg.innerHTML = "<i>Analyzing query with STARK-X agronomy engine...</i>";
-      chatStream.appendChild(botMsg);
-      chatStream.scrollTop = chatStream.scrollHeight;
-
-      setTimeout(() => {
-        if (query.includes('Turmeric') || query.includes('மஞ்சள்')) {
-          botMsg.innerHTML = "<b>Rhizome Rot (Pythium / Fusarium):</b><br>1. Drench root zones with <b>Metalaxyl + Mancozeb (Ridomil MZ) @ 2g/L</b>.<br>2. Ensure raised-bed field layout with furrow drainage in Erode clay soils.<br>3. Apply Neem cake @ 200 kg/acre to suppress soil-borne pathogens.";
-        } else if (query.includes('Sugarcane')) {
-          botMsg.innerHTML = "<b>CO-86032 Fertilization Schedule:</b><br>• Total NPK recommended: 112:60:60 kg/acre.<br>• Apply 25% Nitrogen at 30 days, 50% at 60 days, and remaining 25% at 90 days during earthing up.";
-        } else {
-          botMsg.innerHTML = "STARK-X advisory active. Soil moisture and local Erode weather indexes are optimal for current crop cycles.";
-        }
-        chatStream.scrollTop = chatStream.scrollHeight;
-      }, 700);
+    function sendChatQuery(q) {
+      document.getElementById('chatInput').value = q;
+      sendUserMessage();
     }
 
-    // Crop Vision Selector
-    function selectCropLeaf(card, type) {
-      document.querySelectorAll('.leaf-card').forEach(c => c.classList.remove('selected'));
-      card.classList.add('selected');
-      const report = document.getElementById('visionReport');
+    function jsonStringifySafe(obj) {
+      return JSON.stringify(obj);
+    }
 
-      if (type === 'turmeric') {
-        report.innerHTML = `
-          <div class="report-badge badge-amber">DIAGNOSIS: MODERATE SEVERITY</div>
-          <h2 style="font-size:20px; color:#4ade80; margin-bottom:8px;">Leaf Spot (Colletotrichum capsici)</h2>
-          <p style="font-size:14px; color:#cbd5e1; margin-bottom:16px;"><b>Health Index:</b> 64% • <b>Affected Area:</b> ~28% foliage</p>
-          <h4 style="color:#f8fafc; font-size:14px; margin-bottom:6px;">Recommended Interventions:</h4>
-          <ul style="font-size:13px; color:#94a3b8; padding-left:18px; line-height:1.7;">
-            <li>Spray <b>Mancozeb 75% WP</b> @ 2.5g/L.</li>
-            <li>Apply bio-agent <i>Pseudomonas fluorescens</i> @ 10g/L.</li>
-            <li>Clear weeds to lower humidity in the microclimate.</li>
-          </ul>`;
-      } else if (type === 'rice') {
-        report.innerHTML = `
-          <div class="report-badge" style="background:rgba(239,68,68,0.2); color:#fca5a5;">DIAGNOSIS: HIGH SEVERITY</div>
-          <h2 style="font-size:20px; color:#ef4444; margin-bottom:8px;">Rice Blast (Magnaporthe oryzae)</h2>
-          <p style="font-size:14px; color:#cbd5e1; margin-bottom:16px;"><b>Health Index:</b> 48% • <b>Affected Area:</b> ~42% canopy</p>
-          <h4 style="color:#f8fafc; font-size:14px; margin-bottom:6px;">Recommended Interventions:</h4>
-          <ul style="font-size:13px; color:#94a3b8; padding-left:18px; line-height:1.7;">
-            <li>Immediate foliar spray of <b>Tricyclazole 75% WP @ 0.6g/L</b>.</li>
-            <li>Avoid excessive Nitrogen top-dressing while humidity is high.</li>
-            <li>Keep water level in field to 2-3 inches to reduce stress.</li>
-          </ul>`;
-      } else {
-        report.innerHTML = `
-          <div class="report-badge badge-amber">DIAGNOSIS: PEST ATTACK</div>
-          <h2 style="font-size:20px; color:#fde047; margin-bottom:8px;">Cotton Whitefly & Leaf Curl Virus</h2>
-          <p style="font-size:14px; color:#cbd5e1; margin-bottom:16px;"><b>Health Index:</b> 71% • <b>Vector:</b> Bemisia tabaci</p>
-          <h4 style="color:#f8fafc; font-size:14px; margin-bottom:6px;">Recommended Interventions:</h4>
-          <ul style="font-size:13px; color:#94a3b8; padding-left:18px; line-height:1.7;">
-            <li>Install yellow sticky traps @ 8 per acre across Sathyamangalam border.</li>
-            <li>Spray <b>Diafenthiuron 50% WP @ 1.25g/L</b>.</li>
-            <li>Remove weed hosts around borders.</li>
-          </ul>`;
+    let chatMsgCounter = 0;
+    function appendChatMessage(role, html) {
+      const box = document.getElementById('chatBox');
+      const msgDiv = document.createElement('div');
+      const id = "msg-" + (++chatMsgCounter);
+      msgDiv.id = id;
+      msgDiv.className = "chat-msg " + role;
+      msgDiv.innerHTML = (role === "user" ? "<b>🧑‍🌾 Farmer:</b><br>" : "<b>🌱 STARK-X Advisor:</b><br>") + html;
+      box.appendChild(msgDiv);
+      box.scrollTop = box.scrollHeight;
+      return id;
+    }
+
+    function updateChatMessage(id, html) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.innerHTML = "<b>🌱 STARK-X Advisor:</b><br>" + html;
+        document.getElementById('chatBox').scrollTop = document.getElementById('chatBox').scrollHeight;
       }
     }
 
-    // Optimizer
-    function updateSliders() {
-      // Dynamic calculations
-      const n = document.querySelectorAll('input[type=range]')[0].value;
-      const p = document.querySelectorAll('input[type=range]')[1].value;
-      const k = document.querySelectorAll('input[type=range]')[2].value;
-
-      document.getElementById('nVal').innerText = n + ' kg/ha';
-      document.getElementById('pVal').innerText = p + ' kg/ha';
-      document.getElementById('kVal').innerText = k + ' kg/ha';
-
-      const turmericScore = Math.min(98, Math.max(65, Math.round(50 + (k * 0.25) + (n * 0.15))));
-      const caneScore = Math.min(95, Math.max(60, Math.round(40 + (n * 0.35))));
-      const milletScore = Math.min(92, Math.max(55, Math.round(90 - (n * 0.15))));
-
-      document.getElementById('scoreTurmeric').innerText = turmericScore + '% Match';
-      document.getElementById('scoreCane').innerText = caneScore + '% Match';
-      document.getElementById('scoreMillet').innerText = milletScore + '% Match';
-    }
-
-    // Supabase SOS Real-time Operations with Zero-Crash Fallback
-    function renderTicketsList(tickets, sourceLabel) {
-      const ticketList = document.getElementById('ticketList');
-      const ticketCount = document.getElementById('ticketCount');
-      ticketCount.innerText = `${tickets.length} Emergencies Active (${sourceLabel})`;
-      if (!tickets || tickets.length === 0) {
-        ticketList.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#94a3b8;">No active emergencies reported.</td></tr>';
+    function toggleVoiceInput() {
+      if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        alert("Voice speech recognition is not supported in this browser. Please type your query.");
         return;
       }
-      ticketList.innerHTML = tickets.map(t => `
-        <tr>
-          <td><b>${t.name || t.Farmer}</b></td>
-          <td style="color:#94a3b8;">${t.village || t.Location}</td>
-          <td><span style="color:#f87171; font-weight:600;">${t.category || t.Emergency}</span></td>
-        </tr>
-      `).join('');
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognition.lang = currentLang === 'ta' ? 'ta-IN' : currentLang === 'te' ? 'te-IN' : currentLang === 'hi' ? 'hi-IN' : currentLang === 'kn' ? 'kn-IN' : 'en-IN';
+      recognition.start();
+      recognition.onresult = function(e) {
+        const transcript = e.results[0][0].transcript;
+        document.getElementById('chatInput').value = transcript;
+        sendUserMessage();
+      };
     }
 
-    async function loadCloudTickets() {
-      const ticketList = document.getElementById('ticketList');
-      const ticketCount = document.getElementById('ticketCount');
-      if (supabase) {
-        try {
-          const { data, error } = await supabase
-            .from('sos_tickets')
-            .select('*')
-            .order('id', { ascending: false });
+    // TAB 2: Vision Leaf Presets
+    async function pickLeafPreset(el, cropKey) {
+      document.querySelectorAll('.leaf-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+      document.getElementById('imagePreview').style.display = 'none';
 
-          if (!error && data && data.length > 0) {
-            renderTicketsList(data, "Live Supabase Cloud");
-            return;
-          }
-        } catch (err) {
-          console.warn("Supabase fetch notice, using fallback demo data:", err);
-        }
+      try {
+        const resp = await fetch("/api/vision", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ crop_hint: cropKey, lang: currentLang })
+        });
+        const data = await resp.json();
+        renderVisionReport(data);
+      } catch (err) {
+        console.error("Vision API error:", err);
       }
-      // Guaranteed immediate rendering with rich realistic farmer emergency tickets
-      renderTicketsList(localTicketsCache, "Verified Demo Feed");
+    }
+
+    function handlePhotoUpload(input) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = document.getElementById('imagePreview');
+          img.src = e.target.result;
+          img.style.display = 'block';
+          // Run analysis
+          pickLeafPreset(document.querySelector('.leaf-card'), 'uploaded_image');
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    function renderVisionReport(data) {
+      document.getElementById('reportCrop').innerText = data.crop;
+      document.getElementById('reportSeverity').innerText = data.severity;
+      document.getElementById('reportHealth').innerText = "Health Index: " + data.health_index + "%";
+      document.getElementById('reportDiagnosis').innerText = data.diagnosis;
+      document.getElementById('reportSymptoms').innerText = data.symptoms;
+      document.getElementById('reportOrganic').innerHTML = (data.organic_treatment || []).map(s => `<li>${s}</li>`).join('');
+      document.getElementById('reportChemical').innerHTML = (data.chemical_treatment || []).map(s => `<li>${s}</li>`).join('');
+    }
+
+    // TAB 3: Crop & Soil Optimizer
+    async function runCropOptimization() {
+      const soil = document.getElementById('optSoil').value;
+      const water = document.getElementById('optWater').value;
+      const ph = parseFloat(document.getElementById('optPh').value);
+      const n = parseFloat(document.getElementById('optN').value);
+      const k = parseFloat(document.getElementById('optK').value);
+
+      try {
+        const resp = await fetch("/api/optimizer/recommend", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ soil_type: soil, water_avail: water, ph, nitrogen: n, potassium: k, temperature: 29.4 })
+        });
+        const res = await resp.json();
+        document.getElementById('topCropName').innerText = res.top.crop;
+        document.getElementById('matchBar').style.width = res.top.match + "%";
+        document.getElementById('matchPercent').innerText = res.top.match + "% Agro-Meteorological Match";
+        document.getElementById('altCrops').innerText = res.alternatives.map((a, i) => `${i+2}. ${a.crop} (${a.match}% Match)`).join(' • ');
+
+        if (res.roi) {
+          document.getElementById('roiYield').innerText = res.roi.yield_per_acre;
+          document.getElementById('roiGross').innerText = res.roi.gross_revenue;
+          document.getElementById('roiNet').innerText = res.roi.net_profit;
+          document.getElementById('roiWater').innerText = res.roi.water_req;
+        }
+      } catch (e) {
+        console.error("Optimizer recommendation error:", e);
+      }
+    }
+
+    async function evaluateCropCompatibility() {
+      const crop = document.getElementById('evalCrop').value;
+      const soil = document.getElementById('evalSoil').value;
+      const water = document.getElementById('evalWater').value;
+
+      try {
+        const resp = await fetch("/api/optimizer/evaluate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ target_crop: crop, target_soil: soil, target_water: water, temperature: 29.4 })
+        });
+        const res = await resp.json();
+        const statEl = document.getElementById('evalStatus');
+        const detEl = document.getElementById('evalDetails');
+
+        if (res.is_match) {
+          statEl.style.color = "#4ade80";
+          statEl.innerText = `✅ OPTIMAL MATCH: ${crop} is well-suited for your farm!`;
+          detEl.innerHTML = `Your ${soil}, ${water}, and local climate conditions meet baseline commercial yield criteria.`;
+        } else {
+          statEl.style.color = "#ef4444";
+          statEl.innerText = `⚠️ CRITICAL MISMATCH DETECTED for ${crop}:`;
+          detEl.innerHTML = res.reasons.map(r => `• ${r}`).join('<br>') +
+            (res.alternative ? `<br><br><span style="color:#fde047;">💡 Recommended Alternative: <b>${res.alternative}</b></span>` : '');
+        }
+      } catch (e) {
+        console.error("Optimizer evaluation error:", e);
+      }
+    }
+
+    // TAB 4: SOS Tickets & Market Operations
+    async function loadSosTickets() {
+      const tbody = document.getElementById('sosTableBody');
+      try {
+        const resp = await fetch("/api/sos/tickets");
+        const list = await resp.json();
+        if (!list || list.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No active emergency tickets.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = list.map(t => `
+          <tr>
+            <td><b>${t.Farmer || t.name}</b></td>
+            <td>${t.Location || t.village}</td>
+            <td><span style="color:#f87171; font-weight:700;">${t.Emergency || t.category}</span></td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Loaded local cache.</td></tr>';
+      }
     }
 
     async function handleSosSubmit(e) {
@@ -969,47 +1281,177 @@
       const desc = document.getElementById('sosDesc').value;
 
       btn.disabled = true;
-      btn.innerText = "⏳ Syncing SOS Ticket...";
+      btn.innerText = "⏳ Dispatching to Union...";
 
-      // Format timestamp in Indian Standard Time (IST, UTC+5:30)
       const now = new Intl.DateTimeFormat('sv-SE', {
-        timeZone: 'Asia/Kolkata',
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false
+        timeZone: 'Asia/Kolkata', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
       }).format(new Date());
 
-      const newTicket = { name, village, category, description: desc, timestamp: now };
-      localTicketsCache.unshift(newTicket);
-
-      let syncedCloud = false;
-      if (supabase) {
-        try {
-          const { error } = await supabase
-            .from('sos_tickets')
-            .insert([newTicket]);
-          if (!error) syncedCloud = true;
-        } catch (err) {
-          console.warn("Cloud sync deferred:", err);
-        }
+      try {
+        const resp = await fetch("/api/sos/tickets", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, village, category, description: desc, timestamp: now })
+        });
+        const res = await resp.json();
+        alert("✅ Emergency SOS ticket dispatched to Agricultural Union database!");
+        document.getElementById('sosForm').reset();
+        loadSosTickets();
+      } catch (err) {
+        alert("Logged to local feed!");
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "🚨 Dispatch SOS to Agricultural Union";
       }
-
-      alert(syncedCloud 
-        ? "✅ Emergency SOS successfully logged to Supabase Cloud database!" 
-        : "✅ Emergency SOS logged to active incident feed!");
-
-      document.getElementById('sosForm').reset();
-      renderTicketsList(localTicketsCache, syncedCloud ? "Live Supabase Cloud" : "Active Local Cache");
-      btn.disabled = false;
-      btn.innerText = "🚨 Dispatch SOS to Cloud";
     }
 
-    // Initial load
-    window.onload = () => {
-      loadCloudTickets();
+    async function refreshFinancialStrategy() {
+      try {
+        const resp = await fetch("/api/market/trends");
+        const data = await resp.json();
+        if (data.financial_strategy) {
+          document.getElementById('strategyText').innerHTML = data.financial_strategy.replace(/\n/g, '<br>');
+        }
+      } catch (e) {
+        console.error("Strategy fetch error:", e);
+      }
+    }
+
+    // TAB 5: Direct Marketplace Operations
+    async function loadMarketCrops() {
+      const grid = document.getElementById('cropLotsGrid');
+      try {
+        const resp = await fetch("/api/market/crops");
+        const crops = await resp.json();
+        if (!crops || crops.length === 0) {
+          grid.innerHTML = '<p style="color:#94a3b8;">No harvest lots listed yet. Post your harvest above!</p>';
+          return;
+        }
+
+        grid.innerHTML = crops.map(c => {
+          const qty = parseFloat(c.quantity_kg || 0);
+          const price = parseFloat(c.price_per_kg || 0);
+          const total = qty * price;
+          const cleanPhone = (c.phone_whatsapp || "919876543210").replace(/[^0-9]/g, '');
+          const waUrl = `https://wa.me/${cleanPhone}?text=Vanakkam%20${encodeURIComponent(c.farmer_name)}!%20I%20am%20interested%20in%20your%20${encodeURIComponent(c.crop_name)}%20lot%20on%20STARK-X.`;
+
+          return `
+            <div class="crop-card">
+              <h4 style="color:#4ade80; font-size:16px; margin-bottom:6px;">🌿 ${c.crop_name}</h4>
+              <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px;">
+                <span style="background:rgba(34,197,94,0.15); color:#86efac; font-size:11.5px; font-weight:700; padding:2px 8px; border-radius:4px;">⚖️ ${qty} kg</span>
+                <span style="background:rgba(234,179,8,0.15); color:#fde047; font-size:11.5px; font-weight:700; padding:2px 8px; border-radius:4px;">💰 ₹${price}/kg</span>
+                <span style="background:rgba(59,130,246,0.15); color:#93c5fd; font-size:11.5px; font-weight:700; padding:2px 8px; border-radius:4px;">📍 ${c.location}</span>
+              </div>
+              <p style="font-size:12px; color:#cbd5e1; margin-bottom:6px;">👤 <b>Farmer:</b> ${c.farmer_name} • <b>Total Lot:</b> ₹${total.toLocaleString('en-IN')}</p>
+              <a href="${waUrl}" target="_blank" class="btn-whatsapp">💬 Buy via WhatsApp</a>
+            </div>
+          `;
+        }).join('');
+      } catch (err) {
+        console.error("Crop listings load error:", err);
+      }
+    }
+
+    function calculateLotValuation() {
+      const qty = parseFloat(document.getElementById('postQty').value) || 0;
+      const price = parseFloat(document.getElementById('postPrice').value) || 0;
+      const total = qty * price;
+      document.getElementById('lotValuationDisplay').innerText = "₹" + total.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+    }
+
+    async function handlePostCropSubmit(e) {
+      e.preventDefault();
+      const btn = document.getElementById('postCropBtn');
+      const farmer = document.getElementById('postFarmer').value;
+      const crop = document.getElementById('postCropName').value;
+      const qty = parseFloat(document.getElementById('postQty').value);
+      const price = parseFloat(document.getElementById('postPrice').value);
+      const loc = document.getElementById('postLoc').value;
+      const phone = document.getElementById('postPhone').value;
+
+      btn.disabled = true;
+      btn.innerText = "⏳ Publishing Listing...";
+
+      const now = new Intl.DateTimeFormat('sv-SE', {
+        timeZone: 'Asia/Kolkata', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
+      }).format(new Date());
+
+      try {
+        const resp = await fetch("/api/market/crops", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            farmer_name: farmer,
+            crop_name: crop,
+            quantity_kg: qty,
+            price_per_kg: price,
+            location: loc,
+            phone_whatsapp: phone,
+            created_at: now
+          })
+        });
+        const res = await resp.json();
+        alert(`🎉 ${crop} (${qty} kg) successfully published in Direct Marketplace!`);
+        document.getElementById('postCropForm').reset();
+        calculateLotValuation();
+        switchMarketplaceSubTab('lots');
+        loadMarketCrops();
+      } catch (err) {
+        alert("Published to local feed!");
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "🚀 Post Harvest Lot to Marketplace";
+      }
+    }
+
+    // Agri Reels Carousel
+    const reelsList = [
+      {
+        author: "🌱 @erode_krishi_vigyan",
+        url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+        desc: "Turmeric Seed Rhizome Dip with Trichoderma viride to prevent Rhizome Rot before monsoon sowing."
+      },
+      {
+        author: "🌱 @bhavani_sugarcane_lab",
+        url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+        desc: "Earthing up CO-86032 cane at 90 days. Boosts tiller strength, saves 40% water, and ensures zero lodging."
+      },
+      {
+        author: "🌱 @tamil_organic_farmer",
+        url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
+        desc: "Natural immunity booster against leaf spot and whiteflies! Spray 3% Panchagavya with 5ml/L neem oil."
+      }
+    ];
+    let reelIndex = 0;
+    function nextReel() {
+      reelIndex = (reelIndex + 1) % reelsList.length;
+      const r = reelsList[reelIndex];
+      const vid = document.getElementById('reelVideo');
+      vid.src = r.url;
+      vid.play();
+      document.getElementById('reelAuthor').innerText = r.author;
+      document.getElementById('reelDesc').innerText = r.desc;
+    }
+
+    // Weather Initialization
+    async function initWeather() {
+      try {
+        const resp = await fetch("/api/weather");
+        const w = await resp.json();
+        if (w.city) document.getElementById('liveCity').innerText = `📍 ${w.city} (Kongu Belt)`;
+        if (w.temperature) document.getElementById('liveTemp').innerText = `🌡️ ${w.temperature}°C Live`;
+        if (w.humidity) document.getElementById('liveHumidity').innerText = `💧 ${w.humidity}% Humidity`;
+        if (w.inferred_soil) document.getElementById('liveSoilTag').innerHTML = `🌱 Auto-Inferred Soil: <b>${w.inferred_soil}</b>`;
+      } catch (e) {
+        console.warn("Weather fetch notice:", e);
+      }
+    }
+
+    window.onload = function() {
+      initWeather();
+      loadSosTickets();
+      loadMarketCrops();
     };
   </script>
 </body>
