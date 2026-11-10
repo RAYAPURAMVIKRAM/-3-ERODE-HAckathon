@@ -381,7 +381,7 @@
     }
 
     .tab-content { display: none; animation: fadeIn 0.3s ease; }
-    .tab-content.active { display: block; }
+    .tab-content.active { display: block !important; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
     /* Cards & Grids */
@@ -1203,9 +1203,10 @@
     // Master Supabase Credentials
     const SUPABASE_URL = "https://rhomwvtmmkwepclzaiuu.supabase.co";
     const SUPABASE_KEY = "sb_publishable_OJUn4OSw4PYcDmlIjCntNQ_qGeFBWFO";
-    const supabase = (window.supabase && typeof window.supabase.createClient === 'function')
+    window.supabaseClient = (window.supabase && typeof window.supabase.createClient === 'function')
       ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
       : null;
+    var supabaseClient = window.supabaseClient;
 
     // Multilingual Dictionary (English, Tamil, Telugu, Hindi, Kannada)
     const I18N = {
@@ -1305,8 +1306,11 @@
         }
       });
 
-      // Update tab contents
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      // Update tab contents: explicitly set BOTH classList and style.setProperty
+      document.querySelectorAll('.tab-content').forEach(c => {
+        c.classList.remove('active');
+        c.style.setProperty('display', 'none', 'important');
+      });
       
       let target = document.getElementById('tab-' + resolved) ||
                    document.getElementById('tab-' + tabKey) ||
@@ -1322,6 +1326,7 @@
 
       if (target) {
         target.classList.add('active');
+        target.style.setProperty('display', 'block', 'important');
       }
 
       // Handle sub-tab direct requests
@@ -1791,23 +1796,6 @@
       }
     }
 
-    // Safety hook for getElementById for test runners and legacy callers
-    try {
-      const _origGetElementById = document.getElementById.bind(document);
-      document.getElementById = function(id) {
-        if (id === 'tab-sos') return _origGetElementById('tab-market') || _origGetElementById('tab-sos');
-        if (id === 'tab-0') return _origGetElementById('tab-home') || _origGetElementById(id);
-        if (id === 'tab-1') return _origGetElementById('tab-chat') || _origGetElementById(id);
-        if (id === 'tab-2') return _origGetElementById('tab-vision') || _origGetElementById(id);
-        if (id === 'tab-3') return _origGetElementById('tab-optimizer') || _origGetElementById(id);
-        if (id === 'tab-4') return _origGetElementById('tab-market') || _origGetElementById(id);
-        if (id === 'tab-5') return _origGetElementById('tab-marketplace') || _origGetElementById(id);
-        return _origGetElementById(id);
-      };
-    } catch (e) {
-      console.warn("Element hook notice:", e);
-    }
-
     // Explicit global window bindings for all interactive handlers
     window.selectTab = selectTab;
     window.switchLanguage = switchLanguage;
@@ -1861,7 +1849,47 @@
     window.switchMarketSubTab = switchMarketSubTab;
     window.switchMarketplaceSubTab = switchMarketplaceSubTab;
 
+    // Direct DOM event listener bindings as bulletproof fallback for click events
+    function initClickListeners() {
+      // 1. Direct event listeners for tab buttons
+      document.querySelectorAll('.tab-btn[data-tab]').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          const tab = this.getAttribute('data-tab');
+          if (tab) selectTab(tab);
+        });
+      });
+
+      // 2. Direct event listeners for home module cards and launch buttons
+      document.querySelectorAll('.home-module-card').forEach(card => {
+        const oc = card.getAttribute('onclick') || '';
+        const match = oc.match(/selectTab\(['"]([^'"]+)['"]\)/);
+        if (match) {
+          const targetTab = match[1];
+          card.addEventListener('click', function(e) {
+            e.preventDefault();
+            selectTab(targetTab);
+          });
+        }
+      });
+
+      // 3. Direct event listeners for back-to-home buttons
+      document.querySelectorAll('.btn-back-home').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          selectTab('home');
+        });
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initClickListeners);
+    } else {
+      initClickListeners();
+    }
+
     window.onload = function() {
+      initClickListeners();
       initWeather();
       loadSosTickets();
       loadMarketCrops();
