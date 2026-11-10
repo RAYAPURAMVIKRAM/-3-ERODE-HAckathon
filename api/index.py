@@ -494,6 +494,13 @@ class handler(BaseHTTPRequestHandler):
     def do_GET(self):
         path = self.resolve_path()
 
+        # 0. Favicon Handler
+        if path == "/favicon.ico":
+            self.send_response(204)
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            return
+
         # 1. API Health Check
         if path in ["/health", "/api/health", "/api", "/api/"]:
             return self.send_json(200, {
