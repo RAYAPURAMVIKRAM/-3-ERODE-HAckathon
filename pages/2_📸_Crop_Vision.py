@@ -323,5 +323,5 @@ if uploaded_file is not None:
                 render_diagnostic_card(rep, lang)
 
 # 5. PROMINENT BOTTOM BACK TO HOME NAVIGATION
-render_bottom_back_button()
+render_bottom_back_button("2_Crop_Vision")
 

@@ -361,5 +361,5 @@ with tab2:
                 st.write(f"Your {target_soil}, {target_water}, and local climate ({live_temp:.1f}°C) meet baseline commercial yield criteria.")
 
 # 5. PROMINENT BOTTOM BACK TO HOME NAVIGATION
-render_bottom_back_button()
+render_bottom_back_button("3_Optimizer")
 

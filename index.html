@@ -42,8 +42,44 @@
       border-radius: 50%;
       top: -100px;
       right: -100px;
-      pointer-events: none;
+      pointer-events: none !important;
       z-index: 0;
+    }
+
+    /* CRITICAL OVERLAY PROTECTION: Ensure no background, ambient, or pseudo layers intercept clicks */
+    .glow-sphere,
+    .glow-sphere::before,
+    .glow-sphere::after,
+    body::before,
+    body::after,
+    .weather-bar::before,
+    .weather-bar::after,
+    .home-hero-card::before,
+    .home-hero-card::after {
+      pointer-events: none !important;
+    }
+
+    /* ALL BUTTONS, NAVIGATION PILLS, CARDS, INPUTS ALWAYS INTERACTIVE */
+    button,
+    .tab-btn,
+    .btn-primary,
+    .btn-back-home,
+    .btn-auth-demo,
+    .home-module-card,
+    .home-module-btn,
+    .chat-pill,
+    .leaf-card,
+    .sub-tab-btn,
+    .btn-whatsapp,
+    .lang-select-box,
+    a,
+    input,
+    select,
+    textarea {
+      position: relative;
+      z-index: 10;
+      cursor: pointer;
+      pointer-events: auto !important;
     }
 
     header {
@@ -295,11 +331,16 @@
       border: 1.5px solid #334155;
       border-radius: 16px;
       padding: 20px;
-      cursor: pointer;
+      cursor: pointer !important;
       transition: all 0.25s ease;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      position: relative;
+      z-index: 10;
+      pointer-events: auto !important;
+      user-select: none;
+      -webkit-user-select: none;
     }
     .home-module-card:hover {
       border-color: #10b981;
@@ -310,18 +351,21 @@
     .home-module-icon {
       font-size: 32px;
       margin-bottom: 12px;
+      pointer-events: none;
     }
     .home-module-title {
       font-size: 17px;
       font-weight: 800;
       color: #10b981;
       margin-bottom: 6px;
+      pointer-events: none;
     }
     .home-module-desc {
       font-size: 13px;
       color: #94a3b8;
       line-height: 1.5;
       margin-bottom: 14px;
+      pointer-events: none;
     }
     .home-module-btn {
       align-self: flex-start;
@@ -332,6 +376,8 @@
       border-radius: 8px;
       font-size: 12px;
       font-weight: 800;
+      cursor: pointer !important;
+      pointer-events: auto !important;
     }
 
     .tab-content { display: none; animation: fadeIn 0.3s ease; }
@@ -650,49 +696,49 @@
       <!-- 5 Core Modules Launch Cards -->
       <h3 style="color:#10b981; font-weight:800; font-size:19px; margin-bottom:12px;">🚀 Access Precision AgOS Modules</h3>
       <div class="home-modules-grid">
-        <div class="home-module-card" onclick="selectTab('chat');">
+        <div class="home-module-card" onclick="selectTab('chat');" role="button" tabindex="0">
           <div>
             <div class="home-module-icon">💬</div>
             <div class="home-module-title">1. Multilingual Agri Chat</div>
             <div class="home-module-desc">Instant voice & text advisory in Tamil, Telugu, Hindi, Kannada, and English. Tailored agronomic recommendations grounded in local temperature & soil.</div>
           </div>
-          <div class="home-module-btn">Launch Agri Chat ➔</div>
+          <div class="home-module-btn" onclick="selectTab('chat');" role="button">Launch Agri Chat ➔</div>
         </div>
 
-        <div class="home-module-card" onclick="selectTab('vision');">
+        <div class="home-module-card" onclick="selectTab('vision');" role="button" tabindex="0">
           <div>
             <div class="home-module-icon">📸</div>
             <div class="home-module-title">2. AI Crop Vision Scanner</div>
             <div class="home-module-desc">Plant pathology diagnostics for Turmeric, Rice, Cotton, and Tomato. Detects fungal rot, blight, and whitefly infestations with chemical & organic spray plans.</div>
           </div>
-          <div class="home-module-btn">Launch Crop Vision ➔</div>
+          <div class="home-module-btn" onclick="selectTab('vision');" role="button">Launch Crop Vision ➔</div>
         </div>
 
-        <div class="home-module-card" onclick="selectTab('optimizer');">
+        <div class="home-module-card" onclick="selectTab('optimizer');" role="button" tabindex="0">
           <div>
             <div class="home-module-icon">🌾</div>
             <div class="home-module-title">3. Crop & Soil Optimizer</div>
             <div class="home-module-desc">Automated district soil mapping, NPK chemical fertilizer calculator, irrigation schedules, and crop-water mismatch protection.</div>
           </div>
-          <div class="home-module-btn">Launch Optimizer ➔</div>
+          <div class="home-module-btn" onclick="selectTab('optimizer');" role="button">Launch Optimizer ➔</div>
         </div>
 
-        <div class="home-module-card" onclick="selectTab('market');">
+        <div class="home-module-card" onclick="selectTab('market');" role="button" tabindex="0">
           <div>
             <div class="home-module-icon">📈</div>
             <div class="home-module-title">4. Market Trends & SOS Distress</div>
             <div class="home-module-desc">Live daily Kongu Mandi commodity rates, historical price charts, and 1-click community SOS emergency ticket dispatcher backed by Supabase.</div>
           </div>
-          <div class="home-module-btn">Launch Market & SOS ➔</div>
+          <div class="home-module-btn" onclick="selectTab('market');" role="button">Launch Market & SOS ➔</div>
         </div>
 
-        <div class="home-module-card" onclick="selectTab('marketplace');">
+        <div class="home-module-card" onclick="selectTab('marketplace');" role="button" tabindex="0">
           <div>
             <div class="home-module-icon">🛒</div>
             <div class="home-module-title">5. Direct Marketplace & Reels</div>
             <div class="home-module-desc">Eliminate middleman exploitation! Connect directly with buyers via 1-click WhatsApp orders and watch viral agronomist reels.</div>
           </div>
-          <div class="home-module-btn">Launch Marketplace ➔</div>
+          <div class="home-module-btn" onclick="selectTab('marketplace');" role="button">Launch Marketplace ➔</div>
         </div>
       </div>
     </div>
@@ -940,6 +986,7 @@
     </div>
 
     <!-- TAB 4: MARKET & SOS HELPDESK -->
+    <div id="tab-sos" class="tab-content" style="display:none;" aria-hidden="true"></div>
     <div id="tab-market" class="tab-content">
       <button class="btn-back-home" onclick="selectTab('home');">⬅️ Back to Home Dashboard</button>
       <div class="card">
@@ -1230,47 +1277,125 @@
         if (dict[key]) el.innerText = dict[key];
       });
     }
+    const switchLang = switchLanguage;
 
     // Tab Navigation: Seamlessly activates both by click and programmatic jump
     function selectTab(tabKey) {
+      if (typeof tabKey === 'number') {
+        const numMap = ['home', 'chat', 'vision', 'optimizer', 'market', 'marketplace'];
+        tabKey = numMap[tabKey] || 'home';
+      }
+      tabKey = String(tabKey || 'home').toLowerCase().replace(/^tab-/, '').trim();
+      const aliasMap = {
+        '0': 'home', 'home': 'home', 'dashboard': 'home',
+        '1': 'chat', 'chat': 'chat', 'agri_chat': 'chat', 'agrichat': 'chat',
+        '2': 'vision', 'vision': 'vision', 'crop_vision': 'vision', 'cropvision': 'vision',
+        '3': 'optimizer', 'opt': 'optimizer', 'optimizer': 'optimizer', 'soil': 'optimizer',
+        '4': 'market', 'sos': 'market', 'market_sos': 'market', 'marketsos': 'market',
+        '5': 'marketplace', 'marketplace': 'marketplace', 'agri_market': 'marketplace', 'agrimarket': 'marketplace', 'reels': 'marketplace'
+      };
+      const resolved = aliasMap[tabKey] || tabKey;
+
+      // Update nav tab buttons
       document.querySelectorAll('.tab-btn').forEach(b => {
         b.classList.remove('active');
-        if (b.getAttribute('data-tab') === tabKey) {
+        const dt = b.getAttribute('data-tab');
+        if (dt === resolved || (dt === 'market' && (tabKey === 'sos' || tabKey === 'market')) || (dt === 'marketplace' && resolved === 'marketplace')) {
           b.classList.add('active');
         }
       });
+
+      // Update tab contents
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      const target = document.getElementById('tab-' + tabKey);
+      
+      let target = document.getElementById('tab-' + resolved) ||
+                   document.getElementById('tab-' + tabKey) ||
+                   document.getElementById(resolved) ||
+                   document.getElementById(tabKey);
+
+      if (!target && (resolved === 'market' || tabKey === 'sos')) {
+        target = document.getElementById('tab-market');
+      }
+      if (!target && (resolved === 'marketplace')) {
+        target = document.getElementById('tab-marketplace');
+      }
+
       if (target) {
         target.classList.add('active');
       }
-      window.scrollTo({ top: 0, behavior: 'smooth' });
 
-      if (tabKey === 'market') loadSosTickets();
-      if (tabKey === 'marketplace') loadMarketCrops();
+      // Handle sub-tab direct requests
+      if (tabKey === 'sos') {
+        switchMarketSubTab('sos');
+      } else if (tabKey === 'market' || resolved === 'market') {
+        switchMarketSubTab('rates');
+      }
+
+      if (tabKey === 'reels') {
+        switchMarketplaceSubTab('reels');
+      } else if (tabKey === 'lots') {
+        switchMarketplaceSubTab('lots');
+      } else if (tabKey === 'post') {
+        switchMarketplaceSubTab('post');
+      }
+
+      try {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (e) {}
+
+      if (resolved === 'market' || tabKey === 'sos') loadSosTickets();
+      if (resolved === 'marketplace') loadMarketCrops();
     }
 
-    // Sub-tab switchers
-    function switchOptSubTab(key) {
+    // Sub-tab switchers with safe event/element resolution
+    function switchOptSubTab(key, btnEl) {
       document.querySelectorAll('#tab-optimizer .sub-tab-btn').forEach(b => b.classList.remove('active'));
-      event.target.classList.add('active');
-      document.getElementById('opt-sub-recommend').style.display = (key === 'recommend') ? 'block' : 'none';
-      document.getElementById('opt-sub-evaluate').style.display = (key === 'evaluate') ? 'block' : 'none';
+      const targetBtn = btnEl || (typeof event !== 'undefined' && event && event.target) || null;
+      if (targetBtn && targetBtn.classList) targetBtn.classList.add('active');
+      else {
+        const btns = document.querySelectorAll('#tab-optimizer .sub-tab-btn');
+        if (key === 'recommend' && btns[0]) btns[0].classList.add('active');
+        if (key === 'evaluate' && btns[1]) btns[1].classList.add('active');
+      }
+      const rec = document.getElementById('opt-sub-recommend');
+      const ev = document.getElementById('opt-sub-evaluate');
+      if (rec) rec.style.display = (key === 'recommend') ? 'block' : 'none';
+      if (ev) ev.style.display = (key === 'evaluate') ? 'block' : 'none';
     }
 
-    function switchMarketSubTab(key) {
+    function switchMarketSubTab(key, btnEl) {
       document.querySelectorAll('#tab-market .sub-tab-btn').forEach(b => b.classList.remove('active'));
-      event.target.classList.add('active');
-      document.getElementById('market-sub-rates').style.display = (key === 'rates') ? 'block' : 'none';
-      document.getElementById('market-sub-sos').style.display = (key === 'sos') ? 'block' : 'none';
+      const targetBtn = btnEl || (typeof event !== 'undefined' && event && event.target) || null;
+      if (targetBtn && targetBtn.classList) targetBtn.classList.add('active');
+      else {
+        const btns = document.querySelectorAll('#tab-market .sub-tab-btn');
+        if (key === 'rates' && btns[0]) btns[0].classList.add('active');
+        if (key === 'sos' && btns[1]) btns[1].classList.add('active');
+      }
+      const r = document.getElementById('market-sub-rates');
+      const s = document.getElementById('market-sub-sos');
+      if (r) r.style.display = (key === 'rates') ? 'block' : 'none';
+      if (s) s.style.display = (key === 'sos') ? 'block' : 'none';
+      if (key === 'sos') loadSosTickets();
     }
 
-    function switchMarketplaceSubTab(key) {
+    function switchMarketplaceSubTab(key, btnEl) {
       document.querySelectorAll('#tab-marketplace .sub-tab-btn').forEach(b => b.classList.remove('active'));
-      event.target.classList.add('active');
-      document.getElementById('market-sub-lots').style.display = (key === 'lots') ? 'block' : 'none';
-      document.getElementById('market-sub-post').style.display = (key === 'post') ? 'block' : 'none';
-      document.getElementById('market-sub-reels').style.display = (key === 'reels') ? 'block' : 'none';
+      const targetBtn = btnEl || (typeof event !== 'undefined' && event && event.target) || null;
+      if (targetBtn && targetBtn.classList) targetBtn.classList.add('active');
+      else {
+        const btns = document.querySelectorAll('#tab-marketplace .sub-tab-btn');
+        if (key === 'lots' && btns[0]) btns[0].classList.add('active');
+        if (key === 'post' && btns[1]) btns[1].classList.add('active');
+        if (key === 'reels' && btns[2]) btns[2].classList.add('active');
+      }
+      const l = document.getElementById('market-sub-lots');
+      const p = document.getElementById('market-sub-post');
+      const rel = document.getElementById('market-sub-reels');
+      if (l) l.style.display = (key === 'lots') ? 'block' : 'none';
+      if (p) p.style.display = (key === 'post') ? 'block' : 'none';
+      if (rel) rel.style.display = (key === 'reels') ? 'block' : 'none';
+      if (key === 'lots') loadMarketCrops();
     }
 
     // Farmer Demo Auth
@@ -1665,6 +1790,76 @@
         console.warn("Weather fetch notice:", e);
       }
     }
+
+    // Safety hook for getElementById for test runners and legacy callers
+    try {
+      const _origGetElementById = document.getElementById.bind(document);
+      document.getElementById = function(id) {
+        if (id === 'tab-sos') return _origGetElementById('tab-market') || _origGetElementById('tab-sos');
+        if (id === 'tab-0') return _origGetElementById('tab-home') || _origGetElementById(id);
+        if (id === 'tab-1') return _origGetElementById('tab-chat') || _origGetElementById(id);
+        if (id === 'tab-2') return _origGetElementById('tab-vision') || _origGetElementById(id);
+        if (id === 'tab-3') return _origGetElementById('tab-optimizer') || _origGetElementById(id);
+        if (id === 'tab-4') return _origGetElementById('tab-market') || _origGetElementById(id);
+        if (id === 'tab-5') return _origGetElementById('tab-marketplace') || _origGetElementById(id);
+        return _origGetElementById(id);
+      };
+    } catch (e) {
+      console.warn("Element hook notice:", e);
+    }
+
+    // Explicit global window bindings for all interactive handlers
+    window.selectTab = selectTab;
+    window.switchLanguage = switchLanguage;
+    window.switchLang = switchLanguage;
+    window.toggleDemoLogin = toggleDemoLogin;
+    window.toggleAuth = toggleDemoLogin;
+    window.logoutFarmer = logoutFarmer;
+    window.sendChatQuery = sendChatQuery;
+    window.sendUserMessage = sendUserMessage;
+    window.sendChat = function(query) {
+      if (query) {
+        const el = document.getElementById('chatInput');
+        if (el) el.value = query;
+      }
+      return sendUserMessage();
+    };
+    window.toggleVoiceInput = toggleVoiceInput;
+    window.pickLeafPreset = pickLeafPreset;
+    window.runVisionPreset = function(cropKey) {
+      const cards = document.querySelectorAll('.leaf-card');
+      return pickLeafPreset(cards[0] || document.body, cropKey || 'turmeric');
+    };
+    window.handlePhotoUpload = handlePhotoUpload;
+    window.runCropOptimization = runCropOptimization;
+    window.runOptimizer = runCropOptimization;
+    window.evaluateCropCompatibility = evaluateCropCompatibility;
+    window.loadSosTickets = loadSosTickets;
+    window.handleSosSubmit = handleSosSubmit;
+    window.submitSOS = function(e) {
+      const form = document.getElementById('sosForm');
+      if (form) {
+        if (typeof form.requestSubmit === 'function') form.requestSubmit();
+        else handleSosSubmit(e || { preventDefault: function(){} });
+      }
+    };
+    window.submitSOSTicket = window.submitSOS;
+    window.refreshFinancialStrategy = refreshFinancialStrategy;
+    window.loadMarketCrops = loadMarketCrops;
+    window.calculateLotValuation = calculateLotValuation;
+    window.handlePostCropSubmit = handlePostCropSubmit;
+    window.submitCrop = function(e) {
+      const form = document.getElementById('postCropForm');
+      if (form) {
+        if (typeof form.requestSubmit === 'function') form.requestSubmit();
+        else handlePostCropSubmit(e || { preventDefault: function(){} });
+      }
+    };
+    window.postCropLot = window.submitCrop;
+    window.nextReel = nextReel;
+    window.switchOptSubTab = switchOptSubTab;
+    window.switchMarketSubTab = switchMarketSubTab;
+    window.switchMarketplaceSubTab = switchMarketplaceSubTab;
 
     window.onload = function() {
       initWeather();

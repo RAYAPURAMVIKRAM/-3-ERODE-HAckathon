@@ -326,5 +326,5 @@ with tab2:
         st.dataframe(tickets_df, use_container_width=True, hide_index=True)
 
 # 4. PROMINENT BOTTOM BACK TO HOME NAVIGATION
-render_bottom_back_button()
+render_bottom_back_button("4_Market_SOS")
 

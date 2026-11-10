@@ -9,7 +9,7 @@ if _ROOT_DIR not in sys.path:
 
 import streamlit as st
 from locales import t
-from auth_ui import render_auth_sidebar, render_top_navbar, inject_high_contrast_css
+from auth_ui import render_auth_sidebar, render_top_navbar, inject_high_contrast_css, find_page
 from supabase_client import get_current_user
 
 st.set_page_config(page_title="STARK-X | AgriPirate", page_icon="🌱", layout="centered", initial_sidebar_state="expanded")
@@ -35,10 +35,23 @@ if user:
     welcome_text = t("welcome_farmer", lang).format(name=user.get('name', 'Farmer'), village=user.get('village', 'Tamil Nadu'))
     st.success(f"🌾 {welcome_text}")
 
-st.markdown(t("select_tool_msg", lang))
+st.markdown(f"#### 🚀 {t('select_tool_msg', lang)}")
 
-st.page_link("pages/1_💬_Agri_Chat.py", label=f"**{t('chat_page', lang)}:** {t('chat_page_desc', lang)}", icon="💬")
-st.page_link("pages/2_📸_Crop_Vision.py", label=f"**{t('vision_page', lang)}:** {t('vision_page_desc', lang)}", icon="📸")
-st.page_link("pages/3_🌾_Optimizer.py", label=f"**{t('opt_page', lang)}:** {t('opt_page_desc', lang)}", icon="🌾")
-st.page_link("pages/4_📈_Market_SOS.py", label=f"**{t('market_sos_page', lang)}:** {t('market_sos_desc', lang)}", icon="📈")
-st.page_link("pages/5_🛒_Agri_Market.py", label=f"**{t('market_page', lang)}:** {t('market_page_desc', lang)}", icon="🛒")
+modules = [
+    ("1_", "💬 " + t('chat_page', lang), t('chat_page_desc', lang), "btn_home_chat"),
+    ("2_", "📸 " + t('vision_page', lang), t('vision_page_desc', lang), "btn_home_vision"),
+    ("3_", "🌾 " + t('opt_page', lang), t('opt_page_desc', lang), "btn_home_opt"),
+    ("4_", "📈 " + t('market_sos_page', lang), t('market_sos_desc', lang), "btn_home_sos"),
+    ("5_", "🛒 " + t('market_page', lang), t('market_page_desc', lang), "btn_home_market"),
+]
+
+for prefix, title, desc, btn_key in modules:
+    col_info, col_btn = st.columns([4, 1])
+    with col_info:
+        st.markdown(f"**{title}**  \n<span style='color:#94a3b8; font-size:13px;'>{desc}</span>", unsafe_allow_html=True)
+    with col_btn:
+        page_path = find_page(prefix)
+        if st.button("Launch ➔", key=btn_key, use_container_width=True):
+            if page_path:
+                st.switch_page(page_path)
+    st.markdown("<hr style='margin: 8px 0; border: none; border-bottom: 1px solid rgba(255,255,255,0.1);'>", unsafe_allow_html=True)

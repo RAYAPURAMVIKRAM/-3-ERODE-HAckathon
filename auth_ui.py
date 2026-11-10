@@ -225,10 +225,22 @@ def inject_high_contrast_css():
     </style>
     """, unsafe_allow_html=True)
 
+def find_page(prefix):
+    """
+    Dynamically finds the exact filename in pages/ matching prefix (e.g. '1_', '2_').
+    Uses os.listdir to retrieve the exact filesystem encoding, preventing emoji encoding errors on Windows.
+    """
+    pages_dir = os.path.join(_ROOT_DIR, "pages")
+    if os.path.exists(pages_dir):
+        for fname in os.listdir(pages_dir):
+            if fname.startswith(prefix) and fname.endswith(".py"):
+                return os.path.join("pages", fname).replace("\\", "/")
+    return None
+
 def render_top_navbar(current_page="home"):
     """
     Renders a prominent, high-contrast horizontal navigation bar at the top of every page.
-    Allows instantaneous navigation between Home Dashboard and all 5 core modules.
+    Uses native st.button + st.switch_page with dynamic path discovery to guarantee instant navigation.
     """
     st.markdown("""
     <div style="background: linear-gradient(135deg, #0A1120 0%, #131F37 100%); border: 1.5px solid #334155; border-radius: 14px; padding: 10px 16px; margin-bottom: 14px; box-shadow: 0 4px 16px rgba(0,0,0,0.35);">
@@ -244,36 +256,55 @@ def render_top_navbar(current_page="home"):
     </div>
     """, unsafe_allow_html=True)
     
-    # 6 High-Visibility Pill Buttons
+    # 6 High-Visibility Pill Buttons using native st.button and st.switch_page
     cols = st.columns(6)
     with cols[0]:
-        st.page_link("app.py", label="🏠 Home", use_container_width=True)
+        if st.button("🏠 Home", key=f"top_nav_home_{current_page}", use_container_width=True):
+            st.switch_page("app.py")
     with cols[1]:
-        st.page_link("pages/1_💬_Agri_Chat.py", label="💬 Agri Chat", use_container_width=True)
+        p1 = find_page("1_")
+        if st.button("💬 Agri Chat", key=f"top_nav_chat_{current_page}", use_container_width=True):
+            if p1:
+                st.switch_page(p1)
     with cols[2]:
-        st.page_link("pages/2_📸_Crop_Vision.py", label="📸 Vision", use_container_width=True)
+        p2 = find_page("2_")
+        if st.button("📸 Vision", key=f"top_nav_vision_{current_page}", use_container_width=True):
+            if p2:
+                st.switch_page(p2)
     with cols[3]:
-        st.page_link("pages/3_🌾_Optimizer.py", label="🌾 Optimizer", use_container_width=True)
+        p3 = find_page("3_")
+        if st.button("🌾 Optimizer", key=f"top_nav_opt_{current_page}", use_container_width=True):
+            if p3:
+                st.switch_page(p3)
     with cols[4]:
-        st.page_link("pages/4_📈_Market_SOS.py", label="📈 Market & SOS", use_container_width=True)
+        p4 = find_page("4_")
+        if st.button("📈 Market & SOS", key=f"top_nav_sos_{current_page}", use_container_width=True):
+            if p4:
+                st.switch_page(p4)
     with cols[5]:
-        st.page_link("pages/5_🛒_Agri_Market.py", label="🛒 Market", use_container_width=True)
+        p5 = find_page("5_")
+        if st.button("🛒 Agri Market", key=f"top_nav_market_{current_page}", use_container_width=True):
+            if p5:
+                st.switch_page(p5)
         
     # If on a subpage, also show prominent Back to Home banner button at top
     if current_page != "home":
         st.markdown("<div style='margin-top: 8px;'></div>", unsafe_allow_html=True)
-        bcol1, bcol2 = st.columns([1, 2])
-        with bcol1:
-            st.page_link("app.py", label="⬅️ Back to Home Dashboard", icon="🏠", use_container_width=True)
+        if st.button("⬅️ Back to Home Dashboard", key=f"top_nav_back_home_{current_page}", use_container_width=False):
+            st.switch_page("app.py")
 
-def render_bottom_back_button():
+def render_bottom_back_button(current_page="subpage"):
     """Renders prominent back-to-home navigation at bottom of page."""
     st.markdown("---")
     col1, col2 = st.columns([1, 1])
     with col1:
-        st.page_link("app.py", label="⬅️ Back to Home Dashboard", icon="🏠", use_container_width=True)
+        if st.button("⬅️ Back to Home Dashboard", key=f"bottom_back_home_{current_page}", use_container_width=True):
+            st.switch_page("app.py")
     with col2:
-        st.page_link("pages/1_💬_Agri_Chat.py", label="💬 Open Agri Chat Advisor", icon="🌱", use_container_width=True)
+        p1 = find_page("1_")
+        if st.button("💬 Open Agri Chat Advisor", key=f"bottom_nav_chat_{current_page}", use_container_width=True):
+            if p1:
+                st.switch_page(p1)
 
 def render_auth_sidebar():
     """Renders persistent language selector, user authentication and profile status in the sidebar."""

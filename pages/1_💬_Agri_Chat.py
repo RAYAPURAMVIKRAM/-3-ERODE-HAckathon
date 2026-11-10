@@ -352,4 +352,4 @@ if user_input:
     st.session_state.chat_history.append({"role": "assistant", "content": reply})
 
 # 9. PROMINENT BOTTOM BACK TO HOME NAVIGATION
-render_bottom_back_button()
+render_bottom_back_button("1_Agri_Chat")
