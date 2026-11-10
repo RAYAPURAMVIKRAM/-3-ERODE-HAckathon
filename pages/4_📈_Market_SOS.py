@@ -9,7 +9,7 @@ if _ROOT_DIR not in sys.path:
 
 import streamlit as st
 import pandas as pd
-from auth_ui import render_auth_sidebar
+from auth_ui import render_auth_sidebar, render_top_navbar, render_bottom_back_button, inject_high_contrast_css
 from locales import t
 from supabase_client import (
     get_current_user,
@@ -38,31 +38,18 @@ def format_to_ist(ts_val):
 
 st.set_page_config(page_title="Market & SOS | STARK-X", page_icon="📈", layout="centered")
 
+# 1. GLOBAL HIGH-CONTRAST THEME & TOP NAVIGATOR
+inject_high_contrast_css()
+render_top_navbar("4_Market_SOS")
+
 # Render Farmer Authentication & Profile in Sidebar
 render_auth_sidebar()
 
 lang = st.session_state.get("lang", "English")
 
-# 1. EXECUTIVE AGRICULTURAL THEME & HIGH-CONTRAST CSS
+# 2. EXECUTIVE AGRICULTURAL THEME & HIGH-CONTRAST CSS
 st.markdown("""
 <style>
-    /* Force Light Color Scheme across all browsers & OS dark-mode overrides */
-    :root {
-        color-scheme: light !important;
-        --text-color: #0f172a !important;
-        --background-color: #f8fafc !important;
-        --secondary-background-color: #ffffff !important;
-    }
-
-    /* Base Page Canvas */
-    .stApp {
-        background-color: #f8fafc !important;
-        background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px) !important;
-        background-size: 24px 24px !important;
-        color: #0f172a !important;
-    }
-    #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
-
     /* Premium Header Hero Banner */
     .sos-hero-banner {
         background: linear-gradient(135deg, #064e3b 0%, #047857 50%, #059669 100%) !important;
@@ -73,8 +60,8 @@ st.markdown("""
         display: flex !important;
         align-items: center !important;
         justify-content: space-between !important;
-        box-shadow: 0 4px 16px rgba(6, 78, 59, 0.25) !important;
-        border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
+        box-shadow: 0 4px 16px rgba(6, 78, 59, 0.4) !important;
+        border: 1.5px solid #10b981 !important;
     }
     .sos-hero-banner * {
         color: #ffffff !important;
@@ -87,13 +74,13 @@ st.markdown("""
     .sos-avatar-badge {
         width: 48px !important;
         height: 48px !important;
-        background: #ffffff !important;
+        background: #0f172a !important;
         border-radius: 50% !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
         font-size: 26px !important;
-        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15) !important;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3) !important;
         border: 2px solid #34d399 !important;
     }
     .sos-hero-title {
@@ -126,7 +113,7 @@ st.markdown("""
         50% { opacity: 0.6; transform: scale(1.2); }
     }
     .sos-badge-pill {
-        background: rgba(255, 255, 255, 0.18) !important;
+        background: rgba(255, 255, 255, 0.15) !important;
         border: 1px solid rgba(255, 255, 255, 0.3) !important;
         padding: 6px 14px !important;
         border-radius: 20px !important;
@@ -138,35 +125,35 @@ st.markdown("""
 
     /* System Connectivity Bar */
     .system-status-card {
-        background: #ffffff !important;
-        border: 1.5px solid #cbd5e1 !important;
+        background: #0f172a !important;
+        border: 1.5px solid #334155 !important;
         border-radius: 12px !important;
         padding: 10px 16px !important;
         margin-bottom: 16px !important;
         display: flex !important;
         justify-content: space-between !important;
         align-items: center !important;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
     }
     .system-status-text {
         font-size: 13.5px !important;
         font-weight: 700 !important;
-        color: #1e293b !important;
+        color: #f8fafc !important;
     }
     .system-secure-badge {
         font-size: 12px !important;
         font-weight: 800 !important;
-        color: #059669 !important;
-        background: #dcfce7 !important;
+        color: #10b981 !important;
+        background: #064e3b !important;
         padding: 4px 10px !important;
         border-radius: 12px !important;
-        border: 1px solid #86efac !important;
+        border: 1px solid #10b981 !important;
     }
 
-    /* Tab Buttons: High Contrast & Solid Background */
+    /* Tab Buttons: High Contrast */
     .stTabs [data-baseweb="tab-list"] { 
         gap: 14px !important; 
-        border-bottom: 2px solid #cbd5e1 !important;
+        border-bottom: 2px solid #334155 !important;
         margin-bottom: 20px !important;
     }
     .stTabs [data-baseweb="tab"] { 
@@ -174,38 +161,31 @@ st.markdown("""
         border-radius: 12px 12px 0 0 !important; 
         font-weight: 800 !important;
         font-size: 1.05rem !important;
-        color: #334155 !important;
-        background: #ffffff !important;
-        border: 1.5px solid #cbd5e1 !important;
+        color: #94a3b8 !important;
+        background: #0f172a !important;
+        border: 1.5px solid #334155 !important;
         border-bottom: none !important;
         padding: 10px 22px !important;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
-        transition: all 0.2s ease !important;
-    }
-    .stTabs [data-baseweb="tab"]:hover {
-        background: #f0fdf4 !important;
-        color: #059669 !important;
     }
     .stTabs [aria-selected="true"] {
-        background: #ffffff !important;
-        color: #064e3b !important;
-        border-top: 4px solid #059669 !important;
-        box-shadow: 0 -2px 8px rgba(5, 150, 105, 0.12) !important;
+        background: #1e293b !important;
+        color: #10b981 !important;
+        border-top: 4px solid #10b981 !important;
     }
 
     /* Section Cards */
     .section-card {
-        background: #ffffff !important;
-        border: 1.5px solid #cbd5e1 !important;
+        background: #0f172a !important;
+        border: 1.5px solid #334155 !important;
         border-radius: 16px !important;
         padding: 20px 24px !important;
         margin-bottom: 20px !important;
-        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06) !important;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3) !important;
     }
     .section-card-title {
         font-size: 1.25rem !important;
         font-weight: 800 !important;
-        color: #064e3b !important;
+        color: #10b981 !important;
         margin-top: 0 !important;
         margin-bottom: 6px !important;
         display: flex !important;
@@ -214,100 +194,10 @@ st.markdown("""
     }
     .section-card-desc {
         font-size: 14px !important;
-        color: #475569 !important;
+        color: #94a3b8 !important;
         font-weight: 600 !important;
         margin-bottom: 16px !important;
         line-height: 1.5 !important;
-    }
-
-    /* Dataframe Container */
-    div[data-testid="stDataFrame"] {
-        background: #ffffff !important;
-        border: 2px solid #cbd5e1 !important;
-        border-radius: 14px !important;
-        padding: 8px !important;
-        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05) !important;
-        margin-bottom: 18px !important;
-    }
-
-    /* Forms & Inputs */
-    div[data-testid="stForm"] {
-        background: #ffffff !important;
-        border: 2px solid #cbd5e1 !important;
-        border-radius: 18px !important;
-        padding: 24px !important;
-        box-shadow: 0 4px 18px rgba(15, 23, 42, 0.08) !important;
-        margin-bottom: 24px !important;
-    }
-    div[data-testid="stForm"] label,
-    label[data-testid="stWidgetLabel"] p {
-        color: #064e3b !important;
-        font-weight: 800 !important;
-        font-size: 0.98rem !important;
-        margin-bottom: 6px !important;
-    }
-    div[data-testid="stTextInput"] input,
-    div[data-testid="stTextArea"] textarea,
-    div[data-baseweb="select"] {
-        background-color: #ffffff !important;
-        color: #0f172a !important;
-        border: 2px solid #94a3b8 !important;
-        border-radius: 12px !important;
-        font-weight: 600 !important;
-        font-size: 1rem !important;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
-    }
-    div[data-testid="stTextInput"] input:focus,
-    div[data-testid="stTextArea"] textarea:focus {
-        border-color: #059669 !important;
-        box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.25) !important;
-    }
-
-    /* Buttons: Primary Gradient */
-    div.stButton > button,
-    div[data-testid="stFormSubmitButton"] > button {
-        background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
-        color: #ffffff !important;
-        font-size: 1.08rem !important;
-        font-weight: 800 !important;
-        letter-spacing: 0.3px !important;
-        padding: 14px 24px !important;
-        border-radius: 14px !important;
-        border: none !important;
-        box-shadow: 0 4px 14px rgba(5, 150, 105, 0.3) !important;
-        transition: all 0.2s ease !important;
-    }
-    div.stButton > button:hover,
-    div[data-testid="stFormSubmitButton"] > button:hover {
-        transform: translateY(-2px) !important;
-        box-shadow: 0 6px 20px rgba(5, 150, 105, 0.45) !important;
-        background: linear-gradient(135deg, #047857 0%, #064e3b 100%) !important;
-    }
-    div.stButton > button *,
-    div[data-testid="stFormSubmitButton"] > button * {
-        color: #ffffff !important;
-    }
-
-    /* Alert & Info Boxes */
-    div[data-testid="stAlert"] {
-        background-color: #ffffff !important;
-        border: 2px solid #cbd5e1 !important;
-        border-left: 6px solid #059669 !important;
-        border-radius: 16px !important;
-        padding: 18px 22px !important;
-        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08) !important;
-        margin-top: 14px !important;
-    }
-    div[data-testid="stAlert"] * {
-        color: #0f172a !important;
-        font-size: 1.05rem !important;
-        line-height: 1.75 !important;
-        font-weight: 600 !important;
-    }
-    div[data-testid="stAlert"] strong,
-    div[data-testid="stAlert"] b {
-        color: #047857 !important;
-        font-weight: 800 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -434,3 +324,7 @@ with tab2:
         if "Date" in tickets_df.columns:
             tickets_df["Date"] = tickets_df["Date"].apply(format_to_ist)
         st.dataframe(tickets_df, use_container_width=True, hide_index=True)
+
+# 4. PROMINENT BOTTOM BACK TO HOME NAVIGATION
+render_bottom_back_button()
+

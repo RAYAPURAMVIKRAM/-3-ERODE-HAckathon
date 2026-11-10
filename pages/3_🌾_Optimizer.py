@@ -9,7 +9,7 @@ if _ROOT_DIR not in sys.path:
 
 import requests
 import streamlit as st
-from auth_ui import render_auth_sidebar
+from auth_ui import render_auth_sidebar, render_top_navbar, render_bottom_back_button, inject_high_contrast_css
 
 # 1. PAGE CONFIGURATION
 st.set_page_config(
@@ -19,38 +19,25 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. RENDER AUTHENTICATION SIDEBAR
+# 2. GLOBAL HIGH-CONTRAST THEME & TOP NAVIGATOR
+inject_high_contrast_css()
+render_top_navbar("3_Optimizer")
+
+# 3. RENDER AUTHENTICATION SIDEBAR
 render_auth_sidebar()
 
-# 3. CUSTOM STYLING
+# 4. CUSTOM STYLING
 st.markdown("""
 <style>
-    /* Force Light Color Scheme across all browsers & OS dark-mode overrides */
-    :root {
-        color-scheme: light !important;
-        --text-color: #0f172a !important;
-        --background-color: #f8fafc !important;
-        --secondary-background-color: #ffffff !important;
-    }
-
-    /* Base Page Styling: Professional, clean, light-slate agricultural canvas */
-    .stApp {
-        background-color: #f8fafc !important;
-        background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px) !important;
-        background-size: 24px 24px !important;
-        color: #0f172a !important;
-    }
-    #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
-    
     .opt-header { 
         text-align: center !important; 
-        color: #064e3b !important; 
+        color: #10b981 !important; 
         font-weight: 800 !important; 
         margin-bottom: 6px !important; 
     }
     .opt-subtitle {
         text-align: center !important;
-        color: #475569 !important;
+        color: #94a3b8 !important;
         font-weight: 600 !important;
         font-size: 1.05rem !important;
         margin-bottom: 20px !important;
@@ -58,22 +45,22 @@ st.markdown("""
 
     .stTabs [data-baseweb="tab-list"] { 
         gap: 14px !important; 
-        border-bottom: 2px solid #cbd5e1 !important;
+        border-bottom: 2px solid #334155 !important;
     }
     .stTabs [data-baseweb="tab"] { 
         height: 48px !important; 
         border-radius: 12px 12px 0 0 !important; 
         font-weight: 700 !important;
-        color: #334155 !important;
-        background: #f1f5f9 !important;
-        border: 1.5px solid #cbd5e1 !important;
+        color: #94a3b8 !important;
+        background: #0f172a !important;
+        border: 1.5px solid #334155 !important;
         border-bottom: none !important;
         padding: 8px 18px !important;
     }
     .stTabs [aria-selected="true"] {
-        background: #ffffff !important;
-        color: #064e3b !important;
-        border-top: 3px solid #059669 !important;
+        background: #1e293b !important;
+        color: #10b981 !important;
+        border-top: 3px solid #10b981 !important;
     }
 
     .live-banner {
@@ -82,8 +69,8 @@ st.markdown("""
         padding: 18px 22px !important;
         border-radius: 16px !important;
         margin-bottom: 22px !important;
-        border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
-        box-shadow: 0 4px 16px rgba(6, 78, 59, 0.25) !important;
+        border: 1.5px solid #10b981 !important;
+        box-shadow: 0 4px 16px rgba(6, 78, 59, 0.4) !important;
     }
     .live-banner * {
         color: #ffffff !important;
@@ -118,42 +105,6 @@ st.markdown("""
         font-weight: 800 !important;
         color: #ffffff !important;
         border: 1px solid rgba(255, 255, 255, 0.35) !important;
-    }
-
-    /* Primary Action Buttons */
-    div.stButton > button {
-        background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
-        color: #ffffff !important;
-        font-size: 1.08rem !important;
-        font-weight: 800 !important;
-        letter-spacing: 0.3px !important;
-        padding: 14px 24px !important;
-        border-radius: 14px !important;
-        border: none !important;
-        box-shadow: 0 4px 14px rgba(5, 150, 105, 0.3) !important;
-        transition: all 0.2s ease !important;
-    }
-    div.stButton > button:hover {
-        transform: translateY(-2px) !important;
-        box-shadow: 0 6px 20px rgba(5, 150, 105, 0.45) !important;
-        background: linear-gradient(135deg, #047857 0%, #064e3b 100%) !important;
-    }
-    div.stButton > button * {
-        color: #ffffff !important;
-    }
-
-    /* Alert / Result Boxes */
-    div[data-testid="stAlert"] {
-        background-color: #ffffff !important;
-        border: 2px solid #cbd5e1 !important;
-        border-left: 6px solid #059669 !important;
-        border-radius: 16px !important;
-        padding: 16px 20px !important;
-        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08) !important;
-    }
-    div[data-testid="stAlert"] * {
-        color: #0f172a !important;
-        font-weight: 600 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -408,3 +359,7 @@ with tab2:
             else:
                 st.success(f"✅ **OPTIMAL MATCH:** {target_crop} is well-suited for your farm!")
                 st.write(f"Your {target_soil}, {target_water}, and local climate ({live_temp:.1f}°C) meet baseline commercial yield criteria.")
+
+# 5. PROMINENT BOTTOM BACK TO HOME NAVIGATION
+render_bottom_back_button()
+

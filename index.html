@@ -242,6 +242,98 @@
       box-shadow: 0 4px 12px rgba(5, 150, 105, 0.35);
     }
 
+    .btn-back-home {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #0f172a;
+      border: 1.5px solid #334155;
+      color: #38bdf8;
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      margin-bottom: 16px;
+      transition: all 0.2s;
+    }
+    .btn-back-home:hover {
+      background: #1e293b;
+      border-color: #38bdf8;
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+    
+    .home-hero-card {
+      background: linear-gradient(135deg, rgba(6, 78, 59, 0.9) 0%, rgba(4, 120, 87, 0.9) 50%, rgba(15, 23, 42, 0.95) 100%);
+      border: 1.5px solid #10b981;
+      border-radius: 20px;
+      padding: 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    .home-hero-title {
+      font-size: 26px;
+      font-weight: 900;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+    .home-hero-desc {
+      font-size: 14.5px;
+      color: #d1fae5;
+      line-height: 1.6;
+      max-width: 800px;
+    }
+    .home-modules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+      margin-top: 20px;
+    }
+    .home-module-card {
+      background: #0f172a;
+      border: 1.5px solid #334155;
+      border-radius: 16px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .home-module-card:hover {
+      border-color: #10b981;
+      background: #131f37;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(16, 185, 129, 0.25);
+    }
+    .home-module-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+    .home-module-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: #10b981;
+      margin-bottom: 6px;
+    }
+    .home-module-desc {
+      font-size: 13px;
+      color: #94a3b8;
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+    .home-module-btn {
+      align-self: flex-start;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid #10b981;
+      color: #86efac;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
     .tab-content { display: none; animation: fadeIn 0.3s ease; }
     .tab-content.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
@@ -452,7 +544,7 @@
 
   <!-- Header -->
   <header>
-    <a href="#" class="brand">
+    <a href="javascript:void(0);" onclick="selectTab('home');" class="brand" title="Return to Home Dashboard">
       <div class="brand-icon">🌱</div>
       <div>
         <div class="brand-title">STARK-X <span>AgriPirate</span></div>
@@ -504,17 +596,110 @@
 
   <!-- Main Workspace -->
   <div class="container">
-    <!-- 5 Core Navigation Tabs -->
+    <!-- Navigation Bar with Prominent Home Dashboard & 5 Modules -->
     <div class="nav-tabs">
-      <button class="tab-btn active" onclick="selectTab('chat');">💬 1. <span data-i18n="nav_chat">Agri Chat</span></button>
-      <button class="tab-btn" onclick="selectTab('vision');">📸 2. <span data-i18n="nav_vision">Crop Vision</span></button>
-      <button class="tab-btn" onclick="selectTab('optimizer');">🌾 3. <span data-i18n="nav_optimizer">Crop & Soil Optimizer</span></button>
-      <button class="tab-btn" onclick="selectTab('market');">📈 4. <span data-i18n="nav_market">Market & SOS</span></button>
-      <button class="tab-btn" onclick="selectTab('marketplace');">🛒 5. <span data-i18n="nav_marketplace">Direct Marketplace & Reels</span></button>
+      <button class="tab-btn active" data-tab="home" onclick="selectTab('home');">🏠 <span data-i18n="nav_home">Home Dashboard</span></button>
+      <button class="tab-btn" data-tab="chat" onclick="selectTab('chat');">💬 1. <span data-i18n="nav_chat">Agri Chat</span></button>
+      <button class="tab-btn" data-tab="vision" onclick="selectTab('vision');">📸 2. <span data-i18n="nav_vision">Crop Vision</span></button>
+      <button class="tab-btn" data-tab="optimizer" onclick="selectTab('optimizer');">🌾 3. <span data-i18n="nav_optimizer">Crop & Soil Optimizer</span></button>
+      <button class="tab-btn" data-tab="market" onclick="selectTab('market');">📈 4. <span data-i18n="nav_market">Market & SOS</span></button>
+      <button class="tab-btn" data-tab="marketplace" onclick="selectTab('marketplace');">🛒 5. <span data-i18n="nav_marketplace">Direct Marketplace & Reels</span></button>
+    </div>
+
+    <!-- TAB 0: HOME DASHBOARD -->
+    <div id="tab-home" class="tab-content active">
+      <div class="home-hero-card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">
+          <div>
+            <div style="display:inline-block; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); padding:4px 12px; border-radius:20px; font-size:11.5px; font-weight:800; color:#fff; margin-bottom:10px;">
+              🌱 KONGU AGRO-ECOSYSTEM • TAMIL NADU
+            </div>
+            <h2 class="home-hero-title">STARK-X AgriPirate</h2>
+            <p class="home-hero-desc">
+              Next-generation autonomous precision agriculture operating system combining satellite remote sensing, regional agronomy intelligence, and instant farmer relief across 38 districts of Tamil Nadu.
+            </p>
+          </div>
+          <img src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?q=80&w=360&auto=format&fit=crop" style="border-radius:14px; border:2px solid #34d399; max-width:240px; width:100%; object-fit:cover; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Smart Agriculture">
+        </div>
+      </div>
+
+      <!-- Quick Metrics Grid -->
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:14px; margin-bottom:24px;">
+        <div style="background:#0f172a; border:1.5px solid #334155; border-radius:14px; padding:16px;">
+          <div style="font-size:12px; color:#94a3b8; font-weight:700;">📡 SATELLITE RADAR</div>
+          <div style="font-size:22px; font-weight:900; color:#10b981; margin:4px 0;">29.4°C Live</div>
+          <div style="font-size:12px; color:#cbd5e1;">Erode / Perundurai Grounding</div>
+        </div>
+        <div style="background:#0f172a; border:1.5px solid #334155; border-radius:14px; padding:16px;">
+          <div style="font-size:12px; color:#94a3b8; font-weight:700;">🌱 DISTRICT SOIL</div>
+          <div style="font-size:22px; font-weight:900; color:#06b6d4; margin:4px 0;">Red Loam (Kongu)</div>
+          <div style="font-size:12px; color:#cbd5e1;">High drainage & iron oxide</div>
+        </div>
+        <div style="background:#0f172a; border:1.5px solid #334155; border-radius:14px; padding:16px;">
+          <div style="font-size:12px; color:#94a3b8; font-weight:700;">💰 ERODE TURMERIC MANDI</div>
+          <div style="font-size:22px; font-weight:900; color:#f59e0b; margin:4px 0;">₹14,500 / Qtl</div>
+          <div style="font-size:12px; color:#86efac;">▲ +₹350 Bullish</div>
+        </div>
+        <div style="background:#0f172a; border:1.5px solid #334155; border-radius:14px; padding:16px;">
+          <div style="font-size:12px; color:#94a3b8; font-weight:700;">🚨 UNION RELIEF STATUS</div>
+          <div style="font-size:22px; font-weight:900; color:#10b981; margin:4px 0;">Active Support</div>
+          <div style="font-size:12px; color:#cbd5e1;">24/7 Distress Dispatch Ready</div>
+        </div>
+      </div>
+
+      <!-- 5 Core Modules Launch Cards -->
+      <h3 style="color:#10b981; font-weight:800; font-size:19px; margin-bottom:12px;">🚀 Access Precision AgOS Modules</h3>
+      <div class="home-modules-grid">
+        <div class="home-module-card" onclick="selectTab('chat');">
+          <div>
+            <div class="home-module-icon">💬</div>
+            <div class="home-module-title">1. Multilingual Agri Chat</div>
+            <div class="home-module-desc">Instant voice & text advisory in Tamil, Telugu, Hindi, Kannada, and English. Tailored agronomic recommendations grounded in local temperature & soil.</div>
+          </div>
+          <div class="home-module-btn">Launch Agri Chat ➔</div>
+        </div>
+
+        <div class="home-module-card" onclick="selectTab('vision');">
+          <div>
+            <div class="home-module-icon">📸</div>
+            <div class="home-module-title">2. AI Crop Vision Scanner</div>
+            <div class="home-module-desc">Plant pathology diagnostics for Turmeric, Rice, Cotton, and Tomato. Detects fungal rot, blight, and whitefly infestations with chemical & organic spray plans.</div>
+          </div>
+          <div class="home-module-btn">Launch Crop Vision ➔</div>
+        </div>
+
+        <div class="home-module-card" onclick="selectTab('optimizer');">
+          <div>
+            <div class="home-module-icon">🌾</div>
+            <div class="home-module-title">3. Crop & Soil Optimizer</div>
+            <div class="home-module-desc">Automated district soil mapping, NPK chemical fertilizer calculator, irrigation schedules, and crop-water mismatch protection.</div>
+          </div>
+          <div class="home-module-btn">Launch Optimizer ➔</div>
+        </div>
+
+        <div class="home-module-card" onclick="selectTab('market');">
+          <div>
+            <div class="home-module-icon">📈</div>
+            <div class="home-module-title">4. Market Trends & SOS Distress</div>
+            <div class="home-module-desc">Live daily Kongu Mandi commodity rates, historical price charts, and 1-click community SOS emergency ticket dispatcher backed by Supabase.</div>
+          </div>
+          <div class="home-module-btn">Launch Market & SOS ➔</div>
+        </div>
+
+        <div class="home-module-card" onclick="selectTab('marketplace');">
+          <div>
+            <div class="home-module-icon">🛒</div>
+            <div class="home-module-title">5. Direct Marketplace & Reels</div>
+            <div class="home-module-desc">Eliminate middleman exploitation! Connect directly with buyers via 1-click WhatsApp orders and watch viral agronomist reels.</div>
+          </div>
+          <div class="home-module-btn">Launch Marketplace ➔</div>
+        </div>
+      </div>
     </div>
 
     <!-- TAB 1: AGRI CHAT (AI PRECISION AGRONOMIST) -->
-    <div id="tab-chat" class="tab-content active">
+    <div id="tab-chat" class="tab-content">
+      <button class="btn-back-home" onclick="selectTab('home');">⬅️ Back to Home Dashboard</button>
       <div class="card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
           <h3 style="color:#4ade80;">🌱 <span data-i18n="chat_head">STARK-X Multilingual AI Agronomist</span></h3>
@@ -543,11 +728,16 @@
           <button class="btn-primary" style="width:auto; padding:10px 18px;" onclick="toggleVoiceInput();" title="Voice Input">🎙️</button>
           <button class="btn-primary" style="width:auto; padding:10px 22px;" onclick="sendUserMessage();">Send</button>
         </div>
+
+        <div style="text-align:center; margin-top:20px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.1);">
+          <button class="btn-back-home" onclick="selectTab('home');">🏠 ⬅️ Back to Home Dashboard</button>
+        </div>
       </div>
     </div>
 
     <!-- TAB 2: CROP VISION (AI PLANT PATHOLOGY STUDIO) -->
     <div id="tab-vision" class="tab-content">
+      <button class="btn-back-home" onclick="selectTab('home');">⬅️ Back to Home Dashboard</button>
       <div class="card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
           <h3 style="color:#4ade80;">📸 <span data-i18n="vision_head">AI Crop Disease & Pathology Scanner</span></h3>
@@ -610,11 +800,15 @@
             </div>
           </div>
         </div>
+        <div style="text-align:center; margin-top:20px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.1);">
+          <button class="btn-back-home" onclick="selectTab('home');">🏠 ⬅️ Back to Home Dashboard</button>
+        </div>
       </div>
     </div>
 
     <!-- TAB 3: CROP & SOIL OPTIMIZER -->
     <div id="tab-optimizer" class="tab-content">
+      <button class="btn-back-home" onclick="selectTab('home');">⬅️ Back to Home Dashboard</button>
       <div class="card">
         <div class="sub-tabs">
           <button class="sub-tab-btn active" onclick="switchOptSubTab('recommend');">🎯 1. Recommend Crop for My Farm</button>
@@ -739,11 +933,15 @@
             </div>
           </div>
         </div>
+        <div style="text-align:center; margin-top:20px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.1);">
+          <button class="btn-back-home" onclick="selectTab('home');">🏠 ⬅️ Back to Home Dashboard</button>
+        </div>
       </div>
     </div>
 
     <!-- TAB 4: MARKET & SOS HELPDESK -->
     <div id="tab-market" class="tab-content">
+      <button class="btn-back-home" onclick="selectTab('home');">⬅️ Back to Home Dashboard</button>
       <div class="card">
         <div class="sub-tabs">
           <button class="sub-tab-btn active" onclick="switchMarketSubTab('rates');">📊 Live Mandi Spot Rates & FinTech</button>
@@ -839,11 +1037,15 @@
             </div>
           </div>
         </div>
+        <div style="text-align:center; margin-top:20px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.1);">
+          <button class="btn-back-home" onclick="selectTab('home');">🏠 ⬅️ Back to Home Dashboard</button>
+        </div>
       </div>
     </div>
 
     <!-- TAB 5: DIRECT MARKETPLACE & REELS -->
     <div id="tab-marketplace" class="tab-content">
+      <button class="btn-back-home" onclick="selectTab('home');">⬅️ Back to Home Dashboard</button>
       <div class="card">
         <div class="sub-tabs">
           <button class="sub-tab-btn active" onclick="switchMarketplaceSubTab('lots');">🛒 Direct Harvest Lots</button>
@@ -936,6 +1138,9 @@
             </div>
           </div>
         </div>
+        <div style="text-align:center; margin-top:20px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.1);">
+          <button class="btn-back-home" onclick="selectTab('home');">🏠 ⬅️ Back to Home Dashboard</button>
+        </div>
       </div>
     </div>
   </div>
@@ -958,6 +1163,7 @@
     // Multilingual Dictionary (English, Tamil, Telugu, Hindi, Kannada)
     const I18N = {
       en: {
+        nav_home: "Home Dashboard",
         nav_chat: "Agri Chat",
         nav_vision: "Crop Vision",
         nav_optimizer: "Crop & Soil Optimizer",
@@ -968,6 +1174,7 @@
         vision_head: "AI Crop Disease & Pathology Scanner"
       },
       ta: {
+        nav_home: "முகப்பு பலகை",
         nav_chat: "விவசாய அரட்டை",
         nav_vision: "பயிர் பார்வை",
         nav_optimizer: "பயிர் தேர்வு",
@@ -978,6 +1185,7 @@
         vision_head: "AI பயிர் நோய் கண்டறியும் மையம்"
       },
       te: {
+        nav_home: "హోమ్ డ్యాష్‌బోర్డ్",
         nav_chat: "వ్యవసాయ చాట్",
         nav_vision: "పంట నిర్ధారణ",
         nav_optimizer: "పంట ఎంపిక",
@@ -988,6 +1196,7 @@
         vision_head: "AI పంట తెగుళ్ల స్కానర్"
       },
       hi: {
+        nav_home: "होम डैशबोर्ड",
         nav_chat: "कृषि संवाद",
         nav_vision: "फसल निदान",
         nav_optimizer: "मृदा एवं फसल चयन",
@@ -998,6 +1207,7 @@
         vision_head: "AI फसल रोग एवं कीट स्कैनर"
       },
       kn: {
+        nav_home: "ಮುಖಪುಟ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
         nav_chat: "ಕೃಷಿ ಸಂವಾದ",
         nav_vision: "ಬೆಳೆ ತಪಾಸಣೆ",
         nav_optimizer: "ಬೆಳೆ ಆಯ್ಕೆ",
@@ -1021,12 +1231,20 @@
       });
     }
 
-    // Tab Navigation
+    // Tab Navigation: Seamlessly activates both by click and programmatic jump
     function selectTab(tabKey) {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.remove('active');
+        if (b.getAttribute('data-tab') === tabKey) {
+          b.classList.add('active');
+        }
+      });
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      event.currentTarget.classList.add('active');
-      document.getElementById('tab-' + tabKey).classList.add('active');
+      const target = document.getElementById('tab-' + tabKey);
+      if (target) {
+        target.classList.add('active');
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
 
       if (tabKey === 'market') loadSosTickets();
       if (tabKey === 'marketplace') loadMarketCrops();

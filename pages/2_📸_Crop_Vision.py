@@ -11,7 +11,7 @@ import streamlit as st
 from PIL import Image
 from dotenv import load_dotenv
 import google.generativeai as genai
-from auth_ui import render_auth_sidebar
+from auth_ui import render_auth_sidebar, render_top_navbar, render_bottom_back_button, inject_high_contrast_css
 from locales import t
 
 # 1. LOAD API KEY WITH CACHE OVERRIDE
@@ -22,29 +22,16 @@ GEMINI_API_KEY = raw_key.strip(' "\'')
 # 2. PAGE CONFIG
 st.set_page_config(page_title="Crop Vision | STARK-X", page_icon="📸", layout="centered")
 
+# 3. GLOBAL HIGH-CONTRAST THEME & TOP NAVIGATOR
+inject_high_contrast_css()
+render_top_navbar("2_Crop_Vision")
+
 # Render Farmer Authentication & Persistent Language Selector in Sidebar
 render_auth_sidebar()
 
-# 3. MODERN EXECUTIVE AGRICULTURAL THEME & HIGH-CONTRAST CSS
+# 4. MODERN EXECUTIVE AGRICULTURAL THEME & HIGH-CONTRAST CSS
 st.markdown("""
 <style>
-    /* Force Light Color Scheme across all browsers & OS dark-mode overrides */
-    :root {
-        color-scheme: light !important;
-        --text-color: #0f172a !important;
-        --background-color: #f8fafc !important;
-        --secondary-background-color: #ffffff !important;
-    }
-
-    /* Base Page Styling: Clean, professional, light-slate agricultural canvas */
-    .stApp {
-        background-color: #f8fafc !important;
-        background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px) !important;
-        background-size: 24px 24px !important;
-        color: #0f172a !important;
-    }
-    #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
-    
     /* Premium Header Hero Banner */
     .vision-hero-banner {
         background: linear-gradient(135deg, #064e3b 0%, #047857 50%, #059669 100%) !important;
@@ -55,8 +42,8 @@ st.markdown("""
         display: flex !important;
         align-items: center !important;
         justify-content: space-between !important;
-        box-shadow: 0 4px 16px rgba(6, 78, 59, 0.25) !important;
-        border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
+        box-shadow: 0 4px 16px rgba(6, 78, 59, 0.4) !important;
+        border: 1.5px solid #10b981 !important;
     }
     .vision-hero-banner * {
         color: #ffffff !important;
@@ -69,13 +56,13 @@ st.markdown("""
     .vision-avatar-badge {
         width: 48px !important;
         height: 48px !important;
-        background: #ffffff !important;
+        background: #0f172a !important;
         border-radius: 50% !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
         font-size: 26px !important;
-        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15) !important;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3) !important;
         border: 2px solid #34d399 !important;
     }
     .vision-hero-title {
@@ -108,7 +95,7 @@ st.markdown("""
         50% { opacity: 0.6; transform: scale(1.2); }
     }
     .vision-badge-pill {
-        background: rgba(255, 255, 255, 0.18) !important;
+        background: rgba(255, 255, 255, 0.15) !important;
         border: 1px solid rgba(255, 255, 255, 0.3) !important;
         padding: 6px 14px !important;
         border-radius: 20px !important;
@@ -126,19 +113,19 @@ st.markdown("""
         margin-bottom: 20px !important;
     }
     .step-card {
-        background: #ffffff !important;
-        border: 1.5px solid #cbd5e1 !important;
+        background: #0f172a !important;
+        border: 1.5px solid #334155 !important;
         border-radius: 14px !important;
         padding: 14px 16px !important;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
         display: flex !important;
         align-items: center !important;
         gap: 12px !important;
     }
     .step-icon {
         font-size: 24px !important;
-        background: #f0fdf4 !important;
-        border: 1.5px solid #86efac !important;
+        background: #064e3b !important;
+        border: 1.5px solid #10b981 !important;
         border-radius: 10px !important;
         padding: 8px !important;
         display: flex !important;
@@ -149,12 +136,12 @@ st.markdown("""
     .step-text-title {
         font-size: 13px !important;
         font-weight: 800 !important;
-        color: #064e3b !important;
+        color: #10b981 !important;
         margin: 0 0 2px 0 !important;
     }
     .step-text-desc {
         font-size: 11.5px !important;
-        color: #475569 !important;
+        color: #94a3b8 !important;
         margin: 0 !important;
         line-height: 1.35 !important;
         font-weight: 600 !important;
@@ -162,141 +149,48 @@ st.markdown("""
 
     /* File Uploader Container Styling */
     div[data-testid="stFileUploader"] {
-        background: #ffffff !important;
-        border: 2px dashed #059669 !important;
+        background: #0f172a !important;
+        border: 2px dashed #10b981 !important;
         border-radius: 16px !important;
         padding: 20px !important;
-        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05) !important;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3) !important;
         margin-bottom: 20px !important;
-        transition: all 0.2s ease !important;
-    }
-    div[data-testid="stFileUploader"]:hover {
-        border-color: #047857 !important;
-        background: #f0fdf4 !important;
-        box-shadow: 0 6px 18px rgba(5, 150, 105, 0.12) !important;
     }
     div[data-testid="stFileUploader"] label {
-        color: #064e3b !important;
+        color: #10b981 !important;
         font-size: 1.05rem !important;
         font-weight: 800 !important;
     }
     div[data-testid="stFileUploader"] small {
-        color: #475569 !important;
+        color: #94a3b8 !important;
         font-weight: 600 !important;
     }
     div[data-testid="stFileUploader"] section {
-        background: #f8fafc !important;
+        background: #070e18 !important;
         border-radius: 12px !important;
     }
     div[data-testid="stFileUploader"] button {
-        background: #ffffff !important;
-        color: #064e3b !important;
-        border: 1.5px solid #059669 !important;
+        background: #1e293b !important;
+        color: #ffffff !important;
+        border: 1.5px solid #334155 !important;
         font-weight: 700 !important;
         border-radius: 10px !important;
     }
-    div[data-testid="stFileUploader"] button:hover {
-        background: #059669 !important;
-        color: #ffffff !important;
-    }
 
-    /* Image Preview Container */
-    .stImage {
-        background: #ffffff !important;
-        border: 2px solid #cbd5e1 !important;
+    /* Diagnosis Report Output */
+    .diagnosis-result-card {
+        background: #0c1c10 !important;
+        border: 2px solid #10b981 !important;
         border-radius: 16px !important;
-        padding: 14px !important;
-        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08) !important;
-        margin-bottom: 18px !important;
+        padding: 20px 24px !important;
+        box-shadow: 0 6px 24px rgba(16, 185, 129, 0.2) !important;
+        margin-top: 20px !important;
     }
-    .stImage > img {
-        border-radius: 12px !important;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+    .diagnosis-result-card * {
+        color: #f8fafc !important;
     }
-    .stImage [data-testid="stCaptionContainer"] p {
-        color: #475569 !important;
-        font-weight: 700 !important;
-        font-size: 13px !important;
-        text-align: center !important;
-        margin-top: 8px !important;
-    }
-
-    /* Primary Action Button (Run Vision Scan) */
-    div.stButton > button {
-        background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
-        color: #ffffff !important;
-        font-size: 1.1rem !important;
-        font-weight: 800 !important;
-        letter-spacing: 0.3px !important;
-        padding: 14px 24px !important;
-        border-radius: 14px !important;
-        border: none !important;
-        box-shadow: 0 4px 14px rgba(5, 150, 105, 0.3) !important;
-        transition: all 0.2s ease !important;
-        margin-bottom: 20px !important;
-    }
-    div.stButton > button:hover {
-        transform: translateY(-2px) !important;
-        box-shadow: 0 6px 20px rgba(5, 150, 105, 0.45) !important;
-        background: linear-gradient(135deg, #047857 0%, #064e3b 100%) !important;
-    }
-    div.stButton > button * {
-        color: #ffffff !important;
-    }
-
-    /* Spinner State */
-    div[data-testid="stSpinner"] {
-        background-color: #ffffff !important;
-        border: 2px solid #cbd5e1 !important;
-        border-left: 6px solid #f59e0b !important;
-        border-radius: 14px !important;
-        padding: 12px 18px !important;
-        margin-bottom: 16px !important;
-        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05) !important;
-    }
-    div[data-testid="stSpinner"] * {
-        color: #0f172a !important;
-        font-weight: 700 !important;
-        font-size: 1.02rem !important;
-    }
-
-    /* High-Contrast Agronomy Report Output (stAlert & stInfo) */
-    div[data-testid="stAlert"] {
-        background-color: #ffffff !important;
-        border: 2px solid #cbd5e1 !important;
-        border-left: 6px solid #059669 !important;
-        border-radius: 16px !important;
-        padding: 18px 22px !important;
-        box-shadow: 0 4px 18px rgba(15, 23, 42, 0.08) !important;
-        margin-bottom: 16px !important;
-    }
-    div[data-testid="stAlert"] * {
-        color: #0f172a !important;
-        font-size: 1.05rem !important;
-        line-height: 1.75 !important;
-        font-weight: 600 !important;
-    }
-    div[data-testid="stAlert"] strong,
-    div[data-testid="stAlert"] b {
-        color: #047857 !important;
-        font-weight: 800 !important;
-    }
-    div[data-testid="stAlert"] h1,
-    div[data-testid="stAlert"] h2,
-    div[data-testid="stAlert"] h3,
-    div[data-testid="stAlert"] h4 {
-        color: #064e3b !important;
-        font-weight: 800 !important;
-    }
-    div[data-testid="stAlert"] ul,
-    div[data-testid="stAlert"] ol {
-        color: #0f172a !important;
-        padding-left: 24px !important;
-        margin: 8px 0 12px 0 !important;
-    }
-    div[data-testid="stAlert"] li {
-        margin-bottom: 6px !important;
-        color: #0f172a !important;
+    .diagnosis-result-card h2, .diagnosis-result-card h3 {
+        color: #10b981 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -427,3 +321,7 @@ if uploaded_file is not None:
                 from agronomy_ai import get_agronomy_vision_response
                 rep = get_agronomy_vision_response("turmeric", lang)
                 render_diagnostic_card(rep, lang)
+
+# 5. PROMINENT BOTTOM BACK TO HOME NAVIGATION
+render_bottom_back_button()
+

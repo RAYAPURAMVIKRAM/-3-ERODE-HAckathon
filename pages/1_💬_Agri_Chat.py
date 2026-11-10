@@ -10,7 +10,7 @@ if _ROOT_DIR not in sys.path:
 import streamlit as st
 import google.generativeai as genai
 from dotenv import load_dotenv
-from auth_ui import render_auth_sidebar
+from auth_ui import render_auth_sidebar, render_top_navbar, render_bottom_back_button, inject_high_contrast_css
 from locales import t
 
 # 1. LOAD ENVIRONMENT VARIABLES WITH CACHE OVERRIDE
@@ -21,30 +21,17 @@ GEMINI_API_KEY = raw_key.strip(' "\'')
 # 2. STREAMLIT PAGE CONFIGURATION
 st.set_page_config(page_title="Agri Chat | STARK-X", page_icon="💬", layout="centered")
 
+# 3. GLOBAL HIGH-CONTRAST THEME & TOP NAVIGATOR
+inject_high_contrast_css()
+render_top_navbar("1_Agri_Chat")
+
 # RENDER SIDEBAR AUTH & PERSISTENT LANGUAGE SELECTOR
 with st.sidebar:
     render_auth_sidebar()
 
-# 3. HIGH-CONTRAST MODERN FARM FRESH UI WITH BOLD TYPOGRAPHY
+# 4. HIGH-CONTRAST CHAT STYLING
 st.markdown("""
 <style>
-    /* Force Light Color Scheme across all browsers & OS dark-mode overrides */
-    :root {
-        color-scheme: light !important;
-        --text-color: #0f172a !important;
-        --background-color: #f8fafc !important;
-        --secondary-background-color: #ffffff !important;
-    }
-
-    /* Base Page Styling: Professional, clean, light-slate agricultural canvas */
-    .stApp {
-        background-color: #f8fafc !important;
-        background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px) !important;
-        background-size: 24px 24px !important;
-        color: #0f172a !important;
-    }
-    #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
-    
     /* Premium Header Banner */
     .chat-hero-banner {
         background: linear-gradient(135deg, #064e3b 0%, #047857 50%, #059669 100%) !important;
@@ -55,8 +42,8 @@ st.markdown("""
         display: flex !important;
         align-items: center !important;
         justify-content: space-between !important;
-        box-shadow: 0 4px 16px rgba(6, 78, 59, 0.25) !important;
-        border: 1px solid rgba(255, 255, 255, 0.25) !important;
+        box-shadow: 0 4px 16px rgba(6, 78, 59, 0.4) !important;
+        border: 1.5px solid #10b981 !important;
     }
     .chat-hero-banner * {
         color: #ffffff !important;
@@ -69,13 +56,13 @@ st.markdown("""
     .chat-avatar-badge {
         width: 48px !important;
         height: 48px !important;
-        background: #ffffff !important;
+        background: #0f172a !important;
         border-radius: 50% !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
         font-size: 26px !important;
-        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15) !important;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3) !important;
         border: 2px solid #34d399 !important;
     }
     .chat-hero-title {
@@ -110,17 +97,17 @@ st.markdown("""
 
     /* BOLD, ULTRA-VISIBLE MULTILINGUAL BAR */
     .lang-showcase-card {
-        background: #ffffff !important;
-        border: 2px solid #cbd5e1 !important;
+        background: #0f172a !important;
+        border: 2px solid #334155 !important;
         border-radius: 14px !important;
         padding: 12px 16px !important;
         margin-bottom: 12px !important;
-        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
     }
     .lang-showcase-title {
         font-size: 13px !important;
         font-weight: 800 !important;
-        color: #1e293b !important;
+        color: #10b981 !important;
         margin-bottom: 8px !important;
         text-transform: uppercase !important;
         letter-spacing: 0.5px !important;
@@ -139,252 +126,101 @@ st.markdown("""
         transition: all 0.2s ease !important;
     }
     .lang-pill-en {
-        background: #eff6ff !important;
-        border: 2px solid #3b82f6 !important;
+        background: #1e293b !important;
+        border: 1.5px solid #3b82f6 !important;
     }
     .lang-pill-ta {
-        background: #f0fdf4 !important;
-        border: 2px solid #22c55e !important;
+        background: #064e3b !important;
+        border: 1.5px solid #22c55e !important;
     }
     .lang-pill-te {
-        background: #fff7ed !important;
-        border: 2px solid #f97316 !important;
+        background: #78350f !important;
+        border: 1.5px solid #f97316 !important;
     }
     .lang-txt-en {
         font-size: 16px !important;
         font-weight: 900 !important;
-        color: #1d4ed8 !important;
+        color: #93c5fd !important;
         display: block !important;
     }
     .lang-txt-ta {
         font-size: 18px !important;
         font-weight: 900 !important;
-        color: #15803d !important;
+        color: #86efac !important;
         display: block !important;
     }
     .lang-txt-te {
         font-size: 18px !important;
         font-weight: 900 !important;
-        color: #c2410c !important;
+        color: #fdba74 !important;
         display: block !important;
     }
 
-    /* Streamlit Radio Buttons: BOLD, CRISP, HIGH-CONTRAST LABELS */
-    div[data-testid="stRadio"] {
-        margin-top: -4px !important;
-        margin-bottom: 14px !important;
-    }
-    div[data-testid="stRadio"] > div {
-        gap: 12px !important;
-        justify-content: flex-start !important;
-        flex-wrap: wrap !important;
-    }
+    /* High-contrast Radio Buttons */
     div[data-testid="stRadio"] label {
-        background: #ffffff !important;
-        border: 2.5px solid #94a3b8 !important;
+        background: #0f172a !important;
+        border: 1.5px solid #334155 !important;
         border-radius: 12px !important;
         padding: 8px 18px !important;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06) !important;
-        cursor: pointer !important;
-        transition: all 0.2s ease !important;
+        color: #f8fafc !important;
     }
-    div[data-testid="stRadio"] label:hover {
-        border-color: #059669 !important;
-        background: #f0fdf4 !important;
-        transform: translateY(-2px) !important;
-    }
-    div[data-testid="stRadio"] label[data-checked="true"],
-    div[data-testid="stRadio"] label:has(input:checked) {
-        background: #dcfce7 !important;
-        border-color: #059669 !important;
-        box-shadow: 0 0 0 2px #059669 !important;
-    }
-    div[data-testid="stRadio"] label p,
-    div[data-testid="stRadio"] label span,
-    div[data-testid="stRadio"] label div {
-        font-size: 1.15rem !important;
-        font-weight: 900 !important;
-        color: #0f172a !important;
-        letter-spacing: 0.3px !important;
-    }
-
-    /* ==========================================================
-       ULTRA HIGH-CONTRAST CHAT MESSAGE BUBBLES (ASSISTANT & USER)
-       ========================================================== */
-    
-    /* Default Chat Container: 100% Solid Opaque Pure White Card */
-    div[data-testid="stChatMessage"] {
-        background-color: #ffffff !important;
-        border: 2px solid #cbd5e1 !important;
-        border-left: 6px solid #059669 !important; /* Prominent Advisor Accent */
-        border-radius: 16px !important;
-        padding: 18px 22px !important;
-        margin-bottom: 16px !important;
-        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.09) !important;
-        max-width: 95% !important;
-        opacity: 1 !important;
-    }
-
-    /* Universal Text Color Lock: Prevents dark-mode washed-out/transparent text */
-    div[data-testid="stChatMessage"],
-    div[data-testid="stChatMessage"] [data-testid="stChatMessageContent"],
-    div[data-testid="stChatMessage"] .stMarkdown,
-    div[data-testid="stChatMessage"] p,
-    div[data-testid="stChatMessage"] span,
-    div[data-testid="stChatMessage"] li,
-    div[data-testid="stChatMessage"] div {
-        color: #0f172a !important;
-        font-size: 1.05rem !important;
-        font-weight: 600 !important;
-        line-height: 1.75 !important;
-    }
-
-    /* Bold and Emphasis Words in Assistant Reply */
-    div[data-testid="stChatMessage"] strong,
-    div[data-testid="stChatMessage"] b {
-        color: #047857 !important;
-        font-weight: 800 !important;
-    }
-
-    /* Headings inside AI Response */
-    div[data-testid="stChatMessage"] h1,
-    div[data-testid="stChatMessage"] h2,
-    div[data-testid="stChatMessage"] h3,
-    div[data-testid="stChatMessage"] h4,
-    div[data-testid="stChatMessage"] h5,
-    div[data-testid="stChatMessage"] h6 {
-        color: #064e3b !important;
-        font-weight: 800 !important;
-        margin-top: 14px !important;
-        margin-bottom: 8px !important;
-    }
-
-    /* Lists inside AI Response */
-    div[data-testid="stChatMessage"] ul,
-    div[data-testid="stChatMessage"] ol {
-        color: #0f172a !important;
-        padding-left: 24px !important;
-        margin: 8px 0 12px 0 !important;
-    }
-    div[data-testid="stChatMessage"] li {
-        margin-bottom: 6px !important;
-        color: #0f172a !important;
-    }
-
-    /* Code & Quotes inside AI Response */
-    div[data-testid="stChatMessage"] code {
-        background-color: #f1f5f9 !important;
-        color: #0f172a !important;
+    div[data-testid="stRadio"] label * {
+        color: #f8fafc !important;
         font-weight: 700 !important;
-        padding: 3px 8px !important;
-        border-radius: 6px !important;
-        border: 1px solid #cbd5e1 !important;
-        font-size: 0.95em !important;
     }
-    div[data-testid="stChatMessage"] blockquote {
-        border-left: 4px solid #10b981 !important;
-        background-color: #f0fdf4 !important;
-        color: #064e3b !important;
-        padding: 10px 16px !important;
-        border-radius: 0 10px 10px 0 !important;
-        margin: 10px 0 !important;
-        font-weight: 600 !important;
+
+    /* HIGH-CONTRAST CHAT BUBBLES */
+    div[data-testid="stChatMessage"] {
+        background-color: #0f1e13 !important;
+        border: 1.5px solid #1e3a24 !important;
+        border-left: 6px solid #10b981 !important;
+        border-radius: 16px !important;
+        padding: 16px 20px !important;
+        margin-bottom: 14px !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+        color: #f8fafc !important;
+    }
+    div[data-testid="stChatMessage"] * {
+        color: #f8fafc !important;
+    }
+    div[data-testid="stChatMessage"] strong, div[data-testid="stChatMessage"] b {
+        color: #34d399 !important;
+        font-weight: 800 !important;
+    }
+    div[data-testid="stChatMessage"] h1, div[data-testid="stChatMessage"] h2, div[data-testid="stChatMessage"] h3 {
+        color: #10b981 !important;
+        font-weight: 800 !important;
     }
 
     /* User Message Bubble Overrides */
     div[data-testid="stChatMessage"]:has([data-testid*="User"]),
     div[data-testid="stChatMessage"]:has([data-testid*="user"]),
     div[data-testid="stChatMessage"]:has([aria-label*="user" i]) {
-        background-color: #dcfce7 !important;
-        border: 2px solid #86efac !important;
-        border-right: 6px solid #16a34a !important;
-        border-left: 2px solid #86efac !important;
-        margin-left: auto !important;
-        margin-right: 4px !important;
-        border-top-right-radius: 4px !important;
-        box-shadow: 0 3px 12px rgba(22, 163, 74, 0.12) !important;
+        background-color: #1e293b !important;
+        border: 1.5px solid #334155 !important;
+        border-right: 6px solid #38bdf8 !important;
+        border-left: 1.5px solid #334155 !important;
+        color: #f8fafc !important;
     }
-
-    div[data-testid="stChatMessage"]:has([data-testid*="User"]) [data-testid="stChatMessageContent"],
-    div[data-testid="stChatMessage"]:has([data-testid*="User"]) .stMarkdown,
-    div[data-testid="stChatMessage"]:has([data-testid*="User"]) p,
-    div[data-testid="stChatMessage"]:has([data-testid*="User"]) span,
-    div[data-testid="stChatMessage"]:has([data-testid*="User"]) li,
-    div[data-testid="stChatMessage"]:has([data-testid*="user"]) [data-testid="stChatMessageContent"],
-    div[data-testid="stChatMessage"]:has([data-testid*="user"]) .stMarkdown,
-    div[data-testid="stChatMessage"]:has([data-testid*="user"]) p,
-    div[data-testid="stChatMessage"]:has([data-testid*="user"]) span,
-    div[data-testid="stChatMessage"]:has([data-testid*="user"]) li {
-        color: #064e3b !important;
-        font-weight: 700 !important;
-        font-size: 1.05rem !important;
-    }
-
-    div[data-testid="stChatMessage"]:has([data-testid*="User"]) strong,
-    div[data-testid="stChatMessage"]:has([data-testid*="user"]) strong {
-        color: #022c22 !important;
-        font-weight: 900 !important;
-    }
-
-    /* Avatars */
-    div[data-testid*="ChatMessageAvatar"],
-    div[data-testid*="chatAvatarIcon"] {
-        background-color: #f1f5f9 !important;
-        border-radius: 50% !important;
-        border: 2px solid #94a3b8 !important;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12) !important;
-    }
-    div[data-testid="stChatMessage"]:has([data-testid*="User"]) div[data-testid*="ChatMessageAvatar"],
-    div[data-testid="stChatMessage"]:has([data-testid*="user"]) div[data-testid*="ChatMessageAvatar"] {
-        background-color: #bbf7d0 !important;
-        border-color: #22c55e !important;
-    }
-
-    /* Chat Spinner (Thinking state) */
-    div[data-testid="stSpinner"] {
-        background-color: #ffffff !important;
-        border: 2px solid #cbd5e1 !important;
-        border-left: 6px solid #f59e0b !important;
-        border-radius: 14px !important;
-        padding: 12px 18px !important;
-        margin-bottom: 12px !important;
-        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05) !important;
-    }
-    div[data-testid="stSpinner"] * {
-        color: #0f172a !important;
-        font-weight: 700 !important;
-        font-size: 1.02rem !important;
+    div[data-testid="stChatMessage"]:has([data-testid*="User"]) * {
+        color: #f8fafc !important;
     }
 
     /* Chat Input Bar */
-    div[data-testid="stChatInput"] {
-        border-radius: 16px !important;
-    }
     div[data-testid="stChatInput"] textarea {
-        background-color: #ffffff !important;
-        color: #0f172a !important;
+        background-color: #0f172a !important;
+        color: #ffffff !important;
         font-size: 1.05rem !important;
         font-weight: 600 !important;
-        border: 2px solid #64748b !important;
+        border: 2px solid #334155 !important;
         border-radius: 14px !important;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
     }
     div[data-testid="stChatInput"] textarea::placeholder {
-        color: #475569 !important;
-        font-weight: 600 !important;
+        color: #94a3b8 !important;
     }
     div[data-testid="stChatInput"] textarea:focus {
-        border-color: #059669 !important;
-        box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.25) !important;
-        color: #0f172a !important;
-    }
-    div[data-testid="stChatInput"] button {
-        background-color: #059669 !important;
+        border-color: #10b981 !important;
         color: #ffffff !important;
-        border-radius: 10px !important;
-    }
-    div[data-testid="stChatInput"] button svg {
-        fill: #ffffff !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -514,3 +350,6 @@ if user_input:
             st.markdown(reply)
             
     st.session_state.chat_history.append({"role": "assistant", "content": reply})
+
+# 9. PROMINENT BOTTOM BACK TO HOME NAVIGATION
+render_bottom_back_button()

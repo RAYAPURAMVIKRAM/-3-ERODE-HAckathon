@@ -9,73 +9,19 @@ if _ROOT_DIR not in sys.path:
 
 import streamlit as st
 from locales import t
-from auth_ui import render_auth_sidebar
+from auth_ui import render_auth_sidebar, render_top_navbar, inject_high_contrast_css
 from supabase_client import get_current_user
 
 st.set_page_config(page_title="STARK-X | AgriPirate", page_icon="🌱", layout="centered", initial_sidebar_state="expanded")
 
-# Render Farmer Authentication Portal & Language Selector in Sidebar
-render_auth_sidebar()
+# 1. INJECT GLOBAL HIGH-CONTRAST DARK GLASSMORPHIC THEME
+inject_high_contrast_css()
 
-st.markdown("""
-    <style>
-    :root {
-        color-scheme: light !important;
-        --text-color: #0f172a !important;
-        --background-color: #f8fafc !important;
-        --secondary-background-color: #ffffff !important;
-    }
-    .stApp {
-        background-color: #f8fafc !important;
-        background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px) !important;
-        background-size: 24px 24px !important;
-        color: #0f172a !important;
-    }
-    #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
-    h1 {
-        color: #064e3b !important;
-        font-weight: 800 !important;
-    }
-    h2, h3 {
-        color: #047857 !important;
-        font-weight: 700 !important;
-    }
-    .stImage > img {
-        border-radius: 16px !important;
-        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08) !important;
-        border: 2px solid #cbd5e1 !important;
-    }
-    div[data-testid="stAlert"] {
-        background-color: #ffffff !important;
-        border: 2px solid #cbd5e1 !important;
-        border-left: 6px solid #059669 !important;
-        border-radius: 16px !important;
-        padding: 16px 20px !important;
-        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08) !important;
-    }
-    div[data-testid="stAlert"] * {
-        color: #0f172a !important;
-        font-weight: 600 !important;
-    }
-    div[data-testid="stPageLink-NavLink"] {
-        background-color: #ffffff !important; 
-        border: 1.5px solid #cbd5e1 !important; 
-        padding: 16px 20px !important;
-        border-radius: 14px !important; 
-        margin-bottom: 12px !important;
-        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06) !important; 
-        transition: all 0.2s ease !important;
-    }
-    div[data-testid="stPageLink-NavLink"] * {
-        color: #0f172a !important;
-    }
-    div[data-testid="stPageLink-NavLink"]:hover {
-        border-color: #059669 !important; 
-        transform: translateY(-2px) !important;
-        box-shadow: 0 6px 18px rgba(5, 150, 105, 0.15) !important;
-    }
-    </style>
-""", unsafe_allow_html=True)
+# 2. RENDER TOP NAVIGATION BAR
+render_top_navbar("home")
+
+# 3. RENDER AUTH SIDEBAR & PERSISTENT LANGUAGE SELECTOR
+render_auth_sidebar()
 
 lang = st.session_state.get("lang", "English")
 

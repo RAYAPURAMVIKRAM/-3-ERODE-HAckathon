@@ -11,7 +11,7 @@ import re
 import urllib.parse
 import streamlit as st
 from dotenv import load_dotenv
-from auth_ui import render_auth_sidebar
+from auth_ui import render_auth_sidebar, render_top_navbar, render_bottom_back_button, inject_high_contrast_css
 from locales import t
 from supabase_client import (
     get_current_user,
@@ -48,31 +48,18 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 3. RENDER AUTHENTICATION SIDEBAR
+# 3. GLOBAL HIGH-CONTRAST THEME & TOP NAVIGATOR
+inject_high_contrast_css()
+render_top_navbar("5_Agri_Market")
+
+# 4. RENDER AUTHENTICATION SIDEBAR
 render_auth_sidebar()
 
 lang = st.session_state.get("lang", "English")
 
-# 4. EXECUTIVE AGRICULTURAL THEME & HIGH-CONTRAST CSS
+# 5. EXECUTIVE AGRICULTURAL THEME & HIGH-CONTRAST CSS
 st.markdown("""
 <style>
-    /* Force Light Color Scheme across all browsers & OS dark-mode overrides */
-    :root {
-        color-scheme: light !important;
-        --text-color: #0f172a !important;
-        --background-color: #f8fafc !important;
-        --secondary-background-color: #ffffff !important;
-    }
-
-    /* Base Page Canvas */
-    .stApp {
-        background-color: #f8fafc !important;
-        background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px) !important;
-        background-size: 24px 24px !important;
-        color: #0f172a !important;
-    }
-    #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
-
     /* Premium Header Hero Banner */
     .market-hero-banner {
         background: linear-gradient(135deg, #064e3b 0%, #047857 50%, #059669 100%) !important;
@@ -83,8 +70,8 @@ st.markdown("""
         display: flex !important;
         align-items: center !important;
         justify-content: space-between !important;
-        box-shadow: 0 4px 16px rgba(6, 78, 59, 0.25) !important;
-        border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
+        box-shadow: 0 4px 16px rgba(6, 78, 59, 0.4) !important;
+        border: 1.5px solid #10b981 !important;
     }
     .market-hero-banner * {
         color: #ffffff !important;
@@ -97,13 +84,13 @@ st.markdown("""
     .market-avatar-badge {
         width: 48px !important;
         height: 48px !important;
-        background: #ffffff !important;
+        background: #0f172a !important;
         border-radius: 50% !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
         font-size: 26px !important;
-        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15) !important;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3) !important;
         border: 2px solid #34d399 !important;
     }
     .market-hero-title {
@@ -136,7 +123,7 @@ st.markdown("""
         50% { opacity: 0.6; transform: scale(1.2); }
     }
     .market-badge-pill {
-        background: rgba(255, 255, 255, 0.18) !important;
+        background: rgba(255, 255, 255, 0.15) !important;
         border: 1px solid rgba(255, 255, 255, 0.3) !important;
         padding: 6px 14px !important;
         border-radius: 20px !important;
@@ -149,7 +136,7 @@ st.markdown("""
     /* Tab Buttons: High Contrast & Solid Background */
     .stTabs [data-baseweb="tab-list"] { 
         gap: 14px !important; 
-        border-bottom: 2px solid #cbd5e1 !important;
+        border-bottom: 2px solid #334155 !important;
         margin-bottom: 20px !important;
     }
     .stTabs [data-baseweb="tab"] { 
@@ -157,38 +144,31 @@ st.markdown("""
         border-radius: 12px 12px 0 0 !important; 
         font-weight: 800 !important;
         font-size: 1.05rem !important;
-        color: #334155 !important;
-        background: #ffffff !important;
-        border: 1.5px solid #cbd5e1 !important;
+        color: #94a3b8 !important;
+        background: #0f172a !important;
+        border: 1.5px solid #334155 !important;
         border-bottom: none !important;
         padding: 10px 22px !important;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
-        transition: all 0.2s ease !important;
-    }
-    .stTabs [data-baseweb="tab"]:hover {
-        background: #f0fdf4 !important;
-        color: #059669 !important;
     }
     .stTabs [aria-selected="true"] {
-        background: #ffffff !important;
-        color: #064e3b !important;
-        border-top: 4px solid #059669 !important;
-        box-shadow: 0 -2px 8px rgba(5, 150, 105, 0.12) !important;
+        background: #1e293b !important;
+        color: #10b981 !important;
+        border-top: 4px solid #10b981 !important;
     }
 
     /* Section Cards */
     .section-card {
-        background: #ffffff !important;
-        border: 1.5px solid #cbd5e1 !important;
+        background: #0f172a !important;
+        border: 1.5px solid #334155 !important;
         border-radius: 16px !important;
         padding: 20px 24px !important;
         margin-bottom: 20px !important;
-        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06) !important;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3) !important;
     }
     .section-card-title {
         font-size: 1.25rem !important;
         font-weight: 800 !important;
-        color: #064e3b !important;
+        color: #10b981 !important;
         margin-top: 0 !important;
         margin-bottom: 6px !important;
         display: flex !important;
@@ -197,90 +177,32 @@ st.markdown("""
     }
     .section-card-desc {
         font-size: 14px !important;
-        color: #475569 !important;
+        color: #94a3b8 !important;
         font-weight: 600 !important;
         margin-bottom: 4px !important;
         line-height: 1.5 !important;
     }
 
-    /* Post Harvest Form & Inputs */
-    div[data-testid="stForm"] {
-        background: #ffffff !important;
-        border: 2px solid #cbd5e1 !important;
-        border-radius: 18px !important;
-        padding: 24px !important;
-        box-shadow: 0 4px 18px rgba(15, 23, 42, 0.08) !important;
-        margin-bottom: 24px !important;
-    }
-    div[data-testid="stForm"] label,
-    label[data-testid="stWidgetLabel"] p {
-        color: #064e3b !important;
-        font-weight: 800 !important;
-        font-size: 0.98rem !important;
-        margin-bottom: 6px !important;
-    }
-    div[data-testid="stTextInput"] input,
-    div[data-testid="stNumberInput"] input,
-    div[data-baseweb="select"] {
-        background-color: #ffffff !important;
-        color: #0f172a !important;
-        border: 2px solid #94a3b8 !important;
-        border-radius: 12px !important;
-        font-weight: 600 !important;
-        font-size: 1rem !important;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
-    }
-    div[data-testid="stTextInput"] input:focus,
-    div[data-testid="stNumberInput"] input:focus {
-        border-color: #059669 !important;
-        box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.25) !important;
-    }
-
-    /* Buttons: Primary Gradient */
-    div.stButton > button,
-    div[data-testid="stFormSubmitButton"] > button {
-        background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
-        color: #ffffff !important;
-        font-size: 1.08rem !important;
-        font-weight: 800 !important;
-        letter-spacing: 0.3px !important;
-        padding: 14px 24px !important;
-        border-radius: 14px !important;
-        border: none !important;
-        box-shadow: 0 4px 14px rgba(5, 150, 105, 0.3) !important;
-        transition: all 0.2s ease !important;
-    }
-    div.stButton > button:hover,
-    div[data-testid="stFormSubmitButton"] > button:hover {
-        transform: translateY(-2px) !important;
-        box-shadow: 0 6px 20px rgba(5, 150, 105, 0.45) !important;
-        background: linear-gradient(135deg, #047857 0%, #064e3b 100%) !important;
-    }
-    div.stButton > button *,
-    div[data-testid="stFormSubmitButton"] > button * {
-        color: #ffffff !important;
-    }
-
-    /* Marketplace Crop Cards (Pure White Card with Green Left Accent) */
+    /* Marketplace Crop Cards */
     .market-card {
-        background: #ffffff !important;
-        border: 2px solid #cbd5e1 !important;
-        border-left: 6px solid #059669 !important;
+        background: #0f172a !important;
+        border: 1.5px solid #334155 !important;
+        border-left: 6px solid #10b981 !important;
         border-radius: 18px !important;
         padding: 22px !important;
         margin-bottom: 20px !important;
-        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08) !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
         transition: transform 0.2s, box-shadow 0.2s !important;
     }
     .market-card:hover {
         transform: translateY(-2px) !important;
-        box-shadow: 0 8px 24px rgba(5, 150, 105, 0.16) !important;
-        border-color: #059669 !important;
+        box-shadow: 0 8px 24px rgba(16, 185, 129, 0.25) !important;
+        border-color: #10b981 !important;
     }
     .crop-title {
         font-size: 1.25rem !important;
         font-weight: 800 !important;
-        color: #064e3b !important;
+        color: #10b981 !important;
         margin-bottom: 10px !important;
     }
     .badge-pill {
@@ -293,23 +215,23 @@ st.markdown("""
         margin-bottom: 10px !important;
     }
     .badge-qty {
-        background: #dcfce7 !important;
-        color: #166534 !important;
-        border: 1.5px solid #86efac !important;
+        background: #064e3b !important;
+        color: #4ade80 !important;
+        border: 1.5px solid #10b981 !important;
     }
     .badge-price {
-        background: #fef3c7 !important;
-        color: #92400e !important;
-        border: 1.5px solid #fcd34d !important;
+        background: #78350f !important;
+        color: #fbbf24 !important;
+        border: 1.5px solid #f59e0b !important;
     }
     .badge-loc {
-        background: #e0f2fe !important;
-        color: #075985 !important;
-        border: 1.5px solid #7dd3fc !important;
+        background: #1e3a5f !important;
+        color: #60a5fa !important;
+        border: 1.5px solid #3b82f6 !important;
     }
     .farmer-info {
         font-size: 14px !important;
-        color: #334155 !important;
+        color: #e2e8f0 !important;
         font-weight: 600 !important;
         margin-bottom: 16px !important;
     }
@@ -335,7 +257,7 @@ st.markdown("""
         color: #ffffff !important;
     }
 
-    /* Reels Mobile Vertical Frame & Explicit Contrast Lock */
+    /* Reels Mobile Vertical Frame */
     .reel-container {
         max-width: 440px !important;
         margin: 0 auto 32px auto !important;
@@ -356,7 +278,6 @@ st.markdown("""
         padding: 18px 22px !important;
         background: linear-gradient(180deg, rgba(15, 23, 42, 0.9) 0%, #0f172a 100%) !important;
     }
-    .reel-container,
     .reel-container *,
     .reel-meta,
     .reel-meta * {
@@ -400,14 +321,14 @@ st.markdown("""
 
     /* Valuation Box */
     .lot-valuation-card {
-        background: #f0fdf4 !important;
-        border: 1.5px solid #86efac !important;
+        background: #064e3b !important;
+        border: 1.5px solid #10b981 !important;
         border-radius: 12px !important;
         padding: 12px 16px !important;
         margin-bottom: 16px !important;
         font-size: 15px !important;
         font-weight: 800 !important;
-        color: #166534 !important;
+        color: #4ade80 !important;
         display: flex !important;
         align-items: center !important;
         justify-content: space-between !important;
@@ -630,3 +551,7 @@ with tab_reels:
             </div>
         </div>
         """, unsafe_allow_html=True)
+
+# 6. PROMINENT BOTTOM BACK TO HOME NAVIGATION
+render_bottom_back_button()
+
