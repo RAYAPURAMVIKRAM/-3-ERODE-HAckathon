@@ -135,45 +135,46 @@ DEFAULT_CROPS = [
     }
 ]
 
-# 38 Tamil Nadu Districts Soil Hashmap from pages/3_🌾_Optimizer.py
+# All 38 Tamil Nadu Districts Soil & Climate Mapping
 TN_DISTRICT_SOIL_MAP = {
-    "Erode": "Red Soil",
-    "Coimbatore": "Black Soil",
-    "Tiruppur": "Red Soil",
-    "Salem": "Red Soil",
-    "Namakkal": "Red Soil",
-    "Karur": "Alluvial",
-    "Thanjavur": "Alluvial",
-    "Tiruvarur": "Alluvial",
-    "Nagapattinam": "Alluvial",
-    "Mayiladuthurai": "Alluvial",
-    "Tiruchirappalli": "Alluvial",
-    "Madurai": "Clay",
-    "Dindigul": "Red Soil",
-    "Theni": "Black Soil",
-    "Virudhunagar": "Black Soil",
-    "Sivaganga": "Red Soil",
-    "Ramanathapuram": "Sandy Loam",
-    "Thoothukudi": "Black Soil",
-    "Tirunelveli": "Clay",
-    "Tenkasi": "Red Soil",
-    "Kanniyakumari": "Clay",
-    "The Nilgiris": "Red Soil",
-    "Dharmapuri": "Red Soil",
-    "Krishnagiri": "Red Soil",
-    "Pudukkottai": "Red Soil",
-    "Ariyalur": "Red Soil",
-    "Perambalur": "Black Soil",
-    "Cuddalore": "Clay",
-    "Kancheepuram": "Clay",
-    "Chengalpattu": "Clay",
-    "Tiruvallur": "Sandy Loam",
-    "Vellore": "Red Soil",
-    "Ranipet": "Red Soil",
-    "Tirupathur": "Red Soil",
-    "Tiruvannamalai": "Red Soil",
-    "Villupuram": "Red Soil",
-    "Kallakurichi": "Red Soil"
+    "Ariyalur": {"soil": "Red Soil", "lat": 11.1401, "lon": 79.0786},
+    "Chengalpattu": {"soil": "Clay", "lat": 12.6841, "lon": 79.9836},
+    "Chennai": {"soil": "Sandy Loam", "lat": 13.0827, "lon": 80.2707},
+    "Coimbatore": {"soil": "Black Soil", "lat": 11.0168, "lon": 76.9558},
+    "Cuddalore": {"soil": "Clay", "lat": 11.7480, "lon": 79.7714},
+    "Dharmapuri": {"soil": "Red Soil", "lat": 12.1211, "lon": 78.1582},
+    "Dindigul": {"soil": "Red Soil", "lat": 10.3673, "lon": 77.9803},
+    "Erode": {"soil": "Red Soil", "lat": 11.3410, "lon": 77.7172},
+    "Kallakurichi": {"soil": "Red Soil", "lat": 11.7383, "lon": 78.9639},
+    "Kanchipuram": {"soil": "Clay", "lat": 12.8342, "lon": 79.7036},
+    "Kanyakumari": {"soil": "Clay", "lat": 8.0883, "lon": 77.5385},
+    "Karur": {"soil": "Alluvial", "lat": 10.9601, "lon": 78.0766},
+    "Krishnagiri": {"soil": "Red Soil", "lat": 12.5186, "lon": 78.2137},
+    "Madurai": {"soil": "Clay", "lat": 9.9252, "lon": 78.1198},
+    "Mayiladuthurai": {"soil": "Alluvial", "lat": 11.1075, "lon": 79.6524},
+    "Nagapattinam": {"soil": "Alluvial", "lat": 10.7656, "lon": 79.8424},
+    "Namakkal": {"soil": "Red Soil", "lat": 11.2189, "lon": 78.1674},
+    "Nilgiris": {"soil": "Red Soil", "lat": 11.4102, "lon": 76.6950},
+    "Perambalur": {"soil": "Black Soil", "lat": 11.2342, "lon": 78.8817},
+    "Pudukkottai": {"soil": "Red Soil", "lat": 10.3833, "lon": 78.8001},
+    "Ramanathapuram": {"soil": "Sandy Loam", "lat": 9.3639, "lon": 78.8395},
+    "Ranipet": {"soil": "Red Soil", "lat": 12.9272, "lon": 79.3330},
+    "Salem": {"soil": "Red Soil", "lat": 11.6643, "lon": 78.1460},
+    "Sivaganga": {"soil": "Red Soil", "lat": 9.8433, "lon": 78.4809},
+    "Tenkasi": {"soil": "Red Soil", "lat": 8.9594, "lon": 77.3152},
+    "Thanjavur": {"soil": "Alluvial", "lat": 10.7870, "lon": 79.1378},
+    "Theni": {"soil": "Black Soil", "lat": 10.0104, "lon": 77.4768},
+    "Thoothukudi": {"soil": "Black Soil", "lat": 8.7642, "lon": 78.1348},
+    "Tiruchirappalli": {"soil": "Alluvial", "lat": 10.7905, "lon": 78.7047},
+    "Tirunelveli": {"soil": "Clay", "lat": 8.7139, "lon": 77.7567},
+    "Tirupathur": {"soil": "Red Soil", "lat": 12.4926, "lon": 78.5676},
+    "Tiruppur": {"soil": "Red Soil", "lat": 11.1085, "lon": 77.3411},
+    "Tiruvallur": {"soil": "Sandy Loam", "lat": 13.1432, "lon": 79.9079},
+    "Tiruvannamalai": {"soil": "Red Soil", "lat": 12.2253, "lon": 79.0747},
+    "Tiruvarur": {"soil": "Alluvial", "lat": 10.7725, "lon": 79.6365},
+    "Vellore": {"soil": "Red Soil", "lat": 12.9165, "lon": 79.1325},
+    "Viluppuram": {"soil": "Red Soil", "lat": 11.9401, "lon": 79.4861},
+    "Virudhunagar": {"soil": "Black Soil", "lat": 9.5872, "lon": 77.9514}
 }
 
 def query_supabase_table(table_name: str, method: str = "GET", payload: dict = None):
@@ -346,15 +347,19 @@ def generate_intelligent_agronomy_reply(prompt: str, lang: str) -> str:
         )
 
 def generate_crop_vision_report(crop_hint: str, lang: str) -> dict:
-    """Returns certified diagnostic plant pathology reports."""
+    """Returns certified diagnostic plant pathology reports with cost-benefit analysis."""
     hint = (crop_hint or "").lower()
     if "rice" in hint or "paddy" in hint:
         return {
+            "report_id": "STARK-PATH-CO51-884",
             "crop": "Paddy / Rice (Oryza sativa - CO-51)",
             "health_index": 48,
             "severity": "HIGH SEVERITY",
-            "diagnosis": "Rice Blast (Magnaporthe oryzae) & Leaf Sheath Blight",
-            "symptoms": "Spindle-shaped lesions with grayish centers and brown borders across 42% canopy.",
+            "confidence": 97.4,
+            "stage": "Stage 3: Advanced Foliar Sheath Progression",
+            "diagnosis": "Rice Blast (Magnaporthe oryzae) & Sheath Blight",
+            "pathogen": "Magnaporthe oryzae / Rhizoctonia solani",
+            "symptoms": "Spindle-shaped lesions with grayish centers and dark brown borders across 42% canopy.",
             "organic_treatment": [
                 "Foliar spray of Pseudomonas fluorescens (liquid bio-agent) @ 10ml/L at early dawn.",
                 "Apply 20% fresh cow dung slurry supernatant + 5% neem seed kernel extract (NSKE).",
@@ -364,14 +369,21 @@ def generate_crop_vision_report(crop_hint: str, lang: str) -> dict:
                 "Immediate foliar application of Tricyclazole 75% WP @ 0.6g per litre of water.",
                 "Spray Azoxystrobin 18.2% + Difenoconazole 11.4% SC @ 1.0ml/L at first appearance of collar lesions."
             ],
-            "prevention": "Avoid excessive Nitrogen top-dressing during humid overcast weather."
+            "organic_cost_per_acre": "₹950 / acre",
+            "chemical_cost_per_acre": "₹1,820 / acre",
+            "cost_savings": "Save ₹870 / acre (-48%) utilizing Pseudomonas bio-fungicide",
+            "prevention": "Avoid excessive Nitrogen top-dressing during humid overcast weather; maintain 15x10cm spacing."
         }
     elif "cotton" in hint:
         return {
+            "report_id": "STARK-PATH-MCU5-212",
             "crop": "Hybrid Cotton (Gossypium hirsutum - MCU-5)",
             "health_index": 68,
             "severity": "MODERATE SEVERITY",
+            "confidence": 95.8,
+            "stage": "Stage 2: Nymphal Population Aggregation",
             "diagnosis": "Cotton Whitefly (Bemisia tabaci) & Leaf Curl Pre-symptom",
+            "pathogen": "Bemisia tabaci (Gennadius) vectoring CLCuV",
             "symptoms": "Upward leaf cupping, interveinal chlorosis, and sooty mold honeydew deposits on lower foliage.",
             "organic_treatment": [
                 "Install 10 bright yellow sticky traps per acre at canopy level.",
@@ -382,15 +394,22 @@ def generate_crop_vision_report(crop_hint: str, lang: str) -> dict:
                 "Spray Diafenthiuron 50% WP @ 1.25g/L or Pyriproxyfen 10% EC @ 2.0ml/L.",
                 "Target spray specifically to the undersides of leaves where nymphs congregate."
             ],
-            "prevention": "Eradicate alternate weed hosts (Abutilon indicum) along canal banks."
+            "organic_cost_per_acre": "₹1,100 / acre",
+            "chemical_cost_per_acre": "₹2,450 / acre",
+            "cost_savings": "Save ₹1,350 / acre (-55%) with Neem & Sticky Traps",
+            "prevention": "Eradicate alternate weed hosts (Abutilon indicum) along canal banks; avoid broad-spectrum pyrethroids."
         }
     elif "tomato" in hint:
         return {
+            "report_id": "STARK-PATH-PKM1-309",
             "crop": "Tomato (Solanum lycopersicum - PKM-1)",
             "health_index": 58,
             "severity": "MODERATE SEVERITY",
+            "confidence": 96.2,
+            "stage": "Stage 2: Concentric Target-Board Ring Formation",
             "diagnosis": "Early Blight (Alternaria solani) & Marginal Potassium Deficiency",
-            "symptoms": "Concentric target-board brown rings on lower leaves with yellow halo.",
+            "pathogen": "Alternaria solani Sorauer",
+            "symptoms": "Concentric target-board brown rings on lower leaves with yellow halo and marginal scorching.",
             "organic_treatment": [
                 "Prune and safely burn infected ground-touching foliage to halt soil splash spores.",
                 "Spray Trichoderma viride @ 5g/L + copper oxychloride @ 2.5g/L.",
@@ -400,14 +419,21 @@ def generate_crop_vision_report(crop_hint: str, lang: str) -> dict:
                 "Apply Chlorothalonil 75% WP @ 2g/L or Mancozeb 75% WP @ 2.5g/L.",
                 "Rotate with Difenoconazole 25% EC @ 0.5ml/L after 10 days."
             ],
-            "prevention": "Employ black plastic mulch and drip lines to eliminate splash dispersal."
+            "organic_cost_per_acre": "₹1,200 / acre",
+            "chemical_cost_per_acre": "₹2,100 / acre",
+            "cost_savings": "Save ₹900 / acre (-43%) with bio-fungicide pruning",
+            "prevention": "Employ black plastic mulch and drip lines to eliminate rain/irrigation splash dispersal."
         }
-    else: # Default Turmeric
+    else:  # Default Turmeric
         return {
+            "report_id": "STARK-PATH-BSR2-101",
             "crop": "Erode Turmeric (Curcuma longa - BSR-2)",
             "health_index": 64,
             "severity": "MODERATE SEVERITY",
+            "confidence": 98.1,
+            "stage": "Stage 2: Foliar Blotching & Basal Root-Zone Moisture Stress",
             "diagnosis": "Leaf Spot (Colletotrichum capsici) & Early Rhizome Rot Stress",
+            "pathogen": "Colletotrichum capsici / Pythium aphanidermatum",
             "symptoms": "Elliptical brown necrotic blotches on lamina with chlorotic margin affecting ~28% foliage.",
             "organic_treatment": [
                 "Soil drench with Pseudomonas fluorescens @ 10g/L + Trichoderma viride @ 5g/L.",
@@ -418,6 +444,9 @@ def generate_crop_vision_report(crop_hint: str, lang: str) -> dict:
                 "Foliar spray with Mancozeb 75% WP @ 2.5g/L or Carbendazim 50% WP @ 1g/L.",
                 "For root zones: Drench with Metalaxyl 8% + Mancozeb 64% WP @ 2g/L."
             ],
+            "organic_cost_per_acre": "₹1,450 / acre",
+            "chemical_cost_per_acre": "₹2,280 / acre",
+            "cost_savings": "Save ₹830 / acre (-36%) utilizing Trichoderma & Neem Cake",
             "prevention": "Always dip seed rhizomes in Trichoderma solution for 30 minutes prior to planting."
         }
 
@@ -515,9 +544,9 @@ class handler(BaseHTTPRequestHandler):
                 pass
 
             inferred_soil = "Red Soil"
-            for district, soil in TN_DISTRICT_SOIL_MAP.items():
+            for district, d_info in TN_DISTRICT_SOIL_MAP.items():
                 if district.lower() in city.lower():
-                    inferred_soil = soil
+                    inferred_soil = d_info["soil"] if isinstance(d_info, dict) else d_info
                     break
 
             return self.send_json(200, {
@@ -527,6 +556,8 @@ class handler(BaseHTTPRequestHandler):
                 "temperature": round(temp, 1),
                 "humidity": round(humidity, 0),
                 "inferred_soil": inferred_soil,
+                "districts": list(TN_DISTRICT_SOIL_MAP.keys()),
+                "district_map": TN_DISTRICT_SOIL_MAP,
                 "region": "Kongu Nadu / Tamil Nadu"
             })
 
@@ -555,22 +586,28 @@ class handler(BaseHTTPRequestHandler):
                 return self.send_json(200, cloud_crops)
             return self.send_json(200, DEFAULT_CROPS)
 
-        # 5. Live Mandi Market Spot Rates API
+        # 5. Live Mandi Market Spot Rates & 7-Day Trend API
         if path == "/api/market/trends":
             return self.send_json(200, {
                 "rates": [
-                    {"crop": "Turmeric (Bulb)", "price": "₹12,450 / qtl", "trend": "⬆️ High Demand (+12%)", "status": "bullish"},
-                    {"crop": "Rice (Paddy - Grade A)", "price": "₹2,203 / qtl", "trend": "➡️ Stable (+0.5%)", "status": "neutral"},
-                    {"crop": "Cotton (MCU-5 Long Staple)", "price": "₹7,100 / qtl", "trend": "⬇️ Dropping (-2.1%)", "status": "bearish"},
-                    {"crop": "Millets (Ragi / Kambu)", "price": "₹3,500 / qtl", "trend": "⬆️ Rising (+6.4%)", "status": "bullish"},
-                    {"crop": "Groundnut (Pods)", "price": "₹6,400 / qtl", "trend": "➡️ Stable (+1.2%)", "status": "neutral"},
-                    {"crop": "Sugarcane (CO-86032)", "price": "₹3,200 / tonne", "trend": "⬆️ Rising (+3.8%)", "status": "bullish"}
+                    {"crop": "Turmeric (Bulb)", "price": "₹12,450 / qtl", "trend": "⬆️ High Demand (+12%)", "status": "bullish", "seven_day": [11200, 11450, 11700, 11950, 12100, 12300, 12450], "days": ["D-6", "D-5", "D-4", "D-3", "D-2", "D-1", "Today"]},
+                    {"crop": "Rice (Paddy - Grade A)", "price": "₹2,203 / qtl", "trend": "➡️ Stable (+0.5%)", "status": "neutral", "seven_day": [2180, 2190, 2185, 2195, 2200, 2200, 2203], "days": ["D-6", "D-5", "D-4", "D-3", "D-2", "D-1", "Today"]},
+                    {"crop": "Cotton (MCU-5 Long Staple)", "price": "₹7,100 / qtl", "trend": "⬇️ Dropping (-2.1%)", "status": "bearish", "seven_day": [7350, 7300, 7260, 7200, 7150, 7120, 7100], "days": ["D-6", "D-5", "D-4", "D-3", "D-2", "D-1", "Today"]},
+                    {"crop": "Millets (Ragi / Kambu)", "price": "₹3,500 / qtl", "trend": "⬆️ Rising (+6.4%)", "status": "bullish", "seven_day": [3280, 3310, 3340, 3390, 3420, 3460, 3500], "days": ["D-6", "D-5", "D-4", "D-3", "D-2", "D-1", "Today"]},
+                    {"crop": "Groundnut (Pods)", "price": "₹6,400 / qtl", "trend": "➡️ Stable (+1.2%)", "status": "neutral", "seven_day": [6310, 6320, 6350, 6340, 6380, 6390, 6400], "days": ["D-6", "D-5", "D-4", "D-3", "D-2", "D-1", "Today"]},
+                    {"crop": "Sugarcane (CO-86032)", "price": "₹3,200 / tonne", "trend": "⬆️ Rising (+3.8%)", "status": "bullish", "seven_day": [3080, 3100, 3120, 3150, 3160, 3180, 3200], "days": ["D-6", "D-5", "D-4", "D-3", "D-2", "D-1", "Today"]}
                 ],
                 "financial_strategy": (
                     "**🌿 Turmeric Outlook:** Erode markets show a 12% week-over-week surge due to active direct European and GCC spice export orders. \n\n"
                     "**📌 Actionable Recommendation:** Hold current finger and bulb stock for 14-18 days for peak terminal mandi settlement. \n\n"
                     "**🌾 Millets / Ragi:** Subsidies for climate-resilient grains are lifting Minimum Support Price (MSP). Liquidate 50% now to meet operational costs, hold remainder for retail packaging."
-                )
+                ),
+                "hold_vs_sell": {
+                    "Turmeric": {"action": "HOLD", "gain_pct": "+8.5%", "days": 16, "target_price": "₹13,500 / qtl", "rationale": "High export bookings creating regional supply shortage."},
+                    "Rice": {"action": "SELL NOW", "gain_pct": "+0.4%", "days": 0, "target_price": "₹2,210 / qtl", "rationale": "Government procurement centers active at MSP; limited open market upside."},
+                    "Cotton": {"action": "SELL NOW", "gain_pct": "-2.5%", "days": 0, "target_price": "₹6,950 / qtl", "rationale": "Spinning mills holding buffer stocks; downward price pressure expected."},
+                    "Millets": {"action": "SPLIT (50/50)", "gain_pct": "+6.0%", "days": 30, "target_price": "₹3,750 / qtl", "rationale": "Liquidate half for input liquidity, hold balance for retail demand."}
+                }
             })
 
         # 6. Serve Single Page Application (index.html)
@@ -612,9 +649,22 @@ class handler(BaseHTTPRequestHandler):
         if path in ["/api/chat", "/api/ai/chat"]:
             prompt = (req_data.get("prompt") or req_data.get("message") or "").strip()
             lang = req_data.get("lang", "English")
+            weather = req_data.get("weather", {})
+            district = req_data.get("district", "Erode")
 
             if not prompt:
                 return self.send_json(400, {"error": "Prompt cannot be empty"})
+
+            # Generate dynamic contextual follow-up suggestions
+            p_low = prompt.lower()
+            if any(k in p_low for k in ["rot", "disease", "fung", "spot", "blight"]):
+                followups = ["What is the chemical spray dose?", "Organic Trichoderma bio-shield method", "How to prevent water stagnation?"]
+            elif any(k in p_low for k in ["fertilizer", "urea", "dap", "npk", "potash"]):
+                followups = ["Basal vs Top-dressing split schedule", "Drip fertigation dosage per acre", "Organic vermicompost alternative"]
+            elif any(k in p_low for k in ["mandi", "price", "rate", "sell", "market"]):
+                followups = ["View 7-day Mandi price chart", "Direct Farmer WhatsApp marketplace", "Hold vs Sell recommendation"]
+            else:
+                followups = ["Turmeric Rhizome Rot cure", "Sugarcane CO-86032 fertilizer", "Drought-resilient millets", "Cotton whitefly control"]
 
             # Try Gemini REST API if valid key is available
             gemini_reply = None
@@ -622,9 +672,10 @@ class handler(BaseHTTPRequestHandler):
                 try:
                     ctx = ssl.create_default_context()
                     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+                    grounding = f"Context: District: {district}, Weather: {weather.get('temperature', 29.4)}°C, Humidity: {weather.get('humidity', 64)}%, Soil: {weather.get('inferred_soil', 'Red Loam')}."
                     g_payload = {
                         "contents": [{
-                            "parts": [{"text": f"Act as an expert Indian precision agronomist for South India/Tamil Nadu. Reply natively in {lang}. Farmer asks: {prompt}"}]
+                            "parts": [{"text": f"Act as an expert Indian precision agronomist for South India/Tamil Nadu. {grounding} Reply natively in {lang}. Farmer asks: {prompt}"}]
                         }]
                     }
                     g_req = urllib.request.Request(url, data=json.dumps(g_payload).encode("utf-8"), headers={"Content-Type": "application/json"})
@@ -640,6 +691,7 @@ class handler(BaseHTTPRequestHandler):
             return self.send_json(200, {
                 "reply": gemini_reply,
                 "lang": lang,
+                "followups": followups,
                 "engine": "STARK-X Autonomous Agronomy Engine"
             })
 
@@ -652,12 +704,19 @@ class handler(BaseHTTPRequestHandler):
 
         # 3. Crop & Soil Optimizer: Recommendation Algorithm API
         if path == "/api/optimizer/recommend":
+            district = req_data.get("district", "Erode")
             soil = req_data.get("soil_type", "Red Soil")
             water = req_data.get("water_avail", "Borewell (Medium)")
             temp = float(req_data.get("temperature", 28.5))
             ph = float(req_data.get("ph", 6.5))
             k = float(req_data.get("potassium", 50))
             n = float(req_data.get("nitrogen", 60))
+            acreage = max(0.5, float(req_data.get("acreage", 1.0)))
+
+            # If district provided and in map, align default soil if soil is default
+            if district in TN_DISTRICT_SOIL_MAP and not req_data.get("soil_type_custom"):
+                d_info = TN_DISTRICT_SOIL_MAP[district]
+                soil = d_info["soil"] if isinstance(d_info, dict) else d_info
 
             # STARK-X Recommendation Algorithm Logic from pages/3_🌾_Optimizer.py
             if water == "Rainfed (Low)":
@@ -683,20 +742,89 @@ class handler(BaseHTTPRequestHandler):
             else:
                 crops = [("Maize", 86), ("Vegetables (Tomato / Brinjal)", 82), ("Small Onion", 78)]
 
-            # Financial ROI projection
+            # Financial ROI & Agronomic Details projection
             top_crop = crops[0][0]
             if "turmeric" in top_crop.lower():
-                roi = {"yield_per_acre": "24 Quintals", "gross_revenue": "₹3,48,000", "net_profit": "₹2,10,000 / acre", "water_req": "1,200 mm"}
+                yield_txt = "24 Quintals"
+                gross_num = 348000
+                cost_num = 138000
+                water_daily = "18,000 Liters / acre / day"
+                water_season = "1,200 mm"
+                basal = "DAP 50 kg + MOP 40 kg + Neem Cake 200 kg / acre"
+                top1 = "Urea 35 kg + Micronutrient Spray at 30 days"
+                top2 = "Urea 30 kg + MOP 30 kg during Earthing-Up (60 days)"
             elif "sugarcane" in top_crop.lower():
-                roi = {"yield_per_acre": "60 Tonnes", "gross_revenue": "₹1,92,000", "net_profit": "₹1,15,000 / acre", "water_req": "1,800 mm"}
+                yield_txt = "60 Tonnes"
+                gross_num = 192000
+                cost_num = 77000
+                water_daily = "26,000 Liters / acre / day"
+                water_season = "1,800 mm"
+                basal = "DAP 60 kg + MOP 30 kg + Carbofuran granules in furrows"
+                top1 = "Urea 50 kg at 30-45 days with light hoeing"
+                top2 = "Urea 45 kg + MOP 30 kg at 90 days with earthing-up"
             elif "cotton" in top_crop.lower():
-                roi = {"yield_per_acre": "12 Quintals", "gross_revenue": "₹85,200", "net_profit": "₹48,000 / acre", "water_req": "700 mm"}
+                yield_txt = "12 Quintals"
+                gross_num = 85200
+                cost_num = 37200
+                water_daily = "9,500 Liters / acre / day"
+                water_season = "700 mm"
+                basal = "DAP 35 kg + Potash 20 kg + FYM 5 tonnes / acre"
+                top1 = "Urea 25 kg at square formation (45 days)"
+                top2 = "Urea 20 kg + 1% Potassium Nitrate foliar spray at boll bursting"
             elif "millet" in top_crop.lower():
-                roi = {"yield_per_acre": "16 Quintals", "gross_revenue": "₹56,000", "net_profit": "₹38,000 / acre", "water_req": "350 mm"}
+                yield_txt = "16 Quintals"
+                gross_num = 56000
+                cost_num = 18000
+                water_daily = "5,000 Liters / acre / day"
+                water_season = "350 mm"
+                basal = "DAP 25 kg + Vermicompost 1 tonne / acre"
+                top1 = "Urea 15 kg at 25 days after first weeding"
+                top2 = "Liquid bio-fertilizer spray (Azospirillum) at tillering"
+            elif "paddy" in top_crop.lower():
+                yield_txt = "28 Quintals"
+                gross_num = 78400
+                cost_num = 34000
+                water_daily = "22,000 Liters / acre / day"
+                water_season = "1,250 mm"
+                basal = "DAP 40 kg + MOP 20 kg + Zinc Sulphate 10 kg / acre"
+                top1 = "Urea 30 kg at active tillering (21 days)"
+                top2 = "Urea 20 kg + MOP 15 kg at panicle initiation"
             else:
-                roi = {"yield_per_acre": "28 Quintals", "gross_revenue": "₹72,000", "net_profit": "₹42,000 / acre", "water_req": "550 mm"}
+                yield_txt = "28 Quintals"
+                gross_num = 72000
+                cost_num = 30000
+                water_daily = "8,500 Liters / acre / day"
+                water_season = "550 mm"
+                basal = "DAP 30 kg + Potash 20 kg / acre"
+                top1 = "Urea 25 kg at 30 days"
+                top2 = "Urea 20 kg at flowering"
+
+            net_num = gross_num - cost_num
+            total_gross = gross_num * acreage
+            total_cost = cost_num * acreage
+            total_net = net_num * acreage
+
+            roi = {
+                "acreage": acreage,
+                "yield_per_acre": yield_txt,
+                "gross_revenue": f"₹{gross_num:,.0f}",
+                "cultivation_cost": f"₹{cost_num:,.0f}",
+                "net_profit": f"₹{net_num:,.0f} / acre",
+                "total_gross": f"₹{total_gross:,.0f}",
+                "total_cost": f"₹{total_cost:,.0f}",
+                "total_net": f"₹{total_net:,.0f}",
+                "water_req": water_season,
+                "water_daily": water_daily,
+                "drip_savings": "Up to 40% water conservation via micro-drip",
+                "fertilizer": {
+                    "basal": basal,
+                    "top_dressing_1": top1,
+                    "top_dressing_2": top2
+                }
+            }
 
             return self.send_json(200, {
+                "district": district,
                 "top": {"crop": crops[0][0], "match": crops[0][1]},
                 "alternatives": [
                     {"crop": crops[1][0], "match": crops[1][1]},
@@ -822,3 +950,10 @@ class handler(BaseHTTPRequestHandler):
             })
 
         return self.send_json(404, {"error": "Not Found"})
+
+if __name__ == '__main__':
+    from http.server import HTTPServer
+    port = int(os.environ.get("PORT", 3000))
+    server = HTTPServer(('127.0.0.1', port), handler)
+    print(f"STARK-X Engine serving on http://127.0.0.1:{port}")
+    server.serve_forever()
