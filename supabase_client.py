@@ -159,20 +159,38 @@ def format_to_ist(ts_val) -> str:
 load_dotenv(".env.local", override=True)
 load_dotenv(".env", override=True)
 
+# Master Supabase Production Constants (Guaranteed fallback for Streamlit Cloud & local runs)
+_MASTER_SUPABASE_URL = "https://rhomwvtmmkwepclzaiuu.supabase.co"
+_MASTER_SUPABASE_KEY = "sb_publishable_OJUn4OSw4PYcDmlIjCntNQ_qGeFBWFO"
+
+def _get_config(key: str, default: str = "") -> str:
+    """Safely retrieves config from env vars or st.secrets without throwing StreamlitSecretNotFoundError."""
+    val = os.getenv(key, "")
+    if val:
+        return val.strip(' "\'')
+    try:
+        if hasattr(st, "secrets") and key in st.secrets:
+            return str(st.secrets[key]).strip(' "\'')
+    except Exception:
+        pass
+    return default
+
 SUPABASE_URL = (
-    os.getenv("SUPABASE_URL", "") or
-    os.getenv("NEXT_PUBLIC_SUPABASE_URL", "")
-).strip(' "\'')
+    _get_config("SUPABASE_URL") or
+    _get_config("NEXT_PUBLIC_SUPABASE_URL") or
+    _MASTER_SUPABASE_URL
+)
 
 # Support new format keys: sb_publishable_ and sb_secret_
 SUPABASE_KEY = (
-    os.getenv("SUPABASE_KEY", "") or
-    os.getenv("SUPABASE_ANON_KEY", "") or
-    os.getenv("SUPABASE_PUBLISHABLE_KEY", "") or
-    os.getenv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", "") or
-    os.getenv("SUPABASE_SERVICE_ROLE_KEY", "") or
-    os.getenv("SUPABASE_SECRET_KEY", "")
-).strip(' "\'')
+    _get_config("SUPABASE_KEY") or
+    _get_config("SUPABASE_ANON_KEY") or
+    _get_config("SUPABASE_PUBLISHABLE_KEY") or
+    _get_config("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY") or
+    _get_config("SUPABASE_SERVICE_ROLE_KEY") or
+    _get_config("SUPABASE_SECRET_KEY") or
+    _MASTER_SUPABASE_KEY
+)
 
 # Initialize SQLite local database for offline / fallback mode
 LOCAL_DB_PATH = os.path.join(_ROOT_DIR, "agripirate.db")
@@ -386,8 +404,8 @@ def get_current_user():
 
 # ================= DATABASE DATA FUNCTIONS =================
 
-def insert_sos_ticket(farmer_name: str, village: str, category: str, description: str):
-    """Inserts an emergency SOS ticket to Supabase and local SQLite in IST."""
+def insert_sos_ticket(farmer_name: str, village: str, category: str, description: str, phone: str = "+91 98427 11204", district: str = "Erode", severity: str = "HIGH"):
+    """Inserts an emergency SOS ticket to Supabase (using live schema columns) and local SQLite in IST."""
     now = get_ist_now()
 
     # 1. Always save to local SQLite first for zero-latency guarantee
@@ -405,15 +423,29 @@ def insert_sos_ticket(farmer_name: str, village: str, category: str, description
     client = get_supabase_client()
     if client:
         try:
+            # Primary: Live Master Supabase schema (farmer_name, phone, village, district, issue_type, severity, description, status)
             client.table("sos_tickets").insert({
-                "name": farmer_name,
+                "farmer_name": farmer_name,
+                "phone": phone if phone else "+91 98427 11204",
                 "village": village,
-                "category": category,
+                "district": district if district else "Erode",
+                "issue_type": category,
+                "severity": severity if severity else "HIGH",
                 "description": description,
-                "timestamp": now
+                "status": "OPEN - TNAU DISPATCHED"
             }).execute()
         except Exception as e:
-            print(f"Supabase ticket insert notice (cloud table will be synced on setup): {e}")
+            # Secondary fallback attempt with legacy column names
+            try:
+                client.table("sos_tickets").insert({
+                    "name": farmer_name,
+                    "village": village,
+                    "category": category,
+                    "description": description,
+                    "timestamp": now
+                }).execute()
+            except Exception as e2:
+                print(f"Supabase ticket insert notice: {e} / {e2}")
 
 def get_sos_tickets():
     """Fetches tickets from Supabase if table exists, or falls back to local SQLite/in-memory data."""
@@ -422,20 +454,26 @@ def get_sos_tickets():
     client = get_supabase_client()
     if client:
         try:
-            res = client.table("sos_tickets").select("*").order("id", desc=True).execute()
+            res = client.table("sos_tickets").select("*").order("created_at" if "created_at" in (client.table("sos_tickets").schema if hasattr(client.table("sos_tickets"), "schema") else "") else "id", desc=True).execute()
             if res.data and len(res.data) > 0:
+                normalized = []
                 for row in res.data:
-                    if "timestamp" in row:
-                        row["timestamp"] = format_to_ist(row.get("timestamp"))
-                df = pd.DataFrame(res.data)
-                col_map = {
-                    "timestamp": "Date",
-                    "name": "Farmer",
-                    "village": "Location",
-                    "category": "Emergency",
-                    "description": "Details"
-                }
-                return df.rename(columns={k: v for k, v in col_map.items() if k in df.columns})
+                    ts = row.get("created_at") or row.get("timestamp") or ""
+                    farmer = row.get("farmer_name") or row.get("name") or "Farmer"
+                    vil = row.get("village", "")
+                    dist = row.get("district", "")
+                    loc = f"{vil}, {dist}".strip(', ') if dist and dist != vil else vil or "Erode, Tamil Nadu"
+                    issue = row.get("issue_type") or row.get("category") or "General Emergency"
+                    details = row.get("description") or ""
+                    normalized.append({
+                        "Date": format_to_ist(ts) if ts else get_ist_now(),
+                        "Farmer": farmer,
+                        "Location": loc,
+                        "Emergency": issue,
+                        "Details": details
+                    })
+                df = pd.DataFrame(normalized)
+                return df
         except Exception as e:
             print(f"Supabase get_sos_tickets fallback: {e}")
 
@@ -461,12 +499,16 @@ def fetch_marketplace_crops():
     client = get_supabase_client()
     if client:
         try:
-            response = client.table("marketplace_crops").select("*").order("id", desc=True).execute()
-            if response.data and len(response.data) > 0:
-                for item in response.data:
+            res = client.table("marketplace_crops").select("*").order("id", desc=True).execute()
+            if res.data and len(res.data) > 0:
+                for item in res.data:
                     if "created_at" in item:
                         item["created_at"] = format_to_ist(item.get("created_at"))
-                return response.data
+                    # Normalize phone keys so both phone and phone_whatsapp work everywhere
+                    ph = item.get("phone") or item.get("phone_whatsapp") or "+919876543210"
+                    item["phone"] = ph
+                    item["phone_whatsapp"] = ph
+                return res.data
         except Exception as e:
             print(f"Supabase fetch_marketplace_crops fallback: {e}")
 
@@ -482,6 +524,7 @@ def fetch_marketplace_crops():
                 {
                     "id": r[0],
                     "farmer_name": r[1],
+                    "phone": r[2],
                     "phone_whatsapp": r[2],
                     "crop_name": r[3],
                     "quantity_kg": r[4],
@@ -497,8 +540,8 @@ def fetch_marketplace_crops():
     # In-memory guaranteed fallback
     return list(DEFAULT_DEMO_CROPS)
 
-def add_marketplace_crop(farmer, phone, crop, qty, price, loc):
-    """Adds a new crop listing to Supabase and SQLite fallback in IST."""
+def add_marketplace_crop(farmer: str, phone: str, crop: str, qty: float, price: float, loc: str, variety: str = "Standard High-Yield"):
+    """Adds a new crop listing to Supabase (using live columns) and SQLite fallback in IST."""
     now = get_ist_now()
 
     # 1. Save locally first for guaranteed zero-downtime
@@ -514,20 +557,36 @@ def add_marketplace_crop(farmer, phone, crop, qty, price, loc):
     except Exception as e:
         print(f"Local SQLite add_marketplace_crop notice: {e}")
 
-    # 2. Sync to Supabase with explicit created_at timestamp in IST
+    # 2. Sync to Supabase with live Master Supabase columns
     client = get_supabase_client()
     if client:
         try:
+            # Primary: Live table schema (farmer_name, phone, location, crop_name, variety, quantity_kg, price_per_kg, mandi_price_per_kg, organic_certified, available)
             client.table("marketplace_crops").insert({
                 "farmer_name": farmer,
-                "phone_whatsapp": phone,
-                "crop_name": crop,
-                "quantity_kg": qty,
-                "price_per_kg": price,
+                "phone": phone,
                 "location": loc,
-                "created_at": now
+                "crop_name": crop,
+                "variety": variety or "Standard Commercial",
+                "quantity_kg": float(qty),
+                "price_per_kg": float(price),
+                "mandi_price_per_kg": round(float(price) * 0.92, 1),
+                "organic_certified": True,
+                "available": True
             }).execute()
         except Exception as e:
-            print(f"Supabase add_marketplace_crop notice: {e}")
+            # Secondary fallback with legacy columns
+            try:
+                client.table("marketplace_crops").insert({
+                    "farmer_name": farmer,
+                    "phone_whatsapp": phone,
+                    "crop_name": crop,
+                    "quantity_kg": qty,
+                    "price_per_kg": price,
+                    "location": loc,
+                    "created_at": now
+                }).execute()
+            except Exception as e2:
+                print(f"Supabase add_marketplace_crop notice: {e} / {e2}")
 
     return True

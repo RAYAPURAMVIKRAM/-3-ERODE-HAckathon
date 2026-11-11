@@ -45,19 +45,34 @@ try:
     print("[SUCCESS] 'public.sos_tickets' table exists and is connected in Supabase!")
     print(f"   Found {len(res.data)} existing records in cloud:")
     for r in res.data:
-        print(f"   - [{r.get('timestamp')}] {r.get('name')} ({r.get('village')}): {r.get('category')} - {r.get('description')}")
+        f_name = r.get('farmer_name') or r.get('name') or "Farmer"
+        v_name = r.get('village') or "Erode"
+        cat = r.get('issue_type') or r.get('category') or "General"
+        desc = r.get('description') or ""
+        ts = r.get('created_at') or r.get('timestamp') or ""
+        print(f"   - [{ts[:19]}] {f_name} ({v_name}): {cat} - {desc[:60]}...")
         
 except Exception as e:
     err_str = str(e)
     if "PGRST205" in err_str or "schema cache" in err_str or "not found" in err_str.lower():
         print("\n[ATTENTION] Table 'public.sos_tickets' has NOT been created yet in Supabase!")
-        print("\n--> ACTION REQUIRED (Takes only 15 seconds):")
-        print("   1. Open: https://supabase.com/dashboard/project/rhomwvtmmkwepclzaiuu/sql")
-        print("   2. Open the file 'supabase_setup.sql' in your project root")
-        print("   3. Paste into the SQL Editor and click the green 'RUN' button.")
-        print("   4. Re-run this test script: python test_supabase.py")
-        print("\n[NOTE] Don't worry! AgriPirate's built-in Demo Fallback system is active, so the app is fully functional with live demo data.")
     else:
         print(f"\n[WARNING] Query notice: {e}")
+
+# Check marketplace_crops table
+print("\n[CHECK] Querying 'public.marketplace_crops' table in Supabase...")
+try:
+    c_res = sb.table("marketplace_crops").select("*").limit(5).execute()
+    print("[SUCCESS] 'public.marketplace_crops' table exists and is connected in Supabase!")
+    print(f"   Found {len(c_res.data)} existing listings in cloud:")
+    for c in c_res.data:
+        c_crop = c.get('crop_name') or "Crop"
+        c_farmer = c.get('farmer_name') or "Farmer"
+        c_qty = c.get('quantity_kg') or 0
+        c_price = c.get('price_per_kg') or 0
+        c_phone = c.get('phone') or c.get('phone_whatsapp') or ""
+        print(f"   - {c_crop} ({c_qty} kg @ ₹{c_price}/kg) listed by {c_farmer} [{c_phone}]")
+except Exception as e:
+    print(f"\n[WARNING] Marketplace query notice: {e}")
 
 print("\n" + "=" * 60)

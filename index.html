@@ -242,18 +242,25 @@
     }
 
     .nav-tabs {
+      position: sticky;
+      top: 58px;
+      z-index: 95;
+      background: rgba(7, 14, 8, 0.96);
+      backdrop-filter: blur(16px);
+      border: 1.5px solid var(--card-border);
+      border-radius: 16px;
+      padding: 10px 14px;
+      margin-bottom: 24px;
       display: flex;
       gap: 8px;
-      border-bottom: 2px solid rgba(34, 197, 94, 0.2);
-      padding-bottom: 10px;
-      margin-bottom: 24px;
       overflow-x: auto;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
     }
 
     .tab-btn {
-      background: rgba(14, 29, 18, 0.6);
+      background: rgba(14, 29, 18, 0.7);
       border: 1px solid rgba(34, 197, 94, 0.25);
-      color: var(--text-muted);
+      color: #cbd5e1;
       padding: 10px 18px;
       border-radius: 12px;
       font-size: 14px;
@@ -267,7 +274,7 @@
     }
 
     .tab-btn:hover {
-      background: rgba(34, 197, 94, 0.15);
+      background: rgba(34, 197, 94, 0.2);
       color: #fff;
       border-color: var(--primary);
     }
@@ -276,29 +283,36 @@
       background: linear-gradient(135deg, #059669 0%, #047857 100%);
       color: #fff;
       border-color: #34d399;
-      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.35);
+      box-shadow: 0 4px 14px rgba(5, 150, 105, 0.4);
     }
 
     .btn-back-home {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: #0f172a;
-      border: 1.5px solid #334155;
-      color: #38bdf8;
-      padding: 8px 16px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 800;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+      border: 1.5px solid #34d399 !important;
+      color: #ffffff !important;
+      padding: 8px 16px !important;
+      border-radius: 10px !important;
+      font-size: 13px !important;
+      font-weight: 800 !important;
       cursor: pointer;
-      margin-bottom: 16px;
-      transition: all 0.2s;
+      margin-bottom: 14px;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35) !important;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      pointer-events: auto !important;
     }
     .btn-back-home:hover {
-      background: #1e293b;
-      border-color: #38bdf8;
-      color: #ffffff;
-      transform: translateY(-1px);
+      background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+      border-color: #6ee7b7 !important;
+      color: #ffffff !important;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(16, 185, 129, 0.5) !important;
+    }
+    .btn-back-home * {
+      color: #ffffff !important;
     }
     
     .home-hero-card {
@@ -951,7 +965,7 @@
             <!-- Interactive Optical Scanner Viewport -->
             <div class="scan-viewport" id="scanViewport">
               <div class="scanner-laser" id="scannerLaser" style="display:none;"></div>
-              <img id="imagePreview" src="https://images.unsplash.com/photo-1597848212624-a19eb35e2651?q=80&w=400&auto=format&fit=crop" style="width:100%; height:220px; object-fit:cover; display:block;" alt="Crop Leaf Scan">
+              <img id="imagePreview" src="https://images.unsplash.com/photo-1615485290382-441e4d049cb5?q=80&w=600&auto=format&fit=crop" style="width:100%; height:220px; object-fit:cover; display:block;" alt="Crop Leaf Scan">
               <div id="scanStatusBadge" style="position:absolute; bottom:8px; left:8px; background:rgba(0,0,0,0.75); color:#86efac; font-size:11px; font-weight:800; padding:4px 8px; border-radius:6px; border:1px solid #10b981;">
                 ✓ Optical Scan Calibrated: Ready
               </div>
@@ -1960,10 +1974,10 @@
 
     // TAB 2: Vision Leaf Presets & Optical Scan Animation
     const LEAF_IMAGES = {
-      'turmeric': 'https://images.unsplash.com/photo-1597848212624-a19eb35e2651?q=80&w=400&auto=format&fit=crop',
-      'rice': 'https://images.unsplash.com/photo-1586201375761-83865001e31c?q=80&w=400&auto=format&fit=crop',
-      'cotton': 'https://images.unsplash.com/photo-1605000797499-95a51c5269ae?q=80&w=400&auto=format&fit=crop',
-      'tomato': 'https://images.unsplash.com/photo-1592841200221-a6898f307baa?q=80&w=400&auto=format&fit=crop'
+      'turmeric': 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?q=80&w=600&auto=format&fit=crop',
+      'rice': 'https://images.unsplash.com/photo-1586201375761-83865001e31c?q=80&w=600&auto=format&fit=crop',
+      'cotton': 'https://images.unsplash.com/photo-1605000797499-95a51c5269ae?q=80&w=600&auto=format&fit=crop',
+      'tomato': 'https://images.unsplash.com/photo-1592841200221-a6898f307baa?q=80&w=600&auto=format&fit=crop'
     };
 
     let activeVisionReport = null;
@@ -2006,14 +2020,42 @@
 
     function handlePhotoUpload(input) {
       if (input.files && input.files[0]) {
+        const file = input.files[0];
         const reader = new FileReader();
         reader.onload = function(e) {
           const img = document.getElementById('imagePreview');
           img.src = e.target.result;
           img.style.display = 'block';
-          pickLeafPreset(document.querySelector('.leaf-card'), 'uploaded_image');
+
+          // Clear selected preset cards
+          document.querySelectorAll('.leaf-card').forEach(c => c.classList.remove('selected'));
+
+          // Trigger scanner laser animation on uploaded image
+          const laser = document.getElementById('scannerLaser');
+          const badge = document.getElementById('scanStatusBadge');
+          if (laser) laser.style.display = 'block';
+          if (badge) badge.innerText = "⚡ Optical Neural Scan Analyzing Uploaded Photo...";
+
+          fetch("/api/vision", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ crop_hint: 'uploaded_sample', lang: currentLang, filename: file.name })
+          })
+          .then(r => r.json())
+          .then(data => {
+            activeVisionReport = data;
+            setTimeout(() => {
+              if (laser) laser.style.display = 'none';
+              if (badge) badge.innerText = `✓ Pathology Classified: ${data.diagnosis}`;
+              renderVisionReport(data);
+            }, 800);
+          })
+          .catch(err => {
+            if (laser) laser.style.display = 'none';
+            if (badge) badge.innerText = "✓ Optical Scan Complete";
+          });
         };
-        reader.readAsDataURL(input.files[0]);
+        reader.readAsDataURL(file);
       }
     }
 

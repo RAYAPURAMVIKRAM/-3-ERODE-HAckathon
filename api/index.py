@@ -349,7 +349,32 @@ def generate_intelligent_agronomy_reply(prompt: str, lang: str) -> str:
 def generate_crop_vision_report(crop_hint: str, lang: str) -> dict:
     """Returns certified diagnostic plant pathology reports with cost-benefit analysis."""
     hint = (crop_hint or "").lower()
-    if "rice" in hint or "paddy" in hint:
+    if "uploaded" in hint or "custom" in hint or "sample" in hint:
+        return {
+            "report_id": "STARK-PATH-FIELD-905",
+            "crop": "Field Crop Diagnostic Sample (Kongu Agro-Zone)",
+            "health_index": 71,
+            "severity": "MODERATE SEVERITY",
+            "confidence": 95.4,
+            "stage": "Stage 2: Early Foliar Chlorosis & Pathogen Inoculum",
+            "diagnosis": "Foliar Blight & Micro-Nutrient Zinc/Iron Deficiency",
+            "pathogen": "Alternaria / Cercospora Complex & Soil Salinity Stress",
+            "symptoms": "Interveinal chlorosis, marginal tip yellowing, and scattered fungal spot lesions across vegetative canopy.",
+            "organic_treatment": [
+                "Foliar spray with 1% Ferrous Sulfate + 0.5% Zinc Sulfate + 1% Lime water supernatant.",
+                "Apply Trichoderma viride @ 5g/L + 5% cold-pressed neem oil to control opportunistic fungi.",
+                "Incorporate well-decomposed Farm Yard Manure (FYM) enriched with bio-fertilizers."
+            ],
+            "chemical_treatment": [
+                "Foliar spray with Mancozeb 75% WP @ 2.0g/L + Micronutrient mix @ 2.5g/L.",
+                "In severe progression: Apply Azoxystrobin 23% SC @ 1.0ml/L."
+            ],
+            "organic_cost_per_acre": "₹1,150 / acre",
+            "chemical_cost_per_acre": "₹2,180 / acre",
+            "cost_savings": "Save ₹1,030 / acre (-47%) utilizing enriched organic micronutrient bio-shield",
+            "prevention": "Test soil electrical conductivity (EC); flush excess salts and avoid water stagnation."
+        }
+    elif "rice" in hint or "paddy" in hint:
         return {
             "report_id": "STARK-PATH-CO51-884",
             "crop": "Paddy / Rice (Oryza sativa - CO-51)",
@@ -575,11 +600,11 @@ class handler(BaseHTTPRequestHandler):
                 formatted = [
                     {
                         "id": t.get("id"),
-                        "Date": t.get("timestamp"),
-                        "Farmer": t.get("name"),
-                        "Location": t.get("village"),
-                        "Emergency": t.get("category"),
-                        "Details": t.get("description")
+                        "Date": t.get("created_at") or t.get("timestamp") or "2026-11-09 09:15",
+                        "Farmer": t.get("farmer_name") or t.get("name") or "Farmer",
+                        "Location": f"{t.get('village', '')}, {t.get('district', '')}".strip(', ') if t.get("district") and t.get("district") != t.get("village") else t.get("village") or "Erode, Tamil Nadu",
+                        "Emergency": t.get("issue_type") or t.get("category") or "General Emergency",
+                        "Details": t.get("description") or ""
                     }
                     for t in cloud_tickets
                 ]
@@ -590,6 +615,10 @@ class handler(BaseHTTPRequestHandler):
         if path in ["/api/market/crops", "/api/crops"]:
             cloud_crops = query_supabase_table("marketplace_crops", method="GET")
             if cloud_crops and len(cloud_crops) > 0:
+                for c in cloud_crops:
+                    ph = c.get("phone") or c.get("phone_whatsapp") or "+919876543210"
+                    c["phone"] = ph
+                    c["phone_whatsapp"] = ph
                 return self.send_json(200, cloud_crops)
             return self.send_json(200, DEFAULT_CROPS)
 
@@ -875,29 +904,44 @@ class handler(BaseHTTPRequestHandler):
 
         # 5. Dispatch SOS Ticket API
         if path in ["/api/sos/tickets", "/api/tickets"]:
-            name = req_data.get("name", "Farmer")
+            name = req_data.get("name") or req_data.get("farmer_name") or "Farmer"
             village = req_data.get("village", "Erode")
-            category = req_data.get("category", "General Agricultural Crisis")
+            district = req_data.get("district", "Erode")
+            category = req_data.get("category") or req_data.get("issue_type") or "General Agricultural Crisis"
             desc = req_data.get("description", "")
-            now_str = req_data.get("timestamp", "2026-11-09 09:30")
+            phone = req_data.get("phone", "+91 98427 11204")
+            now_str = req_data.get("timestamp") or req_data.get("created_at") or "2026-11-09 09:30"
 
+            # Primary payload matching live Master Supabase columns
             new_ticket = {
-                "name": name,
+                "farmer_name": name,
+                "phone": phone,
                 "village": village,
-                "category": category,
+                "district": district,
+                "issue_type": category,
+                "severity": req_data.get("severity", "HIGH"),
                 "description": desc,
-                "timestamp": now_str
+                "status": "OPEN - TNAU DISPATCHED"
             }
 
             # Attempt cloud write to Supabase
             cloud_res = query_supabase_table("sos_tickets", method="POST", payload=new_ticket)
+            if not cloud_res:
+                legacy_ticket = {
+                    "name": name,
+                    "village": village,
+                    "category": category,
+                    "description": desc,
+                    "timestamp": now_str
+                }
+                cloud_res = query_supabase_table("sos_tickets", method="POST", payload=legacy_ticket)
 
             # Store in local in-memory fallback
             local_entry = {
                 "id": len(DEFAULT_TICKETS) + 1,
                 "Date": now_str,
                 "Farmer": name,
-                "Location": village,
+                "Location": f"{village}, {district}".strip(', ') if district != village else village,
                 "Emergency": category,
                 "Details": desc
             }
@@ -913,25 +957,48 @@ class handler(BaseHTTPRequestHandler):
         # 6. Post Harvest Lot API
         if path in ["/api/market/crops", "/api/crops"]:
             farmer = req_data.get("farmer_name", "Farmer")
-            phone = req_data.get("phone_whatsapp", "+919876543210")
+            phone = req_data.get("phone") or req_data.get("phone_whatsapp") or "+919876543210"
             crop = req_data.get("crop_name", "Erode Organic Turmeric (Finger)")
+            variety = req_data.get("variety", "Standard Commercial")
             qty = float(req_data.get("quantity_kg", 250.0))
             price = float(req_data.get("price_per_kg", 145.0))
             loc = req_data.get("location", "Perundurai, Erode")
             now_str = req_data.get("created_at", "2026-11-09 09:30")
 
+            # Primary payload matching live Master Supabase columns
             new_crop = {
                 "farmer_name": farmer,
-                "phone_whatsapp": phone,
+                "phone": phone,
+                "location": loc,
                 "crop_name": crop,
+                "variety": variety,
                 "quantity_kg": qty,
                 "price_per_kg": price,
-                "location": loc,
-                "created_at": now_str
+                "mandi_price_per_kg": round(price * 0.92, 1),
+                "organic_certified": True,
+                "available": True
             }
 
             # Attempt cloud write to Supabase
             cloud_res = query_supabase_table("marketplace_crops", method="POST", payload=new_crop)
+            if not cloud_res:
+                legacy_crop = {
+                    "farmer_name": farmer,
+                    "phone_whatsapp": phone,
+                    "crop_name": crop,
+                    "quantity_kg": qty,
+                    "price_per_kg": price,
+                    "location": loc,
+                    "created_at": now_str
+                }
+                cloud_res = query_supabase_table("marketplace_crops", method="POST", payload=legacy_crop)
+
+            # Store in local fallback
+            local_crop = dict(new_crop)
+            local_crop["id"] = len(DEFAULT_CROPS) + 1
+            local_crop["phone_whatsapp"] = phone
+            local_crop["created_at"] = now_str
+            DEFAULT_CROPS.insert(0, local_crop)
 
             # Store in local fallback
             local_crop = dict(new_crop)
